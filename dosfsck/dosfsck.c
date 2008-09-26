@@ -40,6 +40,7 @@ static void usage(char *name)
     fprintf(stderr,"  -f       salvage unused chains to files\n");
     fprintf(stderr,"  -l       list path names\n");
     fprintf(stderr,"  -n       no-op, check non-interactively without changing\n");
+    fprintf(stderr,"  -p       same as -a, for compat with other *fsck\n");
     fprintf(stderr,"  -r       interactively repair the file system\n");
     fprintf(stderr,"  -t       test for bad clusters\n");
     fprintf(stderr,"  -u path  try to undelete that (non-directory) file\n");
@@ -91,12 +92,13 @@ int main(int argc,char **argv)
     interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc,argv,"Aad:flnrtu:vVwy")) != EOF)
+    while ((c = getopt(argc,argv,"Aad:flnprtu:vVwy")) != EOF)
 	switch (c) {
 	    case 'A': /* toggle Atari format */
 	  	atari_format = !atari_format;
 		break;
 	    case 'a':
+	    case 'p':
 	    case 'y':
 		rw = 1;
 		interactive = 0;
