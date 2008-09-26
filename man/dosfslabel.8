@@ -1,0 +1,53 @@
+.TH "dosfslabel" "8" "13 August 2008"
+
+.SH "NAME"
+dosfslabel \- set or get a MS-DOS filesystem label
+
+.SH "SYNOPSIS"
+.PP
+.B dosfslabel
+.IR device \ [ label ]
+
+
+.SH "DESCRIPTION"
+.PP
+This manual page documents briefly the
+.B dosfslabel
+command.
+.PP
+.B dosfslabel
+set or gets  a MS-DOS filesystem label from a given
+.IR device .
+If
+.I label
+is omitted, then the label name of the specified
+.I device
+is written on the standard output.
+
+.I label
+can't be longer than 11 characters.
+
+.SH "OPTIONS"
+.TP
+.BR \-h , \-\-help
+Displays a help message.
+.TP
+.BR \-V , \-\-version
+Shows version.
+
+.SH "SEE ALSO"
+
+.BR mkfs.msdos (8),
+.BR mkdosfs (8)
+
+
+.SH "AUTHORS"
+.PP
+.B dosfslabel
+is Copyright 2007 Red Hat, Inc.
+.PP
+Some portions are Copyright 1998 Roman Hodek.
+.PP
+Some portions are Copyright 1993 Werner Almesberger.
+
+This manual page was written by François Wendling <frwendling@free.fr> for the Debian GNU/Linux system (but may be used by others).
