@@ -805,7 +805,7 @@ setup_tables (void)
       /* On Atari, the first few bytes of the boot sector are assigned
        * differently: The jump code is only 2 bytes (and m68k machine code
        * :-), then 6 bytes filler (ignored), then 3 byte serial number. */
-    strncpy( bs.system_id-1, "mkdosf", 6 );
+    memcpy( bs.system_id-1, "mkdosf", 6 );
   else
     strcpy (bs.system_id, "mkdosfs");
   if (sectors_per_cluster)
