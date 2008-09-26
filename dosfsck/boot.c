@@ -41,7 +41,7 @@ static struct {
     ({						\
 	unsigned short __v;			\
 	memcpy( &__v, &f, sizeof(__v) );	\
-	CF_LE_W( *(unsigned short *)&f );	\
+	CF_LE_W( *(unsigned short *)&__v );	\
     })
 #else
 #define GET_UNALIGNED_W(f) CF_LE_W( *(unsigned short *)&f )
