@@ -375,9 +375,11 @@ void read_boot(DOS_FS *fs)
     if (logical_sector_size & (SECTOR_SIZE-1))
 	die("Logical sector size (%d bytes) is not a multiple of the physical "
 	  "sector size.",logical_sector_size);
+#if 0 /* linux kernel doesn't check that either */
     /* ++roman: On Atari, these two fields are often left uninitialized */
     if (!atari_format && (!b.secs_track || !b.heads))
 	die("Invalid disk format in boot sector.");
+#endif
     if (verbose) dump_boot(fs,&b,logical_sector_size);
 }
 

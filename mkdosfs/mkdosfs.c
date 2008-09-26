@@ -746,8 +746,8 @@ establish_params (int device_num,int size)
     {
       /* Can we get the drive geometry? (Note I'm not too sure about */
       /* whether to use HDIO_GETGEO or HDIO_REQ) */
-      if (ioctl (dev, HDIO_GETGEO, &geometry)) {
-	printf ("unable to get drive geometry, using default 255/63");
+      if (ioctl (dev, HDIO_GETGEO, &geometry) || geometry.sectors == 0 || geometry.heads == 0) {
+	printf ("unable to get drive geometry, using default 255/63\n");
         bs.secs_track = CT_LE_W(63);
         bs.heads = CT_LE_W(255);
       }
