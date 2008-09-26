@@ -24,15 +24,15 @@ Bad clusters (read errors). The clusters are marked bad and they are
 removed from files owning them. This check is optional.
 .IP \-
 Directories with a large number of bad entries (probably corrupt). The
-directory can be dropped.
+directory can be deleted.
 .IP \-
-Files . and .. are non-directories. They can be dropped or renamed.
+Files . and .. are non-directories. They can be deleted or renamed.
 .IP \-
-Directories . and .. in root directory. They are dropped.
+Directories . and .. in root directory. They are deleted.
 .IP \-
 Bad file names. They can be renamed.
 .IP \-
-Duplicate directory entries. They can be dropped or renamed.
+Duplicate directory entries. They can be deleted or renamed.
 .IP \-
 Directories with non-zero size field. Size is set to zero.
 .IP \-
@@ -88,8 +88,8 @@ MS-DOS uses only 0xfff7 for bad clusters, where on Atari values
 0xfff0...0xfff7 are for this purpose (but the standard value is still
 0xfff7).
 .IP \fB\-d\fP
-Drop the specified file. If more that one file with that name exists, the
-first one is dropped.
+Delete the specified file. If more that one file with that name exists, the
+first one is deleted.
 .IP \fB\-f\fP
 Salvage unused cluster chains to files. By default, unused clusters are
 added to the free disk space except in auto mode (\fB-a\fP).
