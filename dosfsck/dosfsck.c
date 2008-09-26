@@ -84,6 +84,7 @@ int main(int argc,char **argv)
 {
     DOS_FS fs;
     int rw,salvage_files,verify,c;
+	unsigned n_files_check=0, n_files_verify=0;
     unsigned long free_clusters;
     
     rw = salvage_files = verify = 0;
@@ -154,12 +155,15 @@ int main(int argc,char **argv)
     free_clusters = update_free(&fs);
     file_unused();
     qfree(&mem_queue);
+	n_files_check = n_files;
     if (verify) {
-	printf("Starting verification pass.\n");
-	read_fat(&fs);
-	scan_root(&fs);
-	reclaim_free(&fs);
-	qfree(&mem_queue);
+		n_files = 0;
+		printf("Starting verification pass.\n");
+		read_fat(&fs);
+		scan_root(&fs);
+		reclaim_free(&fs);
+		qfree(&mem_queue);
+		n_files_verify = n_files;
     }
 
     if (fs_changed()) {
