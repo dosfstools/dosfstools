@@ -47,7 +47,7 @@
 
 /* Include the header files */
 
-#include "../version.h"
+#include "version.h"
 
 #include <fcntl.h>
 #include <linux/hdreg.h>
