@@ -1675,7 +1675,7 @@ main (int argc, char **argv)
 
   if (!create) {
     check_mount (device_name);	/* Is the device already mounted? */
-    dev = open (device_name, O_RDWR);	/* Is it a suitable device to build the FS on? */
+    dev = open (device_name, O_EXCL|O_RDWR);	/* Is it a suitable device to build the FS on? */
     if (dev < 0)
       die ("unable to open %s");
   }
@@ -1683,7 +1683,7 @@ main (int argc, char **argv)
       off_t offset = blocks*BLOCK_SIZE - 1;
       char null = 0;
       /* create the file */
-      dev = open( device_name, O_RDWR|O_CREAT|O_TRUNC, 0666 );
+      dev = open( device_name, O_EXCL|O_RDWR|O_CREAT|O_TRUNC, 0666 );
       if (dev < 0)
 	die("unable to create %s");
       /* seek to the intended end-1, and write one byte. this creates a
