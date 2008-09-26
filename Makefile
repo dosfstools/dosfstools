@@ -1,91 +1,94 @@
-#
-# Makefile for dosfstools (mkdosfs and dosfsck)
-#
+# Makefile
 
-CC ?= gcc
-CPP = $(CC) -E
-OPTFLAGS = -D_FILE_OFFSET_BITS=64
+DESTDIR =
+PREFIX = /usr/local
+SBINDIR = $(PREFIX)/sbin
+DOCDIR = $(PREFIX)/share/doc
+MANDIR = $(PREFIX)/share/man
+
+#OPTFLAGS = -O2 -fomit-frame-pointer -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+OPTFLAGS = -O2 -fomit-frame-pointer $(shell getconf LFS_CFLAGS)
+#WARNFLAGS = -Wall -pedantic -std=c99
 WARNFLAGS = -Wall
-DEBUGFLAGS = 
+DEBUGFLAGS = -g
 CFLAGS += $(OPTFLAGS) $(WARNFLAGS) $(DEBUGFLAGS)
 
-PREFIX = 
-SBINDIR = $(PREFIX)/sbin
-MANDIR = $(PREFIX)/usr/man/man8
+VPATH = src
 
-.PHONY: clean distclean install depend
-.EXPORT_ALL_VARIABLES:
+all: build
 
-all dep clean install:
-	$(MAKE) -C mkdosfs $@
-	$(MAKE) -C dosfsck $@
+build: dosfsck dosfslabel mkdosfs
 
-distclean:
-	$(MAKE) -C mkdosfs $@
-	$(MAKE) -C dosfsck $@
-	rm -f TAGS .#* .new* \#*# *~
+dosfsck: boot.o check.o common.o fat.o file.o io.o lfn.o dosfsck.o
 
-TAGS:
-	etags -d -T `find . -name '*.[ch]'`
+dosfslabel: boot.o check.o common.o fat.o file.o io.o lfn.o dosfslabel.o
 
-dist: binary tar
+mkdosfs: mkdosfs.o
 
-tar: distclean
-	cd ..; \
-	name="$(notdir $(shell pwd))"; \
-	namev="$$name-$(shell perl -ne 'print "$$1\n" if /VERSION.*"(\S+)"/;' version.h)"; \
-	mv $$name $$namev; \
-	tar cf $$namev.src.tar `find $$namev \( -name CVS -o -path $$namev/debian \) -prune -o ! -type d -print`; \
-	gzip -9f $$namev.src.tar; \
-	mv $$namev $$name
+rebuild: distclean build
 
-binary: all
-	doit=""; [ root = "`whoami`" ] || doit=sudo; $$doit $(MAKE) binary-sub
-	cd tmp; \
-	name="$(notdir $(shell pwd))"; \
-	namev="$$name-$(shell perl -ne 'print "$$1\n" if /VERSION.*"(\S+)"/;' version.h)"; \
-	arch=`uname -m | sed 's/i.86/i386/'`; \
-	nameva=$$namev.$$arch.tar; \
-	tar cf ../../$$nameva * ; \
-	gzip -9f ../../$$nameva
-	doit=""; [ root = "`whoami`" ] || doit=sudo; $$doit rm -rf tmp
+install: install-bin install-doc install-man
 
-binary-sub:
-	@[ root = "`whoami`" ] || (echo "Must be root for this!"; exit 1)
-	mkdir -p tmp/$(SBINDIR) tmp/$(MANDIR)
-	$(MAKE) install PREFIX=$(shell pwd)/tmp
+install-bin: build
+	install -d -m 0755 $(DESTDIR)/$(SBINDIR)
+	install -m 0755 dosfsck dosfslabel mkdosfs $(DESTDIR)/$(SBINDIR)
 
-# usage: make diff OLDVER=<last-release-number>
-diff:
-	@if [ "x$(OLDVER)" = "x" ]; then \
-		echo "Usage: make diff OLDVER=<last-release-number>"; \
-		exit 1; \
-	fi; \
-	name="$(notdir $(shell pwd))"; \
-	namev="$$name-$(shell perl -ne 'print "$$1\n" if /VERSION.*"(\S+)"/;' version.h)"; \
-	cvs diff -u -rRELEASE-$(OLDVER) >../$$namev.diff; \
-	gzip -9f ../$$namev.diff
+	ln -sf dosfsck $(DESTDIR)/$(SBINDIR)/fsck.msdos
+	ln -sf dosfsck $(DESTDIR)/$(SBINDIR)/fsck.vfat
+	ln -sf mkdosfs $(DESTDIR)/$(SBINDIR)/mkfs.msdos
+	ln -sf mkdosfs $(DESTDIR)/$(SBINDIR)/mkfs.vfat
 
+install-doc:
+	install -d -m 0755 $(DESTDIR)/$(DOCDIR)/dosfstools
+	install -m 0644 doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
 
-# usage: make release VER=<release-number>
-release:
-	@if [ "x$(VER)" = "x" ]; then \
-		echo "Usage: make release VER=<release-number>"; \
-		exit 1; \
-	fi
-	if [ -d CVS ]; then \
-		modified=`cvs status 2>/dev/null | awk '/Status:/ { if ($$4 != "Up-to-date") print $$2 }'`; \
-		if [ "x$$modified" != "x" ]; then \
-			echo "There are modified files: $$modified"; \
-			echo "Commit first"; \
-			exit 1; \
-		fi; \
-	fi
-	sed "/VERSION/s/\".*\"/\"$(VER)\"/" <version.h >version.h.tmp
-	date="`date +'%d %b %Y'`"; sed "/VERSION_DATE/s/\".*\"/\"$$date\"/" <version.h.tmp >version.h
-	rm version.h.tmp
-	if [ -d CVS ]; then \
-		cvs commit -m"Raised version to $(VER)" version.h; \
-		cvs tag -c -F RELEASE-`echo $(VER) | sed 's/\./-/g'`; \
-	fi
+install-man:
+	install -d -m 0755 $(DESTDIR)/$(MANDIR)/man8
+	install -m 0644 man/*.8 $(DESTDIR)/$(MANDIR)/man8
 
+	ln -sf dosfsck.8 $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8
+	ln -sf dosfsck.8 $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8
+	ln -sf mkdosfs.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8
+	ln -sf mkdosfs.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8
+
+uninstall: uninstall-bin uninstall-doc uninstall-man
+
+uninstall-bin:
+	rm -f $(DESTDIR)/$(SBINDIR)/dosfsck
+	rm -f $(DESTDIR)/$(SBINDIR)/dosfslabel
+	rm -f $(DESTDIR)/$(SBINDIR)/mkdosfs
+
+	rm -f $(DESTDIR)/$(SBINDIR)/fsck.msdos
+	rm -f $(DESTDIR)/$(SBINDIR)/fsck.vfat
+	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.msdos
+	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.vfat
+
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(SBINDIR)
+
+uninstall-doc:
+	rm -rf $(DESTDIR)/$(DOCDIR)/dosfstools
+
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(DOCDIR)
+
+uninstall-man:
+	rm -f $(DESTDIR)/$(MANDIR)/man8/dosfsck.8
+	rm -f $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8
+	rm -f $(DESTDIR)/$(MANDIR)/man8/mkdosfs.8
+
+	rm -f $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8
+	rm -f $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8
+	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8
+	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8
+
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(MANDIR)/man8
+	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(MANDIR)
+
+reinstall: distclean install
+
+clean:
+	rm -f *.o
+
+distclean: clean
+	rm -f dosfsck dosfslabel mkdosfs
+
+.PHONY: build rebuild install install-bin install-doc install-man uninstall uninstall-bin uninstall-doc uninstall-man reinstall clean distclean
