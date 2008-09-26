@@ -79,19 +79,19 @@ is the special file corresponding to the device (e.g /dev/hdXX).
 .I block-count
 is the number of blocks on the device.  If omitted,
 .B mkdosfs
-automatically determiness the file system size.
+automatically determines the file system size.
 .SH OPTIONS
 .TP
 .B \-A
-Use Atari variation of the MS-DOS filesystem. This is default if
+Use Atari variation of the MS-DOS file system. This is default if
 \fBmkdosfs\fP is run on an Atari, then this option turns off Atari
 format. There are some differences when using Atari format: If not
 directed otherwise by the user, \fBmkdosfs\fP will always use 2
 sectors per cluster, since GEMDOS doesn't like other values very much.
 It will also obey the maximum number of sectors GEMDOS can handle.
-Larger filesystems are managed by raising the logical sector size.
+Larger file systems are managed by raising the logical sector size.
 Under Atari format, an Atari-compatible serial number for the
-filesystem is generated, and a 12 bit FAT is used only for filesystems
+file system is generated, and a 12 bit FAT is used only for file systems
 that have one of the usual floppy sizes (720k, 1.2M, 1.44M, 2.88M), a
 16 bit FAT otherwise. This can be overridden with the \fB\-F\fP
 option. Some PC-specific boot sector fields aren't written, and a boot
@@ -126,7 +126,7 @@ more than 2 FATs.
 .BI \-F " FAT-size"
 Specifies the type of file allocation tables used (12, 16 or 32 bit).
 If nothing is specified, \fBmkdosfs\fR will automatically select
-between 12 and 16 bit, whatever fits better for the filesystem size.
+between 12 and 16 bit, whatever fits better for the file system size.
 32 bit FAT (FAT32 format) must (still) be selected explicitly if you
 want it.
 .TP
@@ -137,17 +137,17 @@ such hidden sectors, this option allows you to satisfy them. Assumes
 \'0\' if no value is given on the command line.
 .TP
 .I \-i " volume-id"
-Sets the volume ID of the newly created filesystem;
+Sets the volume ID of the newly created file system;
 .I volume-id
 is a 32-bit hexadecimal number (for example, 2e24ec82).  The default
-is a number which depends on the filesystem creation time.
+is a number which depends on the file system creation time.
 .TP
 .B \-I
 Normally you are not allowed to use any 'full' fixed disk devices.
 .B mkdosfs
 will complain and tell you that it refuses to work.  This is different
-when usind MO disks.  One doesn't always need partitions on MO disks.
-The filesytem can go directly to the whole disk.  Under other OSes
+when using MO disks.  One doesn't always need partitions on MO disks.
+The file system can go directly to the whole disk.  Under other OSes
 this is known as the 'superfloppy' format.
 
 This switch will force
@@ -159,14 +159,14 @@ Read the bad blocks list from
 .IR filename .
 .TP
 .BI \-m " message-file"
-Sets the message the user receives on attempts to boot this filesystem
+Sets the message the user receives on attempts to boot this file system
 without having properly installed an operating system.  The message
 file must not exceed 418 bytes once line feeds have been converted to
 carriage return-line feed combinations, and tabs have been expanded.
 If the filename is a hyphen (-), the text is taken from standard input. 
 .TP
 .BI \-n " volume-name"
-Sets the volume name (label) of the filesystem.  The volume name can
+Sets the volume name (label) of the file system.  The volume name can
 be up to 11 characters long.  The default is no label.
 .TP
 .BI \-r " root-dir-entries"
@@ -174,7 +174,7 @@ Select the number of entries available in the root directory.  The
 default is 112 or 224 for floppies and 512 for hard disks.
 .TP
 .BI \-R " number-of-reserved-sectors "
-Select the number of reserved sectos. With FAT32 format at least 2
+Select the number of reserved sectors. With FAT32 format at least 2
 reserved sectors are needed, the default is 32. Otherwise the default
 is 1 (only the boot sector).
 .TP
@@ -191,7 +191,7 @@ and greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192,
 Verbose execution.
 .SH BUGS
 .B mkdosfs
-can not create bootable filesystems. This isn't as easy as you might
+can not create boot-able file systems. This isn't as easy as you might
 think at first glance for various reasons and has been discussed a lot
 already.
 .B mkdosfs
@@ -200,7 +200,7 @@ simply will not support it ;)
 Dave Hudson - <dave@humbug.demon.co.uk>; modified by Peter Anvin
 <hpa@yggdrasil.com>. Fixes and additions by Roman Hodek
 <roman@hodek.net> for Debian/GNU Linux.
-.SH ACKNOWLEDGEMENTS
+.SH ACKNOWLEDGMENTS
 .B mkdosfs
 is based on code from
 .BR mke2fs
