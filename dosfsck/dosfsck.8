@@ -131,6 +131,10 @@ Recoverable errors have been detected or \fBdosfsck\fP has discovered an
 internal inconsistency.
 .IP 2
 Usage error. \fBdosfsck\fP did not access the file system.
+.SH FILES
+.IP "fsck0000.rec, fsck0001.rec, ..."
+When recovering from a corrupted file system, dosfsck dumps recovered data
+into files named 'fsckNNNN.rec' in the top level directory of the file system.
 .SH BUGS
 Does not create . and .. files where necessary. Does not remove entirely
 empty directories. Should give more diagnostic messages. Undeleting files
