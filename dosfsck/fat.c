@@ -54,7 +54,7 @@ void read_fat(DOS_FS *fs)
     void *first,*second = NULL;
     int first_ok,second_ok;
 
-    eff_size = ((fs->clusters+2)*fs->fat_bits+7)/8;
+    eff_size = ((fs->clusters+2ULL)*fs->fat_bits+7)/8ULL;
     first = alloc(eff_size);
     fs_read(fs->fat_start,eff_size,first);
     if (fs->nfats > 1) {
@@ -101,7 +101,7 @@ void read_fat(DOS_FS *fs)
     if (second) {
           free(second);
     }
-    fs->fat = qalloc(&mem_queue,sizeof(FAT_ENTRY)*(fs->clusters+2));
+    fs->fat = qalloc(&mem_queue,sizeof(FAT_ENTRY)*(fs->clusters+2ULL));
     for (i = 2; i < fs->clusters+2; i++) get_fat(&fs->fat[i],first,i,fs);
     for (i = 2; i < fs->clusters+2; i++)
 	if (fs->fat[i].value >= fs->clusters+2 &&
@@ -179,7 +179,7 @@ unsigned long next_cluster(DOS_FS *fs,unsigned long cluster)
 
 loff_t cluster_start(DOS_FS *fs,unsigned long cluster)
 {
-    return fs->data_start+((loff_t)cluster-2)*fs->cluster_size;
+    return fs->data_start+((loff_t)cluster-2)*(unsigned long long)fs->cluster_size;
 }
 
 
@@ -227,8 +227,8 @@ void reclaim_free(DOS_FS *fs)
 	    reclaimed++;
 	}
     if (reclaimed)
-	printf("Reclaimed %d unused cluster%s (%d bytes).\n",reclaimed,
-	  reclaimed == 1 ?  "" : "s",reclaimed*fs->cluster_size);
+	printf("Reclaimed %d unused cluster%s (%llu bytes).\n",reclaimed,
+	  reclaimed == 1 ?  "" : "s",(unsigned long long)reclaimed*fs->cluster_size);
 }
 
 
@@ -307,8 +307,8 @@ void reclaim_file(DOS_FS *fs)
 	    fs_write(offset,sizeof(DIR_ENT),&de);
 	}
     if (reclaimed)
-	printf("Reclaimed %d unused cluster%s (%d bytes) in %d chain%s.\n",
-	  reclaimed,reclaimed == 1 ? "" : "s",reclaimed*fs->cluster_size,files,
+	printf("Reclaimed %d unused cluster%s (%llu bytes) in %d chain%s.\n",
+	  reclaimed,reclaimed == 1 ? "" : "s",(unsigned long long)reclaimed*fs->cluster_size,files,
 	  files == 1 ? "" : "s");
 }
 

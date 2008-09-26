@@ -305,14 +305,14 @@ static void truncate_file(DOS_FS *fs,DOS_FILE *file,unsigned long clusters)
 static void auto_rename(DOS_FILE *file)
 {
     DOS_FILE *first,*walk;
-    int number;
+    unsigned long int number;
 
     if (!file->offset) return;	/* cannot rename FAT32 root dir */
     first = file->parent ? file->parent->first : root;
     number = 0;
     while (1) {
-	sprintf(file->dir_ent.name,"FSCK%04d",number);
-	strncpy(file->dir_ent.ext,"REN",3);
+	sprintf(file->dir_ent.name, "FSCK%04d", number / 1000);
+	sprintf(file->dir_ent.name, "%03d", number % 1000);
 	for (walk = first; walk; walk = walk->next)
 	    if (walk != file && !strncmp(walk->dir_ent.name,file->dir_ent.
 	      name,MSDOS_NAME)) break;
@@ -321,6 +321,9 @@ static void auto_rename(DOS_FILE *file)
 	    return;
 	}
 	number++;
+	if (number > 9999999) {
+		die("Too many files need repair.");
+	}
     }
     die("Can't generate a unique name.");
 }
@@ -450,10 +453,10 @@ static int check_file(DOS_FS *fs,DOS_FILE *file)
 	    break;
 	}
 	if (!(file->dir_ent.attr & ATTR_DIR) && CF_LE_L(file->dir_ent.size) <=
-	  clusters*fs->cluster_size) {
-	    printf("%s\n  File size is %u bytes, cluster chain length is > %lu "
+	  (unsigned long long)clusters*fs->cluster_size) {
+	    printf("%s\n  File size is %u bytes, cluster chain length is > %llu "
 	      "bytes.\n  Truncating file to %u bytes.\n",path_name(file),
-	      CF_LE_L(file->dir_ent.size),clusters*fs->cluster_size,
+	      CF_LE_L(file->dir_ent.size),(unsigned long long)clusters*fs->cluster_size,
 	      CF_LE_L(file->dir_ent.size));
 	    truncate_file(fs,file,clusters);
 	    break;
@@ -469,20 +472,20 @@ static int check_file(DOS_FS *fs,DOS_FILE *file)
 		else clusters2++;
 	    restart = file->dir_ent.attr & ATTR_DIR;
 	    if (!owner->offset) {
-		printf( "  Truncating second to %lu bytes because first "
-			"is FAT32 root dir.\n", clusters2*fs->cluster_size );
+		printf( "  Truncating second to %llu bytes because first "
+			"is FAT32 root dir.\n", (unsigned long long)clusters2*fs->cluster_size );
 		do_trunc = 2;
 	    }
 	    else if (!file->offset) {
-		printf( "  Truncating first to %lu bytes because second "
-			"is FAT32 root dir.\n", clusters*fs->cluster_size );
+		printf( "  Truncating first to %llu bytes because second "
+			"is FAT32 root dir.\n", (unsigned long long)clusters*fs->cluster_size );
 		do_trunc = 1;
 	    }
 	    else if (interactive)
-		printf("1) Truncate first to %lu bytes%s\n"
-		  "2) Truncate second to %lu bytes\n",clusters*fs->cluster_size,
-		  restart ? " and restart" : "",clusters2*fs->cluster_size);
-	    else printf("  Truncating second to %lu bytes.\n",clusters2*
+		printf("1) Truncate first to %llu bytes%s\n"
+		  "2) Truncate second to %llu bytes\n",(unsigned long long)clusters*fs->cluster_size,
+		  restart ? " and restart" : "",(unsigned long long)clusters2*fs->cluster_size);
+	    else printf("  Truncating second to %llu bytes.\n",(unsigned long long)clusters2*
 		  fs->cluster_size);
 	    if (do_trunc != 2 &&
 		(do_trunc == 1 ||
@@ -494,12 +497,13 @@ static int check_file(DOS_FS *fs,DOS_FILE *file)
 		    if (this == curr) {
 			if (prev) set_fat(fs,prev,-1);
 			else MODIFY_START(owner,0,fs);
-			MODIFY(owner,size,CT_LE_L(clusters*fs->cluster_size));
+			MODIFY(owner,size,CT_LE_L((unsigned long long)clusters*fs->cluster_size));
 			if (restart) return 1;
 			while (this > 0 && this != -1) {
 			    set_owner(fs,this,NULL);
 			    this = next_cluster(fs,this);
 			}
+			this = curr;
 			break;
 		    }
 		    clusters++;
@@ -520,11 +524,11 @@ static int check_file(DOS_FS *fs,DOS_FILE *file)
 	prev = curr;
     }
     if (!(file->dir_ent.attr & ATTR_DIR) && CF_LE_L(file->dir_ent.size) >
-      clusters*fs->cluster_size) {
-	printf("%s\n  File size is %u bytes, cluster chain length is %lu bytes."
+      (unsigned long long)clusters*fs->cluster_size) {
+	printf("%s\n  File size is %u bytes, cluster chain length is %llu bytes."
 	  "\n  Truncating file to %lu bytes.\n",path_name(file),CF_LE_L(file->
-	  dir_ent.size),clusters*fs->cluster_size,clusters*fs->cluster_size);
-	MODIFY(file,size,CT_LE_L(clusters*fs->cluster_size));
+	  dir_ent.size),(unsigned long long)clusters*fs->cluster_size,(unsigned long long)clusters*fs->cluster_size);
+	MODIFY(file,size,CT_LE_L((unsigned long long)clusters*fs->cluster_size));
     }
     return 0;
 }
