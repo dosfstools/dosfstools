@@ -1440,7 +1440,7 @@ main (int argc, char **argv)
   printf ("%s " VERSION " (" VERSION_DATE ")\n",
 	   program_name);
 
-  while ((c = getopt (argc, argv, "AbcCf:F:Ii:l:m:n:r:R:s:S:h:v")) != EOF)
+  while ((c = getopt (argc, argv, "Ab:cCf:F:Ii:l:m:n:r:R:s:S:h:v")) != EOF)
     /* Scan the command line for options */
     switch (c)
       {
