@@ -2,13 +2,12 @@
 # Makefile for dosfstools (mkdosfs and dosfsck)
 #
 
-CC = gcc
+CC ?= gcc
 CPP = $(CC) -E
-OPTFLAGS = -O2 -fomit-frame-pointer -D_FILE_OFFSET_BITS=64
+OPTFLAGS = -D_FILE_OFFSET_BITS=64
 WARNFLAGS = -Wall
 DEBUGFLAGS = 
-CFLAGS = $(OPTFLAGS) $(WARNFLAGS) $(DEBUGFLAGS)
-LDFLAGS =
+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) $(DEBUGFLAGS)
 
 PREFIX = 
 SBINDIR = $(PREFIX)/sbin
