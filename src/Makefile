@@ -1,12 +1,13 @@
 
-OBJECTS = boot.o check.o common.o fat.o file.o io.o lfn.o
+all: dosfsck dosfslabel mkdosfs
 
-all: dosfsck dosfslabel
-
-dosfsck: $(OBJECTS) dosfsck.o
+dosfsck: boot.o check.o common.o fat.o file.o io.o lfn.o dosfsck.o
 	$(CC) -o $@ $(LDFLAGS) $^
 
-dosfslabel : $(OBJECTS) dosfslabel.o
+dosfslabel : boot.o check.o common.o fat.o file.o io.o lfn.o dosfslabel.o
+	$(CC) -o $@ $(LDFLAGS) $^
+
+mkdosfs: mkdosfs.o
 	$(CC) -o $@ $(LDFLAGS) $^
 
 .c.o:
@@ -25,11 +26,22 @@ install: dosfsck
 	ln -s dosfsck.8 $(MANDIR)/fsck.msdos.8
 	ln -s dosfsck.8 $(MANDIR)/fsck.vfat.8
 
+	mkdir -p $(SBINDIR) $(MANDIR)
+	install -m 755 mkdosfs $(SBINDIR)
+	install -m 644 mkdosfs.8 $(MANDIR)
+	rm -f $(SBINDIR)/mkfs.msdos
+	rm -f $(SBINDIR)/mkfs.vfat
+	ln -s mkdosfs $(SBINDIR)/mkfs.msdos
+	ln -s mkdosfs $(SBINDIR)/mkfs.vfat
+	rm -f $(MANDIR)/mkfs.msdos.8
+	ln -s mkdosfs.8 $(MANDIR)/mkfs.msdos.8
+	ln -s mkdosfs.8 $(MANDIR)/mkfs.vfat.8
+
 clean:
 	rm -f *.o *.s *.i *~ \#*# tmp_make .#* .new*
 
 distclean: clean
-	rm -f *.a dosfsck dosfslabel
+	rm -f *.a dosfsck dosfslabel mkdosfs
 
 dep:
 	sed '/\#\#\# Dependencies/q' <Makefile >tmp_make
