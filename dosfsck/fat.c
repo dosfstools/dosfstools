@@ -51,19 +51,16 @@ void read_fat(DOS_FS *fs)
 {
     int eff_size;
     unsigned long i;
-    void *first,*second,*use;
+    void *first,*second = NULL;
     int first_ok,second_ok;
 
     eff_size = ((fs->clusters+2)*fs->fat_bits+7)/8;
     first = alloc(eff_size);
     fs_read(fs->fat_start,eff_size,first);
-    use = first;
     if (fs->nfats > 1) {
 	second = alloc(eff_size);
 	fs_read(fs->fat_start+fs->fat_size,eff_size,second);
     }
-    else
-	second = NULL;
     if (second && memcmp(first,second,eff_size) != 0) {
 	FAT_ENTRY first_media, second_media;
 	get_fat(&first_media,first,0,fs);
@@ -72,24 +69,28 @@ void read_fat(DOS_FS *fs)
 	second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
 	if (first_ok && !second_ok) {
 	    printf("FATs differ - using first FAT.\n");
-	    fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
+	    fs_write(fs->fat_start+fs->fat_size,eff_size,first);
 	}
 	if (!first_ok && second_ok) {
 	    printf("FATs differ - using second FAT.\n");
-	    fs_write(fs->fat_start,eff_size,use = second);
+	    fs_write(fs->fat_start,eff_size,second);
+	    memcpy(first,second,eff_size);
 	}
 	if (first_ok && second_ok) {
 	    if (interactive) {
 		printf("FATs differ but appear to be intact. Use which FAT ?\n"
 		  "1) Use first FAT\n2) Use second FAT\n");
-		if (get_key("12","?") == '1')
-		    fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
-		else fs_write(fs->fat_start,eff_size,use = second);
+		if (get_key("12","?") == '1') {
+		    fs_write(fs->fat_start+fs->fat_size,eff_size,first);
+		} else {
+		    fs_write(fs->fat_start,eff_size,second);
+		    memcpy(first,second,eff_size);
+		}
 	    }
 	    else {
 		printf("FATs differ but appear to be intact. Using first "
 		  "FAT.\n");
-		fs_write(fs->fat_start+fs->fat_size,eff_size,use = first);
+		fs_write(fs->fat_start+fs->fat_size,eff_size,first);
 	    }
 	}
 	if (!first_ok && !second_ok) {
@@ -97,8 +98,11 @@ void read_fat(DOS_FS *fs)
 	    exit(1);
 	}
     }
+    if (second) {
+          free(second);
+    }
     fs->fat = qalloc(&mem_queue,sizeof(FAT_ENTRY)*(fs->clusters+2));
-    for (i = 2; i < fs->clusters+2; i++) get_fat(&fs->fat[i],use,i,fs);
+    for (i = 2; i < fs->clusters+2; i++) get_fat(&fs->fat[i],first,i,fs);
     for (i = 2; i < fs->clusters+2; i++)
 	if (fs->fat[i].value >= fs->clusters+2 &&
 	    (fs->fat[i].value < FAT_MIN_BAD(fs))) {
@@ -107,8 +111,6 @@ void read_fat(DOS_FS *fs)
 	    set_fat(fs,i,-1);
 	}
     free(first);
-    if (second)
-	free(second);
 }
 
 
