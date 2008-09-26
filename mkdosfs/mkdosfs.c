@@ -1732,6 +1732,11 @@ main (int argc, char **argv)
         }
     }
 
+  if (sector_size > 4096)
+    fprintf(stderr, 
+            "Warning: sector size is set to %d > 4096, such filesystem will not propably mount\n",
+            sector_size);
+
   establish_params (statbuf.st_rdev,statbuf.st_size);	
                                 /* Establish the media parameters */
 
