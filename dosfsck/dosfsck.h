@@ -70,10 +70,47 @@ struct boot_sector {
     __u32	root_cluster;	/* first cluster in root directory */
     __u16	info_sector;	/* filesystem info sector */
     __u16	backup_boot;	/* backup boot sector */
-    __u16	reserved2[6];	/* Unused */
+    __u8 	reserved2[12];	/* Unused */
+
+    __u8        drive_number;   /* Logical Drive Number */
+    __u8        reserved3;      /* Unused */
+
+    __u8        extended_sig;   /* Extended Signature (0x29) */
+    __u32       serial;         /* Serial number */
+    __u8        label[11];      /* FS label */
+    __u8        fs_type[8];     /* FS Type */
 
     /* fill up to 512 bytes */
-    __u8	junk[448];
+    __u8	junk[422];
+} __attribute__ ((packed));
+
+struct boot_sector_16 {
+    __u8	ignored[3];	/* Boot strap short or near jump */
+    __u8	system_id[8];	/* Name - can be used to special case
+				   partition manager volumes */
+    __u8	sector_size[2];	/* bytes per logical sector */
+    __u8	cluster_size;	/* sectors/cluster */
+    __u16	reserved;	/* reserved sectors */
+    __u8	fats;		/* number of FATs */
+    __u8	dir_entries[2];	/* root directory entries */
+    __u8	sectors[2];	/* number of sectors */
+    __u8	media;		/* media code (unused) */
+    __u16	fat_length;	/* sectors/FAT */
+    __u16	secs_track;	/* sectors per track */
+    __u16	heads;		/* number of heads */
+    __u32	hidden;		/* hidden sectors (unused) */
+    __u32	total_sect;	/* number of sectors (if sectors == 0) */
+
+    __u8        drive_number;   /* Logical Drive Number */
+    __u8        reserved2;      /* Unused */
+
+    __u8        extended_sig;   /* Extended Signature (0x29) */
+    __u32       serial;         /* Serial number */
+    __u8        label[11];      /* FS label */
+    __u8        fs_type[8];     /* FS Type */
+
+    /* fill up to 512 bytes */
+    __u8	junk[450];
 } __attribute__ ((packed));
 
 struct info_sector {
@@ -133,6 +170,7 @@ typedef struct {
     long free_clusters;
     loff_t backupboot_start; /* 0 if not present */
     FAT_ENTRY *fat;
+    char *label;
 } DOS_FS;
 
 #ifndef offsetof

@@ -1,9 +1,12 @@
 
-OBJECTS = boot.o check.o common.o dosfsck.o fat.o file.o io.o lfn.o
+OBJECTS = boot.o check.o common.o fat.o file.o io.o lfn.o
 
-all: dosfsck
+all: dosfsck dosfslabel
 
-dosfsck: $(OBJECTS)
+dosfsck: $(OBJECTS) dosfsck.o
+	$(CC) -o $@ $(LDFLAGS) $^
+
+dosfslabel : $(OBJECTS) dosfslabel.o
 	$(CC) -o $@ $(LDFLAGS) $^
 
 .c.o:
@@ -13,6 +16,7 @@ install: dosfsck
 	mkdir -p $(SBINDIR) $(MANDIR)
 	install -m 755 dosfsck $(SBINDIR)
 	install -m 644 dosfsck.8 $(MANDIR)
+	install -m 755 dosfslabel $(SBINDIR)
 	rm -f $(SBINDIR)/fsck.msdos
 	rm -f $(SBINDIR)/fsck.vfat
 	ln -s dosfsck $(SBINDIR)/fsck.msdos
@@ -25,7 +29,7 @@ clean:
 	rm -f *.o *.s *.i *~ \#*# tmp_make .#* .new*
 
 distclean: clean
-	rm -f *.a dosfsck
+	rm -f *.a dosfsck dosfslabel
 
 dep:
 	sed '/\#\#\# Dependencies/q' <Makefile >tmp_make
@@ -38,6 +42,7 @@ check.o: check.c common.h dosfsck.h io.h fat.h file.h lfn.h check.h
 common.o: common.c common.h
 dosfsck.o: dosfsck.c common.h dosfsck.h io.h boot.h fat.h file.h \
  check.h
+dosfslabel.o: dosfslabel.c common.h dosfsck.h io.h boot.h fat.h file.h check.h
 fat.o: fat.c common.h dosfsck.h io.h check.h fat.h
 file.o: file.c common.h file.h
 io.o: io.c dosfsck.h common.h io.h

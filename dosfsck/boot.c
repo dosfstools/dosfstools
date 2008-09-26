@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <stdlib.h>
 
 #include "common.h"
 #include "dosfsck.h"
@@ -348,6 +349,21 @@ void read_boot(DOS_FS *fs)
     /* On FAT32, the high 4 bits of a FAT entry are reserved */
     fs->eff_fat_bits = (fs->fat_bits == 32) ? 28 : fs->fat_bits;
     fs->fat_size = fat_length*logical_sector_size;
+
+    fs->label = calloc(12, sizeof (__u8));
+    if (fs->fat_bits == 12 || fs->fat_bits == 16) {
+        struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
+        if (b16->extended_sig == 0x29)
+            memmove(fs->label, b16->label, 11);
+        else
+            fs->label = NULL;
+    } else if (fs->fat_bits == 32) {
+        if (b.extended_sig == 0x29)
+            memmove(fs->label, &b.label, 11);
+        else
+            fs->label = NULL;
+    }
+
     if (fs->clusters > ((unsigned long long)fs->fat_size*8/fs->fat_bits)-2)
 	die("File system has %d clusters but only space for %d FAT entries.",
 	  fs->clusters,((unsigned long long)fs->fat_size*8/fs->fat_bits)-2);
@@ -363,6 +379,36 @@ void read_boot(DOS_FS *fs)
     if (!atari_format && (!b.secs_track || !b.heads))
 	die("Invalid disk format in boot sector.");
     if (verbose) dump_boot(fs,&b,logical_sector_size);
+}
+
+void write_label(DOS_FS *fs, char *label)
+{
+    struct boot_sector b;
+    struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
+    int l = strlen(label);
+
+    while (l < 11)
+        label[l++] = ' ';
+
+    fs_read(0, sizeof(b), &b);
+    if (fs->fat_bits == 12 || fs->fat_bits == 16) {
+        if (b16->extended_sig != 0x29) {
+            b16->extended_sig = 0x29;
+            b16->serial = 0;
+            memmove(b16->fs_type, fs->fat_bits == 12 ?"FAT12   ":"FAT16   ", 8);
+        }
+        memmove(b16->label, label, 11);
+    } else if (fs->fat_bits == 32) {
+        if (b.extended_sig != 0x29) {
+            b.extended_sig = 0x29;
+            b.serial = 0;
+            memmove(b.fs_type, "FAT32   ", 8);
+        }
+        memmove(b.label, label, 11);
+    }
+    fs_write(0, sizeof(b), &b);
+    if (fs->fat_bits == 32 && fs->backupboot_start)
+        fs_write(fs->backupboot_start, sizeof(b), &b);
 }
 
 /* Local Variables: */

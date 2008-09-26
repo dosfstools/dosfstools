@@ -7,6 +7,7 @@
 #define _BOOT_H
 
 void read_boot(DOS_FS *fs);
+void write_label(DOS_FS *fs, char *label);
 
 /* Reads the boot sector from the currently open device and initializes *FS */
 
