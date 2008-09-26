@@ -1634,6 +1634,12 @@ main (int argc, char **argv)
   if (optind < argc)
     {
       device_name = argv[optind];  /* Determine the number of blocks in the FS */
+
+      if (!device_name) {
+	  printf("No device specified.\n");
+	  usage();
+      }
+
       if (!create)
          cblocks = count_blocks (device_name); /*  Have a look and see! */
     }
