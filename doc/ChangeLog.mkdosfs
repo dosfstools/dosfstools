@@ -8,7 +8,7 @@
 	(superblock) format of DOS 3.3+, with support for volume ID's and
 	volume labels (volume labels are also written to the root
 	directory, as they should).
-	
+
 18th February 1994		Dave Hudson (dave@humbug.demon.co.uk)
 
 	Released version 0.2 - clears a bug in the FAT sizing code.

@@ -12,4 +12,3 @@
 
  - dosfsck: read-only sector test (-t without -a or -r); just print
    out errors.
-

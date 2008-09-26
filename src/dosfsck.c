@@ -87,7 +87,7 @@ int main(int argc,char **argv)
     int rw,salvage_files,verify,c;
 	unsigned n_files_check=0, n_files_verify=0;
     unsigned long free_clusters;
-    
+
     rw = salvage_files = verify = 0;
     interactive = 1;
     check_atari();

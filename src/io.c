@@ -57,7 +57,7 @@ static loff_t llseek( int fd, loff_t offset, int whence )
 void fs_open(char *path,int rw)
 {
     struct stat stbuf;
-    
+
     if ((fd = open(path,rw ? O_RDWR : O_RDONLY)) < 0)
 	pdie("open %s",path);
     changes = last = NULL;
