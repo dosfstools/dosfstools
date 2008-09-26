@@ -66,12 +66,7 @@
 #include <time.h>
 #include <errno.h>
 
-#include <linux/version.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
-# define __KERNEL__
 # include <asm/types.h>
-# undef __KERNEL__
-#endif
 
 #if __BYTE_ORDER == __BIG_ENDIAN
 

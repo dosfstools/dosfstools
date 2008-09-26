@@ -2,13 +2,8 @@
 
 /* Written 1993 by Werner Almesberger */
 
-#include <linux/version.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0)
-# define __KERNEL__
 # include <asm/types.h>
-# undef __KERNEL__
 # define MSDOS_FAT12 4084 /* maximum number of clusters in a 12 bit FAT */
-#endif
 
 #ifndef _COMMON_H
 #define _COMMON_H
