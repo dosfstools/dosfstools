@@ -764,18 +764,19 @@ establish_params (int device_num,int size)
 	  size_fat = 32;
       }
       if (size_fat == 32) {
-	  /* For FAT32, try to do the same as M$'s format command:
-	   * fs size < 256M: 0.5k clusters
-	   * fs size <   8G: 4k clusters
-	   * fs size <  16G: 8k clusters
-	   * fs size >= 16G: 16k clusters
+	  /* For FAT32, try to do the same as M$'s format command
+	   * (see http://www.win.tue.nl/~aeb/linux/fs/fat/fatgen103.pdf p. 20):
+	   * fs size <= 260M: 0.5k clusters
+	   * fs size <=   8G: 4k clusters
+	   * fs size <=  16G: 8k clusters
+	   * fs size >   16G: 16k clusters
 	   */
 	  unsigned long sz_mb =
 	      (blocks+(1<<(20-BLOCK_SIZE_BITS))-1) >> (20-BLOCK_SIZE_BITS);
-	  bs.cluster_size = sz_mb >= 16*1024 ? 32 :
-			    sz_mb >=  8*1024 ? 16 :
-			    sz_mb >=     256 ?  8 :
-					        1;
+	  bs.cluster_size = sz_mb > 16*1024 ? 32 :
+			    sz_mb >  8*1024 ? 16 :
+			    sz_mb >     260 ?  8 :
+					       1;
       }
       else {
 	  /* FAT12 and FAT16: start at 4 sectors per cluster */
@@ -1031,6 +1032,8 @@ setup_tables (void)
 	break;
 
       case 32:
+	if (clust32 < MIN_CLUST_32)
+	  fprintf(stderr, "WARNING: Not enough clusters for a 32 bit FAT!\n");
 	cluster_count = clust32;
 	fat_length = fatlength32;
 	bs.fat_length = CT_LE_W(0);
