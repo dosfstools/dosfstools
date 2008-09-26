@@ -1424,6 +1424,7 @@ main (int argc, char **argv)
   int i = 0, pos, ch;
   int create = 0;
   unsigned long long cblocks;
+  int min_sector_size;
   
   if (argc && *argv) {		/* What's the program name? */
     char *p;
@@ -1717,6 +1718,24 @@ main (int argc, char **argv)
 	(statbuf.st_rdev & 0xff3f) == 0x1600 )  /* hdc, hdd */
 	)
       die ("Will not try to make filesystem on full-disk device '%s' (use -I if wanted)");
+
+  if (sector_size_set)
+    {
+      if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0)
+          if (sector_size < min_sector_size)
+            {
+	      sector_size = min_sector_size;
+              fprintf(stderr, "Warning: sector size was set to %d (minimal for this device)\n", sector_size);
+            }
+    }
+  else
+    {
+      if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0)
+        {
+	  sector_size = min_sector_size;
+	  sector_size_set = 1;
+        }
+    }
 
   establish_params (statbuf.st_rdev,statbuf.st_size);	
                                 /* Establish the media parameters */
