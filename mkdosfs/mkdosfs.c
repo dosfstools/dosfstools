@@ -51,7 +51,7 @@
 
 #include <fcntl.h>
 #include <linux/hdreg.h>
-#include <linux/fs.h>
+#include <sys/mount.h>
 #include <linux/fd.h>
 #include <endian.h>
 #include <mntent.h>
