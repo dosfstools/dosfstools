@@ -1,0 +1,307 @@
+commit 17fbf2a6dc9255a6bb832472ae7cda674b55e961
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Sep 28 11:29:01 2008 +0200
+
+    Adding GPL headers to all files.
+
+commit d2039e12c8d53472411c91eb8e7a7c0544e13d6d
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Sep 28 10:51:55 2008 +0200
+
+    Adding new GPL license file.
+
+commit e4e457f4b57090ecf0539f48dc682ab9afd14ab8
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 23:31:12 2008 +0200
+
+    Redoing Makefile from scratch.
+
+commit 216568ca3a01ed38962b22c7bf838d15d5a4d98d
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Sep 27 00:17:38 2008 +0200
+
+    Removing whitespaces in all files at EOL and EOF.
+
+commit f59157e06561c525605279145057361afa721042
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 23:48:56 2008 +0200
+
+    Adding Debians dosfslabel.8 manpage from Francois Wendling
+    <frwendling@free.fr>.
+
+commit c1bacab212d2b7f6ea93914976cb60056ff8276d
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:36:04 2008 +0200
+
+    Updating version.h includes to new location of version.h file.
+
+commit 1dae9f522062037d3539cadf344e0359c644171f
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:19:36 2008 +0200
+
+    Removing old lsm file.
+
+commit d843bec0b987f5582fe048f70e42df18c34d3ae4
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:07:47 2008 +0200
+
+    Removing old cvsignore files.
+
+commit 77fddbc03016752286b26913c62b98f86ee63211
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:18:39 2008 +0200
+
+    Removing old build file.
+
+commit f3e7168fc9eb6f32a6c85021186d84944cefeba8
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:19:16 2008 +0200
+
+    Removing old GPL license files.
+
+commit 68089477036e97911791516ee2167286f26ff819
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:21:57 2008 +0200
+
+    Unifying dosfsck and mkdosfs Makefiles in common src/Makefile.
+
+commit 9432a02d6e7c38872d7b1042f1b8be1b24a57427
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:04:02 2008 +0200
+
+    Unifying dosfsck and mkdosfs sources in common src directory.
+
+commit 0c179b9ee47174d0f34d9fc796d540012740ac01
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:05:27 2008 +0200
+
+    Unifying dosfsck and mkdosfs manpages in common man directory.
+
+commit 2d246c28ba6cfd43be2e44b11283891d922f352b
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 18:12:29 2008 +0200
+
+    Unifying dosfsck and mkdosfs documents in common doc directory.
+
+commit e5b16990515d0214fd103dd8aa22ff6a3cda4b64
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:39:51 2008 +0200
+
+    Applying Gentoos dosfstools-2.11-preen.patch from Roy Marples
+    <uberlord@gentoo.org> to alias dosfsck -p to -a:
+    
+      * Map -p to -a for baselayout-2, #177514.
+
+commit 6a1d974251a9f9a142775ace3a8048149abfa90c
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:49:43 2008 +0200
+
+    Applying Gentoos dosfstools-2.11-build.patch from Mike Frysinger
+    <vapier@gentoo.org> to improve Makefile:
+    
+      * Respect user settings #157785/#157786 by Diego Petteno.
+
+commit 1ea49f00e61b554dc833d44e1a3617e923be667e
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:37:34 2008 +0200
+
+    Applying Gentoos dosfstools-2.11-verify-double-count-fix.patch from
+    Robin H. Johnson <robbat2@gentoo.org> to fix double count of files
+    during verification:
+    
+      * Don't double-count n_files during a verification pass.
+        Bugzilla: http://bugs.gentoo.org/show_bug.cgi?id=99845
+
+commit 2d2f20b2c495fa620c7bb3ec5a0838b08f65ab05
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:33:36 2008 +0200
+
+    Applying Gentoos dosfstools-2.11-fat32size.patch from Mike Frysinger
+    <vapier@gentoo.org> to fix generation of filesystems on 256meg devices:
+    
+      * Fix generation of FAT filesystems on devices that are 256meg in size
+        Patch by Ulrich Mueller and accepted upstream
+        http://bugs.gentoo.org/112504
+
+commit a86564a9317b2bf9f7734feacdce794f20af74a7
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:22:06 2008 +0200
+
+    Applying Suses dosfstools-2.11-unsupported-sector-size.patch from Petr
+    Gajdos <pgajdos@suse.cz> to add sector size warning:
+    
+      * added warning for creation msdos on filesystem with sector size
+        greater than 4096 [fate#303325]
+
+commit 8171e51f4e02bd9f92bb515ca7896d3cb1b564b5
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:18:35 2008 +0200
+
+    Applying Suses dosfstools-2.11-mkdosfs-geo0.diff from Ludwig Nussel
+    <lnussel@suse.de> to fix handling of zero heads and sectors:
+    
+      * the HDIO_GETGEO ioctl works on device mapper devices but returns
+        zero heads and sectors. Therefore let's a) assume dummy values in
+        that case in mkdosfs and b) don't consider such fat file systems as
+        invalid in dosfsck. The Linux kernel accepts them anyways.
+
+commit db887df619f4e995db0ab112334f31464a03fa0e
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:15:40 2008 +0200
+
+    Applying Suses dosfstools-2.11-linuxfs.patch from Ruediger Oertel
+    <ro@suse.de> to not include linux/fs.h.
+
+commit 7fe3fa643494b26962d542fac38d988ac60f8c09
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:11:50 2008 +0200
+
+    Applying Fedoras dosfstools-2.11-assumeKernel26.patch from Peter Vrabec
+    <pvrabec@redhat.com> to remove linux 2.6 conditionals:
+    
+      * LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 0) does not work with
+        glibc-kernheaders-2.4-9.1.94
+
+commit 90c1c93c100722a03e48be51b1312fe65c1cb156
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 15:05:00 2008 +0200
+
+    Applying Debians 99-conglomeration.dpatch (no other information
+    available).
+
+commit bb6541bf4735e3a7f1c71b4722c6d03bb4549eea
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:26:41 2008 +0200
+
+    Applying Debians 15-manpage-files.dpatch from Daniel Baumann
+    <daniel@debian.org> to improve dosfsck manpage:
+    
+      * Lists fsckNNNN.rec files in FILES section (Closes: #444596).
+
+commit 49282165866be19d3bc54a3f4bdee2cf3a63ba6c
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:34:42 2008 +0200
+
+    Applying Debians 13-getopt.dpatch from Adonikam Virgo
+    <adonikam@virgonet.org> to fix mkdosfs getopt:
+    
+      * Fixes backup sector getopt (Closes: #232387, #479794).
+
+commit c32e44b85f4eac6f6a94bd620eea4abba257042a
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:34:17 2008 +0200
+
+    Applying Debians 12-zero-slot.dpatch by Karl Tomlinson
+    <karlt@karlt.net> to fix dosfsck zero slot crashes:
+    
+      * Fixes crashes due to zero slot numbers causing a negative offset in
+        the call to copy_lfn_part in lfn_add_slot. On amd64 this results in
+        a SIGSEGV in copy_lfn_part. On x86 the result is heap corruption
+        and thus sometimes a SIGSEGV or double free abort later. (Closes:
+        #152550, #353198, #356377, #401798).
+
+commit 370847af533e628aa9e38710e6d50af09f2b71ba
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:33:54 2008 +0200
+
+    Applying Debians 11-memory-efficiency.dpatch from Eero Tamminen
+    <eero.tamminen@nokia.com> to improve dosfsck memory efficiency:
+    
+      * Improves memory efficiency when checking filesystems.
+
+commit 28da9f286a52acec7df7ad06cb0679e5f828e7f3
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:33:28 2008 +0200
+
+    Applying Debians 10-manpage-synopsis.dpatch from Daniel Baumann
+    <daniel@debian.org> to fix manpage synopsis:
+    
+      * List alternative binary names in manpage synopsis (Closes: #284983).
+
+commit f253073021551c9b58d0f2ac262deb3c1b950b06
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:32:46 2008 +0200
+
+    Applying Debians 09-manpage-fat32.dpatch from Daniel Baumann
+    <daniel@debian.org> to improve mkdosfs manpage:
+    
+      * Don't claim that FAT32 is not choosed automatically (Closes:
+        #414183).
+
+commit f37c07aec3972cfc0db374d544ee3b27c0b4b20b
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:32:23 2008 +0200
+
+    Applying Debians 08-manpage-drop.dpatch from Daniel Baumann
+    <daniel@debian.org> to improve dosfsck manpage:
+    
+      * Don't use confusing word 'drop' when 'delete' is meant (Closes:
+        #134100).
+
+commit 3f970c65586da2f44d2a49b639e89341bbaf1fba
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:31:50 2008 +0200
+
+    Applying Debians 07-manpage-spelling.dpatch from Justin Pryzby
+    <justinpryzby@users.sourceforge.net> to fix mkdosfs manpage typos.
+
+commit 18678ba5f3a10c2a54ffee735651d7a265ae7d54
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:30:31 2008 +0200
+
+    Applying Suses dosfstools-2.11_determine-sector-size.patch from Petr
+    Gajdos <pgajdos@suse.cz> to determine mkdosfs sector size automatically:
+    
+      * determine sector size of device automatically or if -S parameter
+        present, verify, that it's not under physical sector size
+
+commit 29753931b078856d78f473cfb6273e111a26891e
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:30:03 2008 +0200
+
+    Applying Suses dosfstools-2.11-o_excl.patch from Pavol Rusnak
+    <prusnak@suse.cz> to use O_EXCL in mkdosfs:
+    
+      * mkdosfs now opens device with O_EXCL [#238687]
+
+commit 16bb7b09ad9eaf0fe37a732cabcdbdf975b77d3e
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 14:29:36 2008 +0200
+
+    Applying Debians 04-unaligned-memory.dpatch from Khalid Aziz
+    <khalid_aziz@hp.com> to fix dosfsck unaligned memory accesses:
+    
+      * Fix unaligned memory accesses which cause warnings to appear
+        everytime the elilo bootloader script runs. This has led a number
+        of users to believe their install has failed (Closes: #258839).
+
+commit 1298cc8f37eaa27ca542b8b7186ea5a47a63cd7e
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 13:47:40 2008 +0200
+
+    Applying Fedoras dosfstools-2.11-label.patch from Jeremy Katz
+    <katzj@redhat.com> to add dosfslabel (originally by Peter Jones).
+
+commit d23890e1d89770d6d2ba58362c2fc4ebafbde15c
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 13:41:14 2008 +0200
+
+    Applying Fedoras dosfstools-2.11-fortify.patch from Jakub Jelinek
+    <jakub@redhat.com> to make it build with -D_FORTIFY_SOURCE=2:
+    
+      * This violates -D_FORTIFY_SOURCE=2 (which is stricter than C
+        standard), but isn't actually any buffer overflow. But using memcpy
+        is more efficient anyway.
+
+commit 7dbd82000e59246c1c2f8c280c4491259e10a767
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Sep 26 13:40:47 2008 +0200
+
+    Applying Fedoras dosfstools-2.7-argfix.patch (no other information
+    available).
+
+commit 88f3b3139c72ac11cb3dd3f5afa8dbb2198a8de5
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Thu Jun 26 12:45:36 2008 +0200
+
+    Adding upstream version 2.11.
