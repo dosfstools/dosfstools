@@ -1,6 +1,24 @@
-/* io.h  -  Virtual disk input/output */
+/* io.h - Virtual disk input/output
 
-/* Written 1993 by Werner Almesberger */
+   Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
+   Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+   On Debian systems, the complete text of the GNU General Public License
+   can be found in /usr/share/common-licenses/GPL-3 file.
+*/
 
 /* FAT32, VFAT, Atari format support, and various fixes additions May 1998
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */

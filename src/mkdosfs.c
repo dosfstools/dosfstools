@@ -1,13 +1,29 @@
-/*
-   Filename:     mkdosfs.c
-   Version:      0.3b (Yggdrasil)
-   Author:       Dave Hudson
-   Started:      24th August 1994
-   Last Updated: 7th May 1998
-   Updated by:   Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
-   Target O/S:   Linux (2.x)
+/* mkdosfs.c - utility to create FAT/MS-DOS filesystems
 
-   Description: Utility to allow an MS-DOS filesystem to be created
+   Copyright (C) 1991 Linus Torvalds <torvalds@klaava.helsinki.fi>
+   Copyright (C) 1992-1993 Remy Card <card@masi.ibp.fr>
+   Copyright (C) 1993-1994 David Hudson <dave@humbug.demon.co.uk>
+   Copyright (C) 1998 H. Peter Anvin <hpa@zytor.com>
+   Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
+
+   This program is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+   On Debian systems, the complete text of the GNU General Public License
+   can be found in /usr/share/common-licenses/GPL-3 file.
+*/
+
+/* Description: Utility to allow an MS-DOS filesystem to be created
    under Linux.  A lot of the basic structure of this program has been
    borrowed from Remy Card's "mke2fs" code.
 
@@ -23,27 +39,7 @@
    - Atari format support
    - New options -A, -S, -C
    - Support for filesystems > 2GB
-   - FAT32 support
-
-   Copying:     Copyright 1993, 1994 David Hudson (dave@humbug.demon.co.uk)
-
-   Portions copyright 1992, 1993 Remy Card (card@masi.ibp.fr)
-   and 1991 Linus Torvalds (torvalds@klaava.helsinki.fi)
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. */
-
+   - FAT32 support */
 
 /* Include the header files */
 
