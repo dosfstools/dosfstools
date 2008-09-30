@@ -1711,7 +1711,7 @@ main (int argc, char **argv)
 	(statbuf.st_rdev & 0xff3f) == 0x0d00 || /* xd */
 	(statbuf.st_rdev & 0xff3f) == 0x1600 )  /* hdc, hdd */
 	)
-      die ("Will not try to make filesystem on full-disk device '%s' (use -I if wanted)");
+      die ("Device partition expected, not making filesystem on entire device '%s' (use -I to override)");
 
   if (sector_size_set)
     {

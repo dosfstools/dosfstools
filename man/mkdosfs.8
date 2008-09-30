@@ -141,7 +141,8 @@ is a 32-bit hexadecimal number (for example, 2e24ec82).  The default
 is a number which depends on the file system creation time.
 .TP
 .B \-I
-Normally you are not allowed to use any 'full' fixed disk devices.
+It is typical for fixed disk devices to be partitioned so, by default, you are
+not permitted to create a filesystem across the entire device.
 .B mkdosfs
 will complain and tell you that it refuses to work.  This is different
 when using MO disks.  One doesn't always need partitions on MO disks.
