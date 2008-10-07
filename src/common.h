@@ -20,7 +20,6 @@
 */
 
 # include <asm/types.h>
-# define MSDOS_FAT12 4084 /* maximum number of clusters in a 12 bit FAT */
 
 #ifndef _COMMON_H
 #define _COMMON_H

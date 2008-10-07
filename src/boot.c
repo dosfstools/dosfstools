@@ -37,6 +37,10 @@
 #define ROUND_TO_MULTIPLE(n,m) ((n) && (m) ? (n)+(m)-1-((n)-1)%(m) : 0)
     /* don't divide by zero */
 
+/* cut-over cluster counts for FAT12 and FAT16 */
+#define FAT12_THRESHOLD  4085
+#define FAT16_THRESHOLD 65525
+
 static struct {
     __u8 media;
     char *descr;
@@ -337,6 +341,13 @@ void read_boot(DOS_FS *fs)
 	    printf( "Warning: FAT32 root dir is in a cluster chain, but "
 		    "a separate root dir\n"
 		    "  area is defined. Cannot fix this easily.\n" );
+	if (fs->clusters < FAT16_THRESHOLD)
+		printf("Warning: Filesystem is FAT32 according to fat_length "
+			"and fat32_length fields,\n"
+			"  but has only %lu clusters, less than the required "
+			"minimum of %d.\n"
+			"  This may lead to problems on some systems.\n",
+			fs->clusters, FAT16_THRESHOLD);
 
 	fs->backupboot_start = CF_LE_W(b.backup_boot)*logical_sector_size;
 	check_backup_boot(fs,&b,logical_sector_size);
@@ -346,7 +357,10 @@ void read_boot(DOS_FS *fs)
     else if (!atari_format) {
 	/* On real MS-DOS, a 16 bit FAT is used whenever there would be too
 	 * much clusers otherwise. */
-	fs->fat_bits = (fs->clusters > MSDOS_FAT12) ? 16 : 12;
+	fs->fat_bits = (fs->clusters >= FAT12_THRESHOLD) ? 16 : 12;
+	if (fs->clusters >= FAT16_THRESHOLD)
+		die("Too many clusters (%lu) for FAT16 filesystem.",
+			fs->clusters);
     }
     else {
 	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
