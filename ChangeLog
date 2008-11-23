@@ -1,3 +1,41 @@
+commit 41574812a2586f0b6aa1d4f6e2276e557e9cbbcf
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Nov 23 18:41:01 2008 +0100
+
+    Applying Fedoras dosfstools-vfat-timingfix.diff from Bill Nottingham
+    <notting@redhat.com> to fix vfat timing issue. See
+    https://bugzilla.redhat.com/show_bug.cgi?id=448247 for more information.
+
+commit b80656109cc5cffdefd626c2ec9d45e3cf63a03e
+Author: Ulrich Mueller <ulm@gentoo.org>
+Date:   Tue Oct 7 07:55:37 2008 +0200
+
+    Patch to check for bad number of clusters in dosfsck:
+    
+      * FAT16 filesystems with 65525 clusters or more will be rejected
+        (Before, this was not tested for. Up to 65535 clusters were accepted
+        as good).
+    
+      * For FAT32 filesystems with less than 65525 a warning message will be
+        output.
+    
+    Macro MSDOS_FAT12 is now replaced by FAT12_THRESHOLD to make it
+    consistent with the definition in mkdosfs and to remove the dependency
+    on the kernel version.
+
+commit b9c13d143c420a3ec6e1dcb652cafa407621e9c7
+Author: Dann Frazier <dannf@hp.com>
+Date:   Tue Sep 30 07:25:19 2008 +0200
+
+    Changing some wording to make the indended meaning of "full-disk device"
+    more obvious.
+
+commit 4df18ad463f41ae368c3c51bfb5a033072605663
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Sep 28 11:43:19 2008 +0200
+
+    Releasing upstream version 3.0.0.
+
 commit 17fbf2a6dc9255a6bb832472ae7cda674b55e961
 Author: Daniel Baumann <daniel@debian.org>
 Date:   Sun Sep 28 11:29:01 2008 +0200
