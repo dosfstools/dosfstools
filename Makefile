@@ -58,11 +58,11 @@ install-bin: build
 
 install-doc:
 	install -d -m 0755 $(DESTDIR)/$(DOCDIR)/dosfstools
-	install -m 0644 doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
+	install -p -m 0644 doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
 
 install-man:
 	install -d -m 0755 $(DESTDIR)/$(MANDIR)/man8
-	install -m 0644 man/*.8 $(DESTDIR)/$(MANDIR)/man8
+	install -p -m 0644 man/*.8 $(DESTDIR)/$(MANDIR)/man8
 
 	ln -sf dosfsck.8 $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8
 	ln -sf dosfsck.8 $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8
