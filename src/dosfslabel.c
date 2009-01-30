@@ -122,5 +122,6 @@ int main(int argc, char *argv[])
     }
 
     write_label(&fs, label);
-    return fs_close(rw) ? 1 : 0;
+    fs_close(rw);
+    return 0;
 }
