@@ -58,7 +58,7 @@ install-bin: build
 
 install-doc:
 	install -d -m 0755 $(DESTDIR)/$(DOCDIR)/dosfstools
-	install -p -m 0644 doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
+	install -p -m 0644 ChangeLog doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
 
 install-man:
 	install -d -m 0755 $(DESTDIR)/$(MANDIR)/man8
