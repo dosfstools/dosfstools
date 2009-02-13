@@ -174,7 +174,9 @@ void set_fat(DOS_FS *fs,unsigned long cluster,unsigned long new)
     }
     fs->fat[cluster].value = new;
     fs_write(offs,size,&data);
-    fs_write(offs+fs->fat_size,size,&data);
+    if (fs->nfats > 1) {
+	fs_write(offs+fs->fat_size,size,&data);
+    }
 }
 
 
