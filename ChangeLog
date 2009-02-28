@@ -1,3 +1,33 @@
+commit a75924b8ff629fe7ca5ba9c58ac75f66290242ee
+Author: Hiroaki Ishizawa <hiroaki.ishizawa@gmail.com>
+Date:   Fri Feb 13 10:00:46 2009 +0100
+
+    dosfsck corrupts root directory when fs->nfats is 1.
+
+commit 161a5e1fdd019732e0a304beceaeeb606eb128d6
+Author: Stepan Kasal <skasal@redhat.com>
+Date:   Fri Jan 30 14:56:33 2009 +0100
+
+    src/dosfslabel.c (main): After writing the label, exit code should be 0.
+
+commit 26ffa1fb565c2b3284b846ca2733118808c85cb5
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Jan 30 14:06:01 2009 +0100
+
+    Also installing ChangeLog in install-doc target of Makefile.
+
+commit abad38ee561b02ec47be7e861780bf5fa2a05d0b
+Author: Stepan Kasal <skasal@redhat.com>
+Date:   Fri Jan 30 14:05:12 2009 +0100
+
+    Makefile: Do not clobber time stamps of doc files.
+
+commit 81882d20ec6bd4bf4914d39636cecc8c8e57dd67
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Nov 23 22:45:45 2008 +0100
+
+    Releasing upstream version 3.0.1.
+
 commit 41574812a2586f0b6aa1d4f6e2276e557e9cbbcf
 Author: Daniel Baumann <daniel@debian.org>
 Date:   Sun Nov 23 18:41:01 2008 +0100
