@@ -57,7 +57,7 @@ static struct {
     { 0xff, "5.25\" 320k floppy 2s/40tr/8sec" },
 };
 
-#if defined __alpha || defined __ia64__ || defined __s390x__ || defined __x86_64__ || defined __ppc64__
+#if defined __alpha || defined __ia64__ || defined __s390x__ || defined __x86_64__ || defined __ppc64__ || defined __bfin__
 /* Unaligned fields must first be copied byte-wise */
 #define GET_UNALIGNED_W(f)			\
     ({						\
