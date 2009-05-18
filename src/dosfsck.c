@@ -106,6 +106,7 @@ int main(int argc,char **argv)
 	unsigned n_files_check=0, n_files_verify=0;
     unsigned long free_clusters;
 
+    memset(&fs, 0, sizeof(fs));
     rw = salvage_files = verify = 0;
     interactive = 1;
     check_atari();

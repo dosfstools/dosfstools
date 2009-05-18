@@ -28,6 +28,10 @@ void read_fat(DOS_FS *fs);
 /* Loads the FAT of the file system described by FS. Initializes the FAT,
    replaces broken FATs and rejects invalid cluster entries. */
 
+void get_fat(FAT_ENTRY *entry, void *fat, unsigned long cluster, DOS_FS *fs);
+
+/* Retrieve the FAT entry (next chained cluster) for CLUSTER. */
+
 void set_fat(DOS_FS *fs,unsigned long cluster,unsigned long new);
 
 /* Changes the value of the CLUSTERth cluster of the FAT of FS to NEW. Special

@@ -57,7 +57,8 @@ static struct {
     { 0xff, "5.25\" 320k floppy 2s/40tr/8sec" },
 };
 
-#if defined __alpha || defined __ia64__ || defined __s390x__ || defined __x86_64__ || defined __ppc64__ || defined __bfin__
+#if defined __alpha || defined __ia64__ || defined __s390x__ || defined __x86_64__ \
+ || defined __ppc64__ || defined __bfin__ || defined __MICROBLAZE__
 /* Unaligned fields must first be copied byte-wise */
 #define GET_UNALIGNED_W(f)			\
     ({						\
@@ -300,6 +301,14 @@ void read_boot(DOS_FS *fs)
     fs_read(0,sizeof(b),&b);
     logical_sector_size = GET_UNALIGNED_W(b.sector_size);
     if (!logical_sector_size) die("Logical sector size is zero.");
+
+    /* This was moved up because it's the first thing that will fail */
+    /* if the platform needs special handling of unaligned multibyte accesses */
+    /* but such handling isn't being provided. See GET_UNALIGNED_W() above. */
+    if (logical_sector_size & (SECTOR_SIZE-1))
+	die("Logical sector size (%d bytes) is not a multiple of the physical "
+	  "sector size.",logical_sector_size);
+
     fs->cluster_size = b.cluster_size*logical_sector_size;
     if (!fs->cluster_size) die("Cluster size is zero.");
     if (b.fats != 2 && b.fats != 1)

@@ -57,6 +57,14 @@ static void put_char(char **p,unsigned char c)
 }
 
 
+/**
+ * Construct the "pretty-printed" representation of the name in a short directory entry.
+ *
+ * @param[in]    fixed  Pointer to name[0] of a DIR_ENT
+ *
+ * @return  Pointer to static string containing pretty "8.3" equivalent of the
+ *          name in the directory entry.
+ */
 char *file_name(unsigned char *fixed)
 {
     static char path[MSDOS_NAME*4+2];
@@ -204,6 +212,8 @@ static FDSC **file_find(FDSC **dir,char *fixed)
 }
 
 
+/* Returns the attribute of the file FIXED in directory CURR or FDT_NONE if no
+   such file exists or if CURR is NULL. */
 FD_TYPE file_type(FDSC **curr,char *fixed)
 {
     FDSC **this;

@@ -302,6 +302,7 @@ static struct msdos_boot_sector bs;	/* Boot sector data */
 static int start_data_sector;	/* Sector number for the start of the data area */
 static int start_data_block;	/* Block number for the start of the data area */
 static unsigned char *fat;	/* File allocation table */
+static unsigned alloced_fat_length;	/* # of FAT sectors we can keep in memory */
 static unsigned char *info_sector;	/* FAT32 info sector */
 static struct msdos_dir_entry *root_dir;	/* Root directory */
 static int size_root_dir;	/* Size of the root directory in bytes */
@@ -309,7 +310,7 @@ static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
 static char *blank_sector;		/* Blank sector - all zeros */
 static int hidden_sectors = 0;		/* Number of hidden sectors */
-
+static int malloc_entire_fat = FALSE;	/* Whether we should malloc() the entire FAT or not */
 
 /* Function prototype definitions */
 
@@ -1219,10 +1220,15 @@ setup_tables (void)
 
   /* Make the file allocation tables! */
 
-  if ((fat = (unsigned char *) malloc (fat_length * sector_size)) == NULL)
+  if (malloc_entire_fat)
+    alloced_fat_length = fat_length;
+  else
+    alloced_fat_length = 1;
+
+  if ((fat = (unsigned char *) malloc (alloced_fat_length * sector_size)) == NULL)
     die ("unable to allocate space for FAT image in memory");
 
-  memset( fat, 0, fat_length * sector_size );
+  memset( fat, 0, alloced_fat_length * sector_size );
 
   mark_FAT_cluster (0, 0xffffffff);	/* Initial fat entries */
   mark_FAT_cluster (1, 0xffffffff);
@@ -1352,8 +1358,13 @@ write_tables (void)
     }
   /* seek to start of FATS and write them all */
   seekto( reserved_sectors*sector_size, "first FAT" );
-  for (x = 1; x <= nr_fats; x++)
-    writebuf( fat, fat_length * sector_size, "FAT" );
+  for (x = 1; x <= nr_fats; x++) {
+    int y;
+    int blank_fat_length = fat_length - alloced_fat_length;
+    writebuf( fat, alloced_fat_length * sector_size, "FAT" );
+    for (y=0; y<blank_fat_length; y++)
+      writebuf( blank_sector, sector_size, "FAT" );
+  }
   /* Write the root directory directly after the last FAT. This is the root
    * dir area on FAT12/16, and the first cluster on FAT32. */
   writebuf( (char *) root_dir, size_root_dir, "root directory" );
@@ -1456,6 +1467,7 @@ main (int argc, char **argv)
 
       case 'c':		/* c : Check FS as we build it */
 	check = TRUE;
+	malloc_entire_fat = TRUE;	/* Need to be able to mark clusters bad */
 	break;
 
       case 'C':		/* C : Create a new file */
@@ -1505,6 +1517,7 @@ main (int argc, char **argv)
 
       case 'l':		/* l : Bad block filename */
 	listfile = optarg;
+	malloc_entire_fat = TRUE;	/* Need to be able to mark clusters bad */
 	break;
 
       case 'm':		/* m : Set boot message */

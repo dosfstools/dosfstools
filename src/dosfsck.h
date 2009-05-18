@@ -163,8 +163,6 @@ typedef struct _dos_file {
 typedef struct {
     unsigned long value;
     unsigned long reserved;
-    DOS_FILE *owner;
-    int prev; /* number of previous clusters */
 } FAT_ENTRY;
 
 typedef struct {
@@ -182,7 +180,8 @@ typedef struct {
     loff_t fsinfo_start; /* 0 if not present */
     long free_clusters;
     loff_t backupboot_start; /* 0 if not present */
-    FAT_ENTRY *fat;
+    unsigned char *fat;
+    DOS_FILE **cluster_owner;
     char *label;
 } DOS_FS;
 

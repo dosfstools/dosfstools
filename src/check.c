@@ -111,8 +111,11 @@ loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern)
 	    if (!prev)
 		die("Root directory has no cluster allocated!");
 	    for (clu_num = prev+1; clu_num != prev; clu_num++) {
+                FAT_ENTRY entry;
+
 		if (clu_num >= fs->clusters+2) clu_num = 2;
-		if (!fs->fat[clu_num].value)
+                get_fat(&entry, fs->fat, clu_num, fs);
+		if (!entry.value)
 		    break;
 	    }
 	    if (clu_num == prev)
@@ -183,15 +186,27 @@ loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern)
 }
 
 
+/**
+ * Construct a full path (starting with '/') for the specified dentry,
+ * relative to the partition. All components are "long" names where possible.
+ *
+ * @param[in]   file    Information about dentry (file or directory) of interest
+ *
+ * return       Pointer to static string containing file's full path
+ */
 static char *path_name(DOS_FILE *file)
 {
     static char path[PATH_MAX*2];
 
-    if (!file) *path = 0;
+    if (!file) *path = 0;       /* Reached the root directory */
     else {
 	if (strlen(path_name(file->parent)) > PATH_MAX)
 	    die("Path name too long.");
 	if (strcmp(path,"/") != 0) strcat(path,"/");
+
+        /* Append the long name to the path,
+         * or the short name if there isn't a long one
+         */
 	strcpy(strrchr(path,0),file->lfn?file->lfn:file_name(file->dir_ent.name));
     }
     return path;
@@ -461,9 +476,12 @@ static int check_file(DOS_FS *fs,DOS_FILE *file)
     clusters = prev = 0;
     for (curr = FSTART(file,fs) ? FSTART(file,fs) :
       -1; curr != -1; curr = next_cluster(fs,curr)) {
-	if (!fs->fat[curr].value || bad_cluster(fs,curr)) {
+        FAT_ENTRY curEntry;
+        get_fat(&curEntry, fs->fat, curr, fs);
+
+	if (!curEntry.value || bad_cluster(fs,curr)) {
 	    printf("%s\n  Contains a %s cluster (%lu). Assuming EOF.\n",
-	      path_name(file),fs->fat[curr].value ? "bad" : "free",curr);
+	      path_name(file), curEntry.value ? "bad" : "free",curr);
 	    if (prev) set_fat(fs,prev,-1);
 	    else if (!file->offset)
 		die( "FAT32 root dir starts with a bad cluster!" );
@@ -690,6 +708,15 @@ static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
 }
 
 
+/**
+ * Check a dentry's cluster chain for bad clusters.
+ * If requested, we verify readability and mark unreadable clusters as bad.
+ *
+ * @param[inout]    fs          Information about the filesystem
+ * @param[in]       file        dentry to check
+ * @param[in]       read_test   Nonzero == verify that dentry's clusters can
+ *                              be read
+ */
 static void test_file(DOS_FS *fs,DOS_FILE *file,int read_test)
 {
     DOS_FILE *owner;
@@ -699,6 +726,11 @@ static void test_file(DOS_FS *fs,DOS_FILE *file,int read_test)
     for (walk = FSTART(file,fs); walk > 0 && walk < fs->clusters+2;
       walk = next_clu) {
 	next_clu = next_cluster(fs,walk);
+
+        /* In this stage we are checking only for a loop within our own
+         * cluster chain.
+         * Cross-linking of clusters is handled in check_file()
+         */
 	if ((owner = get_owner(fs,walk))) {
 	    if (owner == file) {
 		printf("%s\n  Circular cluster chain. Truncating to %lu "
@@ -727,6 +759,7 @@ static void test_file(DOS_FS *fs,DOS_FILE *file,int read_test)
 	}
 	set_owner(fs,walk,file);
     }
+    /* Revert ownership (for now) */
     for (walk = FSTART(file,fs); walk > 0 && walk < fs->clusters+2;
       walk = next_cluster(fs,walk))
 	if (bad_cluster(fs,walk)) break;
@@ -742,11 +775,21 @@ static void undelete(DOS_FS *fs,DOS_FILE *file)
     clusters = left = (CF_LE_L(file->dir_ent.size)+fs->cluster_size-1)/
       fs->cluster_size;
     prev = 0;
-    for (walk = FSTART(file,fs); left && walk >= 2 && walk <
-       fs->clusters+2 && !fs->fat[walk].value; walk++) {
+
+    walk = FSTART(file,fs);
+
+    while (left && (walk >= 2) && (walk < fs->clusters+2)) {
+
+        FAT_ENTRY curEntry;
+        get_fat(&curEntry, fs->fat, walk, fs);
+
+        if (!curEntry.value)
+            break;
+
 	left--;
 	if (prev) set_fat(fs,prev,walk);
 	prev = walk;
+        walk++;
     }
     if (prev) set_fat(fs,prev,-1);
     else MODIFY_START(file,0,fs);
@@ -763,6 +806,19 @@ static void new_dir( void )
 }
 
 
+/**
+ * Create a description for a referenced dentry and insert it in our dentry
+ * tree. Then, go check the dentry's cluster chain for bad clusters and
+ * cluster loops.
+ *
+ * @param[inout]    fs      Information about the filesystem
+ * @param[out]      chain
+ * @param[in]       parent  Information about parent directory of this file
+ *                          NULL == no parent ('file' is root directory)
+ * @param[in]       offset  Partition-relative byte offset of directory entry of interest
+ *                          0 == Root directory
+ * @param           cp
+ */
 static void add_file(DOS_FS *fs,DOS_FILE ***chain,DOS_FILE *parent,
 					 loff_t offset,FDSC **cp)
 {
@@ -773,6 +829,7 @@ static void add_file(DOS_FS *fs,DOS_FILE ***chain,DOS_FILE *parent,
     if (offset)
 	fs_read(offset,sizeof(DIR_ENT),&de);
     else {
+        /* Construct a DIR_ENT for the root directory */
 	memcpy(de.name,"           ",MSDOS_NAME);
 	de.attr = ATTR_DIR;
 	de.size = de.time = de.date = 0;
@@ -805,14 +862,15 @@ static void add_file(DOS_FS *fs,DOS_FILE ***chain,DOS_FILE *parent,
     if (list) {
 	printf("Checking file %s",path_name(new));
 	if (new->lfn)
-	    printf(" (%s)", file_name(new->dir_ent.name) );
+	    printf(" (%s)", file_name(new->dir_ent.name) );     /* (8.3) */
 	printf("\n");
     }
+    /* Don't include root directory, '.', or '..' in the total file count */
     if (offset &&
 	strncmp(de.name,MSDOS_DOT,MSDOS_NAME) != 0 &&
 	strncmp(de.name,MSDOS_DOTDOT,MSDOS_NAME) != 0)
 	++n_files;
-    test_file(fs,new,test);
+    test_file(fs,new,test);     /* Bad cluster check */
 }
 
 
@@ -844,6 +902,16 @@ static int scan_dir(DOS_FS *fs,DOS_FILE *this,FDSC **cp)
 }
 
 
+/**
+ * Recursively scan subdirectories of the specified parent directory.
+ *
+ * @param[inout]    fs      Information about the filesystem
+ * @param[in]       parent  Identifies the directory to scan
+ * @param[in]       cp
+ *
+ * @return  0   Success
+ * @return  1   Error
+ */
 static int subdirs(DOS_FS *fs,DOS_FILE *parent,FDSC **cp)
 {
     DOS_FILE *walk;
@@ -857,6 +925,14 @@ static int subdirs(DOS_FS *fs,DOS_FILE *parent,FDSC **cp)
 }
 
 
+/**
+ * Scan all directory and file information for errors.
+ *
+ * @param[inout]    fs      Information about the filesystem
+ *
+ * @return  0   Success
+ * @return  1   Error
+ */
 int scan_root(DOS_FS *fs)
 {
     DOS_FILE **chain;
