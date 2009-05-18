@@ -1,3 +1,31 @@
+commit 8147c98a542b714ccab34b57c84ed842bb6b50f2
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Mon May 18 15:10:55 2009 +0200
+
+    Also declaring arm as an unaligned architecture, see Debian bug #502961.
+
+commit 18e27fa5c0f811e7edc10bca771acc7c04b19146
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Mon May 18 15:01:49 2009 +0200
+
+    Adding support for limited-memory embedded systems.
+    
+    This patch reorganizes heap memory usage by dosfsck and mkdosfs
+    to support limited-memory embedded systems - in particular, those
+    based on Xilinx's Microblaze processor. It also adds a few comments.
+
+commit 180b68e652df7bfeb7f336e0247aee8873edea7f
+Author: Mike Frysinger <vapier@gentoo.org>
+Date:   Thu Mar 5 07:03:36 2009 +0100
+
+    Declaring Blackfin as an unaligned architecture.
+
+commit 71ac75353d9158aed663f0a3a9d1a1a67ee4ff4f
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Feb 28 09:48:04 2009 +0100
+
+    Releasing upstream version 3.0.2.
+
 commit a75924b8ff629fe7ca5ba9c58ac75f66290242ee
 Author: Hiroaki Ishizawa <hiroaki.ishizawa@gmail.com>
 Date:   Fri Feb 13 10:00:46 2009 +0100
