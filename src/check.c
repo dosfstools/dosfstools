@@ -345,7 +345,7 @@ static void auto_rename(DOS_FILE *file)
     number = 0;
     while (1) {
 	sprintf(file->dir_ent.name, "FSCK%04d", number / 1000);
-	sprintf(file->dir_ent.name, "%03d", number % 1000);
+	sprintf(file->dir_ent.ext, "%03d", number % 1000);
 	for (walk = first; walk; walk = walk->next)
 	    if (walk != file && !strncmp(walk->dir_ent.name,file->dir_ent.
 	      name,MSDOS_NAME)) break;
