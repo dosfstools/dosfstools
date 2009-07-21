@@ -1,3 +1,25 @@
+commit 3ce6422e93f3de746be092e324253a8722917a86
+Author: Andrew Tridgell <tridge@samba.org>
+Date:   Tue Jul 21 07:59:22 2009 +0200
+
+    Modify dosfstools to support the dummy 8.3 short filename values
+    used by Linux systems with the VFAT_FS_DUALNAMES option disabled.
+    
+    See http://lkml.org/lkml/2009/6/26/313 and
+    http://lkml.org/lkml/2009/6/26/314 for more information.
+
+commit 94f8769aeddf0d0d3f0be54361514a464907a4a1
+Author: Paul Rupe <prupe@nc.rr.com>
+Date:   Tue May 19 10:37:52 2009 +0200
+
+    Fixing "Too many files need repair" error during fsck.
+
+commit 89566399e407e54eb14d275770106ad42b3ac87c
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Mon May 18 15:12:04 2009 +0200
+
+    Releasing upstream version 3.0.3.
+
 commit 8147c98a542b714ccab34b57c84ed842bb6b50f2
 Author: Daniel Baumann <daniel@debian.org>
 Date:   Mon May 18 15:10:55 2009 +0200
