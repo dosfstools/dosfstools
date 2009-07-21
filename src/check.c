@@ -250,15 +250,20 @@ static char *file_stat(DOS_FILE *file)
 }
 
 
-static int bad_name(unsigned char *name)
+static int bad_name(DOS_FILE *file)
 {
     int i, spc, suspicious = 0;
     char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
+    char *name = file->dir_ent.name;
 
     /* Do not complain about (and auto-correct) the extended attribute files
      * of OS/2. */
     if (strncmp(name,"EA DATA  SF",11) == 0 ||
         strncmp(name,"WP ROOT  SF",11) == 0) return 0;
+
+    /* don't complain about the dummy 11 bytes used by patched Linux
+       kernels */
+    if (file->lfn && name[0] == ' ') return 0;
 
     for (i = 0; i < 8; i++) {
 	if (name[i] < ' ' || name[i] == 0x7f) return 1;
@@ -590,7 +595,7 @@ static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
     parent = (*root)->parent;
     good = bad = 0;
     for (walk = root; *walk; walk = &(*walk)->next)
-	if (bad_name((*walk)->dir_ent.name)) bad++;
+	if (bad_name(*walk)) bad++;
 	else good++;
     if (*root && parent && good+bad > 4 && bad > good/2) {
 	printf("%s\n  Has a large number of bad entries. (%d/%d)\n",
@@ -617,7 +622,7 @@ static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
 	    else dotdot++;
 	}
 	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) &&
-	    bad_name((*walk)->dir_ent.name)) {
+	    bad_name(*walk)) {
 	    printf("%s\n  Bad file name.\n",path_name(*walk));
 	    if (interactive)
 		printf("1) Drop file\n2) Rename file\n3) Auto-rename\n"
@@ -647,7 +652,7 @@ static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
 	    skip = 0;
 	    while (*scan && !skip) {
 		if (!((*scan)->dir_ent.attr & ATTR_VOLUME) &&
-		    !strncmp((*walk)->dir_ent.name,(*scan)->dir_ent.name,MSDOS_NAME)) {
+		    !memcmp((*walk)->dir_ent.name,(*scan)->dir_ent.name,MSDOS_NAME)) {
 		    printf("%s\n  Duplicate directory entry.\n  First  %s\n",
 			   path_name(*walk),file_stat(*walk));
 		    printf("  Second %s\n",file_stat(*scan));
