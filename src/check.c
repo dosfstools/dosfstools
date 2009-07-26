@@ -254,7 +254,7 @@ static int bad_name(DOS_FILE *file)
 {
     int i, spc, suspicious = 0;
     char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
-    char *name = file->dir_ent.name;
+    unsigned char *name = file->dir_ent.name;
 
     /* Do not complain about (and auto-correct) the extended attribute files
      * of OS/2. */
