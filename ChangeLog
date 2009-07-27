@@ -1,3 +1,25 @@
+commit e80ede4dd3c2058fe32e29ff82244ecb1c7c5514
+Author: Piotr Kaczuba <pepe@attika.ath.cx>
+Date:   Sun Jul 26 22:21:25 2009 +0200
+
+    Signed/unsigned char mismatch in check.c causes false positives
+    in bad_name() and can result in data loss, see Debian bug #538758.
+
+commit 9e15ddf6d52dd166efcb59f91f16fb9d695c86c5
+Author: Andrew Tridgell <tridge@samba.org>
+Date:   Sun Jul 26 22:12:06 2009 +0200
+
+    Update to new kernel patches that add FAT_NO_83NAME flag.
+    
+    See http://lkml.org/lkml/2009/7/20/425 and
+    http://lkml.org/lkml/2009/7/20/424 for more information.
+
+commit 6c68b94008157c444954d2f90a7f9ec8ffc2ec87
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Tue Jul 21 08:10:52 2009 +0200
+
+    Releasing upstream version 3.0.4.
+
 commit 3ce6422e93f3de746be092e324253a8722917a86
 Author: Andrew Tridgell <tridge@samba.org>
 Date:   Tue Jul 21 07:59:22 2009 +0200
