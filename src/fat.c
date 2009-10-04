@@ -151,6 +151,11 @@ void read_fat(DOS_FS *fs)
     for (i = 2; i < fs->clusters+2; i++) {
         FAT_ENTRY curEntry;
         get_fat(&curEntry, fs->fat, i, fs);
+	if (curEntry.value == 1) {
+	    printf("Cluster %ld out of range (1). Setting to EOF.\n",
+		   i-2);
+	    set_fat(fs, i, -1);
+	}
 	if (curEntry.value >= fs->clusters+2 &&
 	    (curEntry.value < FAT_MIN_BAD(fs))) {
 	    printf("Cluster %ld out of range (%ld > %ld). Setting to EOF.\n",
