@@ -1,3 +1,32 @@
+commit 144f8fcfc3f7982e8f460f8379a753b7a5941783
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Sun Oct 4 10:58:43 2009 +0200
+
+    Attempt to improve clarity of the orphan cluster reclaim code.
+    Minor optimization - remove some unnecessary checking.
+
+commit 343fe6d5e7135efadc498fd91e19ba8da499d0c9
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Sun Oct 4 08:37:19 2009 +0200
+
+    Close hole that permitted clusters to link to (invalid) cluster 1.
+    
+    If an orphan chain that linked to cluster 1 was reclaimed to a file,
+    deletion of the file would result in a filesystem panic.
+
+commit db079a02059d7f7296fbe9f87624623a43816c5f
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Sun Oct 4 08:32:30 2009 +0200
+
+    Fix erroneous report of huge number of clusters in use on big-endian
+    systems when the FSINFO free cluster count is reset.
+
+commit 7d5320b8a374b8da1a16b09b3b9b0713828d6755
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Mon Jul 27 14:26:11 2009 +0200
+
+    Releasing upstream version 3.0.5.
+
 commit e80ede4dd3c2058fe32e29ff82244ecb1c7c5514
 Author: Piotr Kaczuba <pepe@attika.ath.cx>
 Date:   Sun Jul 26 22:21:25 2009 +0200
