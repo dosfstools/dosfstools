@@ -174,6 +174,10 @@ void read_fat(DOS_FS *fs)
  * @param[in,out]   fs          Information about the filesystem
  * @param[in]	    cluster     Cluster to change
  * @param[in]       new	        Cluster to link to
+ *				Special values:
+ *				   0 == free cluster
+ *				  -1 == end-of-chain
+ *				  -2 == bad cluster
  */
 void set_fat(DOS_FS *fs,unsigned long cluster,unsigned long new)
 {
@@ -345,27 +349,52 @@ void reclaim_free(DOS_FS *fs)
 }
 
 
-static void tag_free(DOS_FS *fs,DOS_FILE *ptr,
-                     const unsigned long *prev_cluster)
+/**
+ * Assign the specified owner to all orphan chains (except cycles).
+ * Break cross-links between orphan chains.
+ *
+ * @param[in,out]   fs             Information about the filesystem
+ * @param[in]	    owner          dentry to be assigned ownership of orphans
+ * @param[in,out]   num_refs	   For each orphan cluster [index], how many
+ *				   clusters link to it.
+ * @param[in]	    start_cluster  Where to start scanning for orphans
+ */
+static void tag_free(DOS_FS *fs, DOS_FILE *owner, unsigned long *num_refs,
+		     unsigned long start_cluster)
 {
-    DOS_FILE *owner;
     int prev;
     unsigned long i,walk;
 
-    for (i = 2; i < fs->clusters+2; i++) {
+    if (start_cluster == 0)
+	start_cluster = 2;
+
+    for (i = start_cluster; i < fs->clusters+2; i++) {
         FAT_ENTRY curEntry;
         get_fat(&curEntry, fs->fat, i, fs);
 
+	/* If the current entry is the head of an un-owned chain... */
 	if (curEntry.value && !FAT_IS_BAD(fs, curEntry.value) &&
-	    !get_owner(fs,i) && !prev_cluster[i]) {
+	    !get_owner(fs, i) && !num_refs[i]) {
 	    prev = 0;
-	    for (walk = i; walk > 0 && walk != -1;
+	    /* Walk the chain, claiming ownership as we go */
+	    for (walk = i; walk != -1;
 		 walk = next_cluster(fs,walk)) {
-		if (!(owner = get_owner(fs,walk))) set_owner(fs,walk,ptr);
-		else if (owner != ptr)
-		        die("Internal error: free chain collides with file");
-		    else {
+		if (!get_owner(fs, walk)) {
+		    set_owner(fs, walk, owner);
+		} else {
+		    /* We've run into cross-links between orphaned chains,
+		     * or a cycle with a tail.
+		     * Terminate this orphan chain (break the link)
+		     */
 			set_fat(fs,prev,-1);
+
+		    /* This is not necessary because 'walk' is owned and thus
+		     * will never become the head of a chain (the only case
+		     * that would matter during reclaim to files).
+		     * It's easier to decrement than to prove that it's
+		     * unnecessary.
+		     */
+		    num_refs[walk]--;
 			break;
 		    }
 		prev = walk;
@@ -374,21 +403,30 @@ static void tag_free(DOS_FS *fs,DOS_FILE *ptr,
     }
 }
 
-
+/**
+ * Recover orphan chains to files, handling any cycles or cross-links.
+ *
+ * @param[in,out]   fs             Information about the filesystem
+ */
 void reclaim_file(DOS_FS *fs)
 {
-    DOS_FILE dummy;
-    int reclaimed,files,changed;
+    DOS_FILE orphan;
+    int reclaimed,files;
+    int changed = 0;
     unsigned long i,next,walk;
-    unsigned long *prev_cluster = NULL;
+    unsigned long *num_refs = NULL;	/* Only for orphaned clusters */
     unsigned long total_num_clusters;
 
     if (verbose)
 	printf("Reclaiming unconnected clusters.\n");
 
     total_num_clusters = fs->clusters + 2UL;
-    prev_cluster = alloc(total_num_clusters * sizeof(unsigned long));
-    memset(prev_cluster, 0, (total_num_clusters * sizeof(unsigned long)));
+    num_refs = alloc(total_num_clusters * sizeof(unsigned long));
+    memset(num_refs, 0, (total_num_clusters * sizeof(unsigned long)));
+
+    /* Guarantee that all orphan chains (except cycles) end cleanly
+     * with an end-of-chain mark.
+     */
 
     for (i = 2; i < total_num_clusters; i++) {
         FAT_ENTRY curEntry;
@@ -396,37 +434,55 @@ void reclaim_file(DOS_FS *fs)
 
 	next = curEntry.value;
 	if (!get_owner(fs,i) && next && next < fs->clusters+2) {
+	    /* Cluster is linked, but not owned (orphan) */
             FAT_ENTRY nextEntry;
             get_fat(&nextEntry, fs->fat, next, fs);
 
+	    /* Mark it end-of-chain if it links into an owned cluster,
+	     * a free cluster, or a bad cluster.
+	     */
 	    if (get_owner(fs,next) || !nextEntry.value ||
 		FAT_IS_BAD(fs, nextEntry.value)) set_fat(fs,i,-1);
 	    else
-                prev_cluster[next]++;
+                num_refs[next]++;
 	}
     }
+
+    /* Scan until all the orphans are accounted for,
+     * and all cycles and cross-links are broken
+     */
     do {
-	tag_free(fs,&dummy, prev_cluster);
+	tag_free(fs, &orphan, num_refs, changed);
 	changed = 0;
+
+	/* Any unaccounted-for orphans must be part of a cycle */
 	for (i = 2; i < total_num_clusters; i++) {
             FAT_ENTRY curEntry;
             get_fat(&curEntry, fs->fat, i, fs);
 
 	    if (curEntry.value && !FAT_IS_BAD(fs, curEntry.value) &&
 		!get_owner(fs, i)) {
-		if (!prev_cluster[curEntry.value]--)
-		    die("Internal error: prev going below zero");
+		if (!num_refs[curEntry.value]--)
+		    die("Internal error: num_refs going below zero");
 		set_fat(fs,i,-1);
-		changed = 1;
+		changed = curEntry.value;
 		printf("Broke cycle at cluster %lu in free chain.\n",i);
+
+		/* If we've created a new chain head,
+		 * tag_free() can claim it
+		 */
+		if (num_refs[curEntry.value] == 0)
 		break;
 	    }
         }
     }
     while (changed);
+
+    /* Now we can start recovery */
     files = reclaimed = 0;
     for (i = 2; i < total_num_clusters; i++)
-	if (get_owner(fs,i) == &dummy && !prev_cluster[i]) {
+	/* If this cluster is the head of an orphan chain... */
+	if (get_owner(fs, i) == &orphan && !num_refs[i]) {
 	    DIR_ENT de;
 	    loff_t offset;
 	    files++;
@@ -446,7 +502,7 @@ void reclaim_file(DOS_FS *fs)
 	  reclaimed,reclaimed == 1 ? "" : "s",(unsigned long long)reclaimed*fs->cluster_size,files,
 	  files == 1 ? "" : "s");
 
-    free(prev_cluster);
+    free(num_refs);
 }
 
 
