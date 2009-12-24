@@ -27,9 +27,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "common.h"
 #include "dosfsck.h"
+#include "fat.h"
 #include "io.h"
 #include "boot.h"
 
@@ -425,14 +427,10 @@ void read_boot(DOS_FS *fs)
     if (verbose) dump_boot(fs,&b,logical_sector_size);
 }
 
-void write_label(DOS_FS *fs, char *label)
+static void write_boot_label(DOS_FS *fs, char *label)
 {
     struct boot_sector b;
     struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
-    int l = strlen(label);
-
-    while (l < 11)
-        label[l++] = ' ';
 
     fs_read(0, sizeof(b), &b);
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
@@ -453,6 +451,68 @@ void write_label(DOS_FS *fs, char *label)
     fs_write(0, sizeof(b), &b);
     if (fs->fat_bits == 32 && fs->backupboot_start)
         fs_write(fs->backupboot_start, sizeof(b), &b);
+}
+
+static loff_t find_volume_de(DOS_FS *fs, DIR_ENT *de)
+{
+    unsigned long cluster;
+    loff_t offset;
+    int i;
+
+    if (fs->root_cluster) {
+	for (cluster = fs->root_cluster;
+	     cluster != 0 && cluster != -1;
+	     cluster = next_cluster(fs, cluster)) {
+	    offset = cluster_start(fs, cluster);
+	    for (i = 0; i * sizeof(DIR_ENT) < fs->cluster_size; i++) {
+		fs_read(offset, sizeof(DIR_ENT), de);
+		if (de->attr & ATTR_VOLUME)
+		    return offset;
+		offset += sizeof(DIR_ENT);
+	    }
+	}
+    } else {
+	for (i = 0; i < fs->root_entries; i++) {
+	    offset = fs->root_start + i * sizeof(DIR_ENT);
+	    fs_read(offset, sizeof(DIR_ENT), de);
+	    if (de->attr & ATTR_VOLUME)
+		return offset;
+	}
+    }
+
+    return 0;
+}
+
+static void write_volume_label(DOS_FS *fs, char *label)
+{
+    time_t now = time(NULL);
+    struct tm *mtime = localtime(&now);
+    loff_t offset;
+    DIR_ENT de;
+
+    offset = find_volume_de(fs, &de);
+    if (offset == 0)
+	return;
+
+    memcpy(de.name, label, 11);
+    de.time = CT_LE_W((unsigned short)((mtime->tm_sec >> 1) +
+				       (mtime->tm_min << 5) +
+				       (mtime->tm_hour << 11)));
+    de.date = CT_LE_W((unsigned short)(mtime->tm_mday +
+				       ((mtime->tm_mon+1) << 5) +
+				       ((mtime->tm_year-80) << 9)));
+    fs_write(offset, sizeof(DIR_ENT), &de);
+}
+
+void write_label(DOS_FS *fs, char *label)
+{
+    int l = strlen(label);
+
+    while (l < 11)
+        label[l++] = ' ';
+
+    write_boot_label(fs, label);
+    write_volume_label(fs, label);
 }
 
 /* Local Variables: */
