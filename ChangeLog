@@ -1,3 +1,37 @@
+commit 844307669208608a3464157ddb5e789bd9556f34
+Author: Ben Hutchings <ben@decadent.org.uk>
+Date:   Thu Dec 24 09:55:52 2009 +0100
+
+    Fixing dosfslabel to set volume label in the right place,
+    see Debian bug #559985.
+
+commit 1bae0e2037717d65b3283db9da51ae7686a7a9be
+Author: Lubomir Rintel <lkundrak@v3.sk>
+Date:   Thu Dec 24 09:39:39 2009 +0100
+
+    Fixing out-of bound writes.
+    
+    Firstly, packed attribute is added to the structure so that extension
+    is guarranteed to immediately follow name for the cross-name-extension
+    reads to succeed.
+    
+    Secondly, writes into dir_entry->name that span through the extension as
+    well are split into two, so that FORTIFY_SOURCE's bound checking does
+    not abort dosfsck. There also was an off-by-one error in auto_rename()'s
+    sprintf().
+
+commit eb297071adfca1ed7af85ca111f20ab41db8ac59
+Author: San Mehat <san@google.com>
+Date:   Thu Dec 24 09:31:41 2009 +0100
+
+    Adding custom exit code in dosfsck for the case where the FS is read only.
+
+commit b3864d0939c960d0e0f15e4e3b1d626639b64681
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Oct 4 10:59:33 2009 +0200
+
+    Releasing upstream version 3.0.6.
+
 commit 144f8fcfc3f7982e8f460f8379a753b7a5941783
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Sun Oct 4 10:58:43 2009 +0200
