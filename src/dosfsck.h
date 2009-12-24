@@ -149,7 +149,7 @@ typedef struct {
     __u16	starthi;	/* High 16 bits of cluster in FAT32 */
     __u16	time,date,start;/* time, date and first cluster */
     __u32	size;		/* file size (in bytes) */
-} DIR_ENT;
+} __attribute__ ((packed)) DIR_ENT;
 
 typedef struct _dos_file {
     DIR_ENT dir_ent;

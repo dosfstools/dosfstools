@@ -131,7 +131,10 @@ loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern)
 	}
 	memset(de,0,sizeof(DIR_ENT));
 	while (1) {
-	    sprintf(de->name,pattern,curr_num);
+	    char expanded[12];
+	    sprintf(expanded, pattern, curr_num);
+	    memcpy(de->name+4, expanded, 4);
+	    memcpy(de->ext, expanded+4, 3);
 	    clu_num = fs->root_cluster;
 	    i = 0;
 	    offset2 = cluster_start(fs,clu_num);
@@ -349,8 +352,11 @@ static void auto_rename(DOS_FILE *file)
     first = file->parent ? file->parent->first : root;
     number = 0;
     while (1) {
-	sprintf(file->dir_ent.name, "FSCK%04d", number / 1000);
-	sprintf(file->dir_ent.ext, "%03d", number % 1000);
+	char num[8];
+	sprintf(num, "%07d", number);
+	memcpy(file->dir_ent.name, "FSCK", 4);
+	memcpy(file->dir_ent.name+4, num, 4);
+	memcpy(file->dir_ent.ext, num+4, 3);
 	for (walk = first; walk; walk = walk->next)
 	    if (walk != file && !strncmp(walk->dir_ent.name,file->dir_ent.
 	      name,MSDOS_NAME)) break;

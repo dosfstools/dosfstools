@@ -1254,7 +1254,8 @@ setup_tables (void)
   if ( memcmp(volume_name, "           ", 11) )
     {
       struct msdos_dir_entry *de = &root_dir[0];
-      memcpy(de->name, volume_name, 11);
+      memcpy(de->name, volume_name, 8);
+      memcpy(de->ext, volume_name+8, 3);
       de->attr = ATTR_VOLUME;
       ctime = localtime(&create_time);
       de->time = CT_LE_W((unsigned short)((ctime->tm_sec >> 1) +
