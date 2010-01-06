@@ -91,7 +91,8 @@ will align all the data structures to cluster size, to make sure that
 as long as the partition is properly aligned, so will all the data
 structures in the filesystem.  This option disables alignment; this
 may provide a handful of additional clusters of storage at the expense
-of much performance on flash media or large-sector hard disks.
+of a significant performance degradation on RAIDs, flash media or
+large-sector hard disks.
 .TP
 .B \-A
 Use Atari variation of the MS-DOS file system. This is default if
