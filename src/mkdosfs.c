@@ -592,6 +592,7 @@ establish_params (int device_num,int size)
   long loop_size;
   struct hd_geometry geometry;
   struct floppy_struct param;
+  int def_root_dir_entries = 512;
 
   if ((0 == device_num) || ((device_num & 0xff00) == 0x0200))
     /* file image or floppy disk */
@@ -641,37 +642,32 @@ establish_params (int device_num,int size)
 	case 720:		/* 5.25", 2, 9, 40 - 360K */
 	  bs.media = (char) 0xfd;
 	  bs.cluster_size = (char) 2;
-	  bs.dir_entries[0] = (char) 112;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 112;
 	  break;
 
 	case 1440:		/* 3.5", 2, 9, 80 - 720K */
 	  bs.media = (char) 0xf9;
 	  bs.cluster_size = (char) 2;
-	  bs.dir_entries[0] = (char) 112;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 112;
 	  break;
 
 	case 2400:		/* 5.25", 2, 15, 80 - 1200K */
 	  bs.media = (char) 0xf9;
 	  bs.cluster_size = (char)(atari_format ? 2 : 1);
-	  bs.dir_entries[0] = (char) 224;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 224;
 	  break;
 
 	case 5760:		/* 3.5", 2, 36, 80 - 2880K */
 	  bs.media = (char) 0xf0;
 	  bs.cluster_size = (char) 2;
-	  bs.dir_entries[0] = (char) 224;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 224;
 	  break;
 
 	case 2880:		/* 3.5", 2, 18, 80 - 1440K */
 	floppy_default:
 	  bs.media = (char) 0xf0;
 	  bs.cluster_size = (char)(atari_format ? 2 : 1);
-	  bs.dir_entries[0] = (char) 224;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 224;
 	  break;
 
 	default:		/* Anything else */
@@ -693,8 +689,7 @@ establish_params (int device_num,int size)
 	  bs.heads = CF_LE_W(2);
 	  bs.media = (char) 0xfd;
 	  bs.cluster_size = (char) 2;
-	  bs.dir_entries[0] = (char) 112;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 112;
 	  break;
 
 	case 1440:		/* 3.5", 2, 9, 80 - 720K */
@@ -702,8 +697,7 @@ establish_params (int device_num,int size)
 	  bs.heads = CF_LE_W(2);
 	  bs.media = (char) 0xf9;
 	  bs.cluster_size = (char) 2;
-	  bs.dir_entries[0] = (char) 112;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 112;
 	  break;
 
 	case 2400:		/* 5.25", 2, 15, 80 - 1200K */
@@ -711,8 +705,7 @@ establish_params (int device_num,int size)
 	  bs.heads = CF_LE_W(2);
 	  bs.media = (char) 0xf9;
 	  bs.cluster_size = (char)(atari_format ? 2 : 1);
-	  bs.dir_entries[0] = (char) 224;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 224;
 	  break;
 
 	case 5760:		/* 3.5", 2, 36, 80 - 2880K */
@@ -729,8 +722,7 @@ establish_params (int device_num,int size)
 	  bs.heads = CF_LE_W(2);
 	  bs.media = (char) 0xf0;
 	  bs.cluster_size = (char)(atari_format ? 2 : 1);
-	  bs.dir_entries[0] = (char) 224;
-	  bs.dir_entries[1] = (char) 0;
+	  def_root_dir_entries = 224;
 	  break;
 
 	default:		/* Anything else: default hd setup */
@@ -757,8 +749,6 @@ establish_params (int device_num,int size)
       }
     def_hd_params:
       bs.media = (char) 0xf8; /* Set up the media descriptor for a hard drive */
-      bs.dir_entries[0] = (char) 0;	/* Default to 512 entries */
-      bs.dir_entries[1] = (char) 2;
       if (!size_fat && blocks*SECTORS_PER_BLOCK > 1064960) {
 	  if (verbose) printf("Auto-selecting FAT32 for large filesystem\n");
 	  size_fat = 32;
@@ -783,6 +773,9 @@ establish_params (int device_num,int size)
 	  bs.cluster_size = (char) 4;
       }
     }
+
+  if (!root_dir_entries)
+    root_dir_entries = def_root_dir_entries;
 }
 
 /*
@@ -821,17 +814,8 @@ setup_tables (void)
     {
       /* Under FAT32, the root dir is in a cluster chain, and this is
        * signalled by bs.dir_entries being 0. */
-      bs.dir_entries[0] = bs.dir_entries[1] = (char) 0;
       root_dir_entries = 0;
     }
-  else if (root_dir_entries)
-    {
-      /* Override default from establish_params() */
-      bs.dir_entries[0] = (char) (root_dir_entries & 0x00ff);
-      bs.dir_entries[1] = (char) ((root_dir_entries & 0xff00) >> 8);
-    }
-  else
-    root_dir_entries = bs.dir_entries[0] + (bs.dir_entries[1] << 8);
 
   if (atari_format) {
     bs.system_id[5] = (unsigned char) (volume_id & 0x000000ff);
@@ -1077,8 +1061,10 @@ setup_tables (void)
     reserved_sectors = align_object(reserved_sectors, bs.cluster_size);
 
     /* Adjust the number of root directory entries to help enforce alignment */
-    root_dir_entries = align_object(root_dir_sectors, bs.cluster_size)
-      * (sector_size >> 5);
+    if (align_structures) {
+      root_dir_entries = align_object(root_dir_sectors, bs.cluster_size)
+	* (sector_size >> 5);
+    }
   }
   else {
     unsigned clusters, maxclust, fatdata;
@@ -1160,6 +1146,9 @@ setup_tables (void)
 
   bs.sector_size[0] = (char) (sector_size & 0x00ff);
   bs.sector_size[1] = (char) ((sector_size & 0xff00) >> 8);
+
+  bs.dir_entries[0] = (char) (root_dir_entries & 0x00ff);
+  bs.dir_entries[1] = (char) ((root_dir_entries & 0xff00) >> 8);
 
   if (size_fat == 32)
     {
@@ -1253,7 +1242,7 @@ setup_tables (void)
 	  bs.dir_entries[0] + ((bs.dir_entries[1]) * 256);
 	unsigned root_dir_sectors =
 	  cdiv (root_dir_entries*32, sector_size);
-	printf ("Root directory contains %u slots and uses %u sectors\n",
+	printf ("Root directory contains %u slots and uses %u sectors.\n",
 		root_dir_entries, root_dir_sectors);
       }
       printf ("Volume ID is %08lx, ", volume_id &
