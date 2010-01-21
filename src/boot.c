@@ -167,7 +167,7 @@ static void check_backup_boot(DOS_FS *fs, struct boot_sector *b, int lss)
 	    fs->backupboot_start = bbs*lss;
 	    b->backup_boot = CT_LE_W(bbs);
 	    fs_write(fs->backupboot_start,sizeof(*b),b);
-	    fs_write((off_t)offsetof(struct boot_sector,backup_boot),
+	    fs_write((loff_t)offsetof(struct boot_sector,backup_boot),
 		     sizeof(b->backup_boot),&b->backup_boot);
 	    printf( "Created backup of boot sector in sector %d\n", bbs );
 	    return;
@@ -242,9 +242,9 @@ static void read_fsinfo(DOS_FS *fs, struct boot_sector *b,int lss)
 		if (s != CF_LE_W(b->backup_boot)) break;
 	    if (s > 0 && s < CF_LE_W(b->reserved)) {
 		init_fsinfo(&i);
-		fs_write((off_t)s*lss,sizeof(i),&i);
+		fs_write((loff_t)s*lss,sizeof(i),&i);
 		b->info_sector = CT_LE_W(s);
-		fs_write((off_t)offsetof(struct boot_sector,info_sector),
+		fs_write((loff_t)offsetof(struct boot_sector,info_sector),
 			 sizeof(b->info_sector),&b->info_sector);
 		if (fs->backupboot_start)
 		    fs_write(fs->backupboot_start+
@@ -299,7 +299,7 @@ void read_boot(DOS_FS *fs)
     unsigned total_sectors;
     unsigned short logical_sector_size, sectors;
     unsigned fat_length;
-    off_t data_size;
+    loff_t data_size;
 
     fs_read(0,sizeof(b),&b);
     logical_sector_size = GET_UNALIGNED_W(b.sector_size);
@@ -321,17 +321,17 @@ void read_boot(DOS_FS *fs)
     total_sectors = sectors ? sectors : CF_LE_L(b.total_sect);
     if (verbose) printf("Checking we can access the last sector of the filesystem\n");
     /* Can't access last odd sector anyway, so round down */
-    fs_test((off_t)((total_sectors & ~1)-1)*(off_t)logical_sector_size,
+    fs_test((loff_t)((total_sectors & ~1)-1)*(loff_t)logical_sector_size,
 	    logical_sector_size);
     fat_length = CF_LE_W(b.fat_length) ?
 		 CF_LE_W(b.fat_length) : CF_LE_L(b.fat32_length);
-    fs->fat_start = (off_t)CF_LE_W(b.reserved)*logical_sector_size;
-    fs->root_start = ((off_t)CF_LE_W(b.reserved)+b.fats*fat_length)*
+    fs->fat_start = (loff_t)CF_LE_W(b.reserved)*logical_sector_size;
+    fs->root_start = ((loff_t)CF_LE_W(b.reserved)+b.fats*fat_length)*
       logical_sector_size;
     fs->root_entries = GET_UNALIGNED_W(b.dir_entries);
     fs->data_start = fs->root_start+ROUND_TO_MULTIPLE(fs->root_entries <<
       MSDOS_DIR_BITS,logical_sector_size);
-    data_size = (off_t)total_sectors*logical_sector_size-fs->data_start;
+    data_size = (loff_t)total_sectors*logical_sector_size-fs->data_start;
     fs->clusters = data_size/fs->cluster_size;
     fs->root_cluster = 0; /* indicates standard, pre-FAT32 root dir */
     fs->fsinfo_start = 0; /* no FSINFO structure */

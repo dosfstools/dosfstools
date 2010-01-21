@@ -538,7 +538,7 @@ valid_offset (int fd, loff_t offset)
 static unsigned long long
 count_blocks (char *filename)
 {
-  off_t high, low;
+  loff_t high, low;
   int fd;
 
   if ((fd = open (filename, O_RDONLY)) < 0)
@@ -1731,7 +1731,7 @@ main (int argc, char **argv)
       die ("unable to open %s");
   }
   else {
-      off_t offset = blocks*BLOCK_SIZE - 1;
+      loff_t offset = blocks*BLOCK_SIZE - 1;
       char null = 0;
       /* create the file */
       dev = open( device_name, O_EXCL|O_RDWR|O_CREAT|O_TRUNC, 0666 );

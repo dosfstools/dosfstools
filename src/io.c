@@ -29,6 +29,8 @@
 /* FAT32, VFAT, Atari format support, and various fixes additions May 1998
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
+#define _LARGEFILE64_SOURCE
+#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -60,8 +62,7 @@ unsigned device_no;
 
 #ifdef __DJGPP__
 #include "volume.h"	/* DOS lowlevel disk access functions */
-#undef llseek
-static loff_t llseek( int fd, loff_t offset, int whence )
+loff_t llseek(int fd, loff_t offset, int whence)
 {
     if ((whence != SEEK_SET) || (fd == 4711)) return -1; /* only those supported */
     return VolumeSeek(offset);
@@ -70,6 +71,11 @@ static loff_t llseek( int fd, loff_t offset, int whence )
 #define close CloseVolume
 #define read(a,b,c) ReadVolume(b,c)
 #define write(a,b,c) WriteVolume(b,c)
+#else
+loff_t llseek(int fd, loff_t offset, int whence)
+{
+    return (loff_t) lseek64(fd, (off64_t)offset, whence);
+}
 #endif
 
 void fs_open(char *path,int rw)

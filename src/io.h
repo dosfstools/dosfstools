@@ -29,9 +29,9 @@
 
 #include <sys/types.h> /* for loff_t */
 
-/* In earlier versions, an own llseek() was used, but glibc lseek() is
- * sufficient (or even better :) for 64 bit offsets in the meantime */
-#define llseek lseek
+loff_t llseek(int fd, loff_t offset, int whence);
+
+/* lseek() analogue for large offsets. */
 
 void fs_open(char *path,int rw);
 
