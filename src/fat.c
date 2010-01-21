@@ -525,7 +525,7 @@ unsigned long update_free(DOS_FS *fs)
 
     if (verbose)
 	printf("Checking free cluster summary.\n");
-    if (fs->free_clusters >= 0) {
+    if (fs->free_clusters != 0xFFFFFFFF) {
 	if (free != fs->free_clusters) {
 	    printf( "Free cluster summary wrong (%ld vs. really %ld)\n",
 		    fs->free_clusters,free);
