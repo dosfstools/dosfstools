@@ -39,7 +39,7 @@
 #include "check.h"
 
 
-int interactive = 0,list = 0,test = 0,verbose = 0,write_immed = 0;
+int interactive = 0,rw = 0,list = 0,test = 0,verbose = 0,write_immed = 0;
 int atari_format = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
@@ -86,7 +86,7 @@ static void check_atari( void )
 int main(int argc, char *argv[])
 {
     DOS_FS fs;
-    int rw = 0;
+    rw = 0;
 
     char *device = NULL;
     char *label = NULL;

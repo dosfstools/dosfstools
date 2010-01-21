@@ -538,11 +538,13 @@ unsigned long update_free(DOS_FS *fs)
     }
     else {
 	printf( "Free cluster summary uninitialized (should be %ld)\n", free );
-	if (interactive)
-	    printf( "1) Set it\n2) Leave it uninitialized\n" );
-	else printf( "  Auto-setting.\n" );
-	if (!interactive || get_key("12","?") == '1')
-	    do_set = 1;
+	if (rw) {
+	    if (interactive)
+	        printf( "1) Set it\n2) Leave it uninitialized\n" );
+	    else printf( "  Auto-setting.\n" );
+	    if (!interactive || get_key("12","?") == '1')
+	        do_set = 1;
+	}
     }
 
     if (do_set) {

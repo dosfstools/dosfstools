@@ -42,7 +42,7 @@
 #include "check.h"
 
 
-int interactive = 0,list = 0,test = 0,verbose = 0,write_immed = 0;
+int interactive = 0,rw = 0,list = 0,test = 0,verbose = 0,write_immed = 0;
 int atari_format = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
@@ -102,7 +102,7 @@ static void check_atari( void )
 int main(int argc,char **argv)
 {
     DOS_FS fs;
-    int rw,salvage_files,verify,c;
+    int salvage_files,verify,c;
 	unsigned n_files_check=0, n_files_verify=0;
     unsigned long free_clusters;
 
