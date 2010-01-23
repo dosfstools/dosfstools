@@ -1,3 +1,94 @@
+commit 69dbf2e002f0cb3f0781256dec7258b66ffae3b6
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Jan 23 10:15:01 2010 +0100
+
+    Removing some cruft in end-comments.
+
+commit eef306657f3152bbf913a8a45c514f11b2dc2494
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Thu Jan 21 16:58:11 2010 +0100
+
+    When compiling a 32-bit version of dosfstools on an x86_64 machine,
+    the resulting applications report strange errors on "large" (> 2 GiB)
+    partitions:
+    
+      Seek to -2118967808:Invalid argument
+    
+      Warning: Filesystem is FAT32 according to fat_length and fat32_length fields,
+      but has only 8613 clusters, less than the required minimum of 65525.
+      This may lead to problems on some systems.
+    
+    This appears to be due to compilation with a 32-bit off_t and lseek() library
+    function.
+    
+    Use lseek64 for positioning, and change some suspect uses of off_t to loff_t.
+
+commit e69f49dd1fe52780071cb3f024d1a8246125915a
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Thu Jan 21 16:56:26 2010 +0100
+
+    If dosfsck is run in read-only mode (-n), exit with code 0
+    if the only issue found is an uninitialized free cluster summary.
+
+commit e52a16d488cf680117e4d476400bdd7915ef2f7a
+Author: Steven J. Magnani <steve@digidescorp.com>
+Date:   Thu Jan 21 16:55:30 2010 +0100
+
+    On x86_64, dosfsck incorrectly claims that a free_cluster summary of
+    0xFFFFFFFF, defined by Microsoft to be "uninitialized," is wrong.
+
+commit 32db02998ed7882df355fa4077009e8d363df3ab
+Author: H. Peter Anvin <hpa@zytor.com>
+Date:   Fri Jan 8 09:16:38 2010 +0100
+
+    mkdosfs: correct alignment of the root directory.
+    
+    Correct the code to align the root directory; it was broken before
+    since bs.dir_entries had already been set at the point of alignment.
+    This patch removes the dual use of bs.dir_entries and root_dir_entries
+    to carry the same information: the information is carried in
+    root_dir_entires exclusively, and then bs.dir_entries is set inside
+    setup_tables() at a late point.
+    
+    The code to align the root directory is also wrapped in
+    if (align_structures); this avoids rounding the number of root
+    directory entries up to a whole sector when used with -a
+    (i.e. preserves the previous behavior.)
+
+commit e462ac31a1d5d235b8a31a9e392e44e2dbc3783c
+Author: H. Peter Anvin <hpa@zytor.com>
+Date:   Wed Jan 6 20:55:36 2010 +0100
+
+    mkdosfs: improve wording in the man page for the -a option.
+    
+    Improve the English language used in the man page for the -a (no
+    align) option to mkdosfs.
+
+commit 680d71d167f30a823f88dd66473fc664cd887ab0
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Wed Jan 6 11:27:25 2010 +0100
+
+    Adding reference to dosfslable in mkdosfs manpage.
+
+commit 60fc9f853c1045e615b34a193738f88021678d30
+Author: H. Peter Anvin <hpa@zytor.com>
+Date:   Wed Jan 6 11:18:55 2010 +0100
+
+    mkdosfs: by default align all structures to cluster boundaries
+    
+    Align all data structures (reserved sectors, FATs, root directory for
+    FAT12/16) to an even multiple of the cluster size. This means that if
+    the partition is aligned, so will all clusters be. This adds
+    significant performance for anything where the physical sector size is
+    larger than the logical sector size, e.g. flash media or large-sector
+    hard disks.
+
+commit 312b05fc47107f695483994375a1f6f429069708
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Thu Dec 24 10:53:36 2009 +0100
+
+    Releasing upstream version 3.0.7.
+
 commit 844307669208608a3464157ddb5e789bd9556f34
 Author: Ben Hutchings <ben@decadent.org.uk>
 Date:   Thu Dec 24 09:55:52 2009 +0100
