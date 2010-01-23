@@ -25,4 +25,4 @@
 #define VERSION "3.0.7"
 #define VERSION_DATE "24 Dec 2009"
 
-#endif  /* _version_h */
+#endif

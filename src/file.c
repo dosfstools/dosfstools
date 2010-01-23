@@ -267,7 +267,3 @@ void file_unused(void)
 {
     report_unused(fp_root);
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

@@ -211,7 +211,3 @@ extern void *mem_queue;
 #define FAT_NO_83NAME 32
 
 #endif
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

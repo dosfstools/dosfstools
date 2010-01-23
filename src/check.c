@@ -964,7 +964,3 @@ int scan_root(DOS_FS *fs)
     if (check_files(fs,root)) return 1;
     return subdirs(fs,NULL,&fp_root);
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

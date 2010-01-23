@@ -119,7 +119,3 @@ char get_key(char *valid,char *prompt)
 	printf("Invalid input.\n");
     }
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

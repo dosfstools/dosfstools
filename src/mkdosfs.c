@@ -1806,9 +1806,3 @@ main (int argc, char **argv)
 
   exit (0);			/* Terminate with no errors! */
 }
-
-
-/* That's All Folks */
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

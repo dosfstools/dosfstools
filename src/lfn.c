@@ -489,7 +489,3 @@ void lfn_check_orphaned(void)
     }
     lfn_reset();
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

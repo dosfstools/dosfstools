@@ -220,7 +220,3 @@ int fs_changed(void)
 {
     return !!changes || did_change;
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

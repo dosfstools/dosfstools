@@ -202,7 +202,3 @@ int main(int argc,char **argv)
 
     return fs_close(rw) ? 1 : 0;
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */

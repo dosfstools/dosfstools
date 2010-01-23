@@ -556,7 +556,3 @@ unsigned long update_free(DOS_FS *fs)
 
     return free;
 }
-
-/* Local Variables: */
-/* tab-width: 8     */
-/* End:             */
