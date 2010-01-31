@@ -1059,6 +1059,7 @@ setup_tables (void)
 
     /* Adjust the reserved number of sectors for alignment */
     reserved_sectors = align_object(reserved_sectors, bs.cluster_size);
+    bs.reserved = CT_LE_W(reserved_sectors);
 
     /* Adjust the number of root directory entries to help enforce alignment */
     if (align_structures) {
