@@ -1,3 +1,16 @@
+commit 9415707c2c9ad22b48660593915667dd228722fa
+Author: Daniel Kahn Gillmor <dkg@fifthhorseman.net>
+Date:   Sun Jan 31 00:11:41 2010 -0500
+
+    Be sure to store the updated reserved_sector count in the boot sector,
+    see Debian bug #567337.
+
+commit 68b3f00471f60a692fe021d65289bbaf2dc990d5
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Jan 23 10:16:18 2010 +0100
+
+    Releasing upstream version 3.0.8.
+
 commit 69dbf2e002f0cb3f0781256dec7258b66ffae3b6
 Author: Daniel Baumann <daniel@debian.org>
 Date:   Sat Jan 23 10:15:01 2010 +0100
