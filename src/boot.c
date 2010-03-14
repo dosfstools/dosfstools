@@ -346,7 +346,7 @@ void read_boot(DOS_FS *fs)
 	     * warning, but convertig to a root dir in a cluster chain seems
 	     * to complex for now... */
 	    printf( "Warning: FAT32 root dir not in cluster chain! "
-		    "Compability mode...\n" );
+		    "Compatibility mode...\n" );
 	else if (!fs->root_cluster && !fs->root_entries)
 	    die("No root directory!");
 	else if (fs->root_cluster && fs->root_entries)
