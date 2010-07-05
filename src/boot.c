@@ -59,7 +59,7 @@ static struct {
     { 0xff, "5.25\" 320k floppy 2s/40tr/8sec" },
 };
 
-#if defined __alpha || defined __arm || defined __ia64__ || defined __s390x__ \
+#if defined __alpha || defined __arm || defined __arm__ || defined __ia64__ || defined __s390x__ \
  || defined __x86_64__ || defined __ppc64__ || defined __bfin__ \
  || defined __MICROBLAZE__
 /* Unaligned fields must first be copied byte-wise */
