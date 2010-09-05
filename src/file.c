@@ -40,11 +40,14 @@
 
 #include "common.h"
 #include "file.h"
+#include "charconv.h"
 
 FDSC *fp_root = NULL;
 
 static void put_char(char **p, unsigned char c)
 {
+    if (dos_char_to_printable(p, c))
+	return;
     if ((c >= ' ' && c < 0x7f) || c >= 0xa0)
 	*(*p)++ = c;
     else {

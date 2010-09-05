@@ -40,6 +40,7 @@
 #include "fat.h"
 #include "file.h"
 #include "check.h"
+#include "charconv.h"
 
 int interactive = 0, rw = 0, list = 0, test = 0, verbose = 0, write_immed = 0;
 int atari_format = 0, boot_only = 0;
@@ -53,6 +54,7 @@ static void usage(char *name)
     fprintf(stderr, "  -a       automatically repair the file system\n");
     fprintf(stderr, "  -A       toggle Atari file system format\n");
     fprintf(stderr, "  -b       make read-only boot sector check\n");
+    fprintf(stderr, "  -c N     use DOS codepage N to decode short file names (default: %d)\n", DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -d path  drop that file\n");
     fprintf(stderr, "  -f       salvage unused chains to files\n");
     fprintf(stderr, "  -l       list path names\n");
@@ -109,7 +111,7 @@ int main(int argc, char **argv)
     interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc, argv, "Aad:bflnprtu:vVwy")) != EOF)
+    while ((c = getopt(argc, argv, "Aac:d:bflnprtu:vVwy")) != EOF)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
 	    atari_format = !atari_format;
@@ -125,6 +127,9 @@ int main(int argc, char **argv)
 	    rw = 0;
 	    interactive = 0;
 	    boot_only = 1;
+	    break;
+	case 'c':
+	    set_dos_codepage(atoi(optarg));
 	    break;
 	case 'd':
 	    file_add(optarg, fdt_drop);
@@ -162,6 +167,7 @@ int main(int argc, char **argv)
 	default:
 	    usage(argv[0]);
 	}
+    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
     if ((test || write_immed) && !rw) {
 	fprintf(stderr, "-t and -w require -a or -r\n");
 	exit(2);
