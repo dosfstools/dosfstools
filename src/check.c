@@ -304,11 +304,10 @@ static int bad_name(DOS_FILE *file)
     if (atari_format && suspicious)
 	return 1;
 
-    /* Only complain about too much suspicious chars in interactive mode,
-     * never correct them automatically. The chars are all basically ok, so we
-     * shouldn't auto-correct such names. */
-    if (interactive && suspicious > 6)
-	return 1;
+    /* Under MS-DOS and Windows, chars >= 128 in short names are valid
+     * (but these characters can be visualised differently depending on
+     * local codepage: CP437, CP866, etc). The chars are all basically ok,
+     * so we shouldn't auto-correct such names. */
     return 0;
 }
 
