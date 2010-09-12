@@ -628,7 +628,8 @@ static int check_dir(DOS_FS *fs,DOS_FILE **root,int dots)
 	}
 	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) &&
 	    bad_name(*walk)) {
-	    printf("%s\n  Bad file name.\n",path_name(*walk));
+	    puts(path_name(*walk));
+	    printf("  Bad short file name (%s).\n", file_name((*walk)->dir_ent.name));
 	    if (interactive)
 		printf("1) Drop file\n2) Rename file\n3) Auto-rename\n"
 		  "4) Keep it\n");
