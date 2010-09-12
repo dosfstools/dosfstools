@@ -311,12 +311,29 @@ static int bad_name(DOS_FILE *file)
     return 0;
 }
 
+static void lfn_remove(loff_t from, loff_t to)
+{
+    int i;
+    DIR_ENT empty;
+
+    /* New dir entry is zeroed except first byte, which is set to 0xe5.
+     * This is to avoid that some FAT-reading OSes (not Linux! ;) stop reading
+     * a directory at the first zero entry...
+     */
+    memset( &empty, 0, sizeof(empty) );
+    empty.name[0] = DELETED_FLAG;
+
+    for( ; from < to; from += sizeof(empty) ) {
+	fs_write( from, sizeof(DIR_ENT), &empty );
+    }
+}
 
 static void drop_file(DOS_FS *fs,DOS_FILE *file)
 {
     unsigned long cluster;
 
     MODIFY(file,name[0],DELETED_FLAG);
+    if (file->lfn) lfn_remove(file->lfn_offset, file->offset);
     for (cluster = FSTART(file,fs); cluster > 0 && cluster <
       fs->clusters+2; cluster = next_cluster(fs,cluster))
 	set_owner(fs,cluster,NULL);
@@ -361,6 +378,7 @@ static void auto_rename(DOS_FILE *file)
 	      name,MSDOS_NAME)) break;
 	if (!walk) {
 	    fs_write(file->offset,MSDOS_NAME,file->dir_ent.name);
+	    if (file->lfn) lfn_fix_checksum(file->lfn_offset, file->offset, file->dir_ent.name);
 	    return;
 	}
 	number++;
@@ -392,6 +410,7 @@ static void rename_file(DOS_FILE *file)
 	    for (walk = name; *walk == ' ' || *walk == '\t'; walk++);
 	    if (file_cvt(walk,file->dir_ent.name)) {
 		fs_write(file->offset,MSDOS_NAME,file->dir_ent.name);
+		if (file->lfn) lfn_fix_checksum(file->lfn_offset, file->offset, file->dir_ent.name);
 		return;
 	    }
 	}
@@ -862,7 +881,7 @@ static void add_file(DOS_FS *fs,DOS_FILE ***chain,DOS_FILE *parent,
 	return;
     }
     new = qalloc(&mem_queue,sizeof(DOS_FILE));
-    new->lfn = lfn_get(&de);
+    new->lfn = lfn_get(&de, &new->lfn_offset);
     new->offset = offset;
     memcpy(&new->dir_ent,&de,sizeof(de));
     new->next = new->first = NULL;

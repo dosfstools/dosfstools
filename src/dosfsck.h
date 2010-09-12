@@ -155,6 +155,7 @@ typedef struct _dos_file {
     DIR_ENT dir_ent;
     char *lfn;
     loff_t offset;
+    loff_t lfn_offset;
     struct _dos_file *parent; /* parent directory */
     struct _dos_file *next; /* next entry */
     struct _dos_file *first; /* first entry (directory only) */

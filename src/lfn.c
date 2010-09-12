@@ -148,6 +148,18 @@ static void clear_lfn_slots( int start, int end )
     }
 }
 
+void lfn_fix_checksum(loff_t from, loff_t to, const char *short_name)
+{
+    int i;
+    __u8 sum;
+    for (sum = 0, i = 0; i < 11; i++)
+	sum = (((sum&1) << 7) | ((sum&0xfe) >> 1)) + short_name[i];
+
+    for( ; from < to; from += sizeof(LFN_ENT) ) {
+	fs_write( from + offsetof(LFN_ENT,alias_checksum), sizeof(sum), &sum );
+    }
+}
+
 void lfn_reset( void )
 {
     if (lfn_unicode)
@@ -374,12 +386,13 @@ void lfn_add_slot( DIR_ENT *de, loff_t dir_offset )
 
 /* This function is always called when de->attr != VFAT_LN_ATTR is found, to
  * retrieve the previously constructed LFN. */
-char *lfn_get( DIR_ENT *de )
+char *lfn_get( DIR_ENT *de, loff_t *lfn_offset )
 {
     char *lfn;
     __u8 sum;
     int i;
 
+    *lfn_offset = 0;
     if (de->attr == VFAT_LN_ATTR)
 	die("lfn_get called with LFN directory entry");
 
@@ -467,6 +480,7 @@ char *lfn_get( DIR_ENT *de )
 	}
     }
 
+    *lfn_offset = lfn_offsets[0];
     lfn = cnv_unicode( lfn_unicode, UNTIL_0, 1 );
     lfn_reset();
     return( lfn );
