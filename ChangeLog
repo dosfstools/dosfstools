@@ -1,3 +1,55 @@
+commit 8b7c9d94a4571142a77a587138bc26b39f8e2863
+Author: Alexander Korolkov <alexander.korolkov@gmail.com>
+Date:   Sun Sep 12 09:29:12 2010 +0200
+
+    Modify LFN direntries when file is renamed or deleted, see
+    Debian bug #596329.
+
+commit 761b798f3bf2b4a87f2d454f555e18758791c864
+Author: Alexander Korolkov <alexander.korolkov@gmail.com>
+Date:   Sun Sep 12 09:27:07 2010 +0200
+
+    If the test of short filename fails, dosfsck could complain about
+    bad long filename, see Debian bug #596327.
+
+commit 8fa3587a946614cd43d813052e0e31e595e6d63d
+Author: Alexander Korolkov <alexander.korolkov@gmail.com>
+Date:   Sun Sep 12 09:24:47 2010 +0200
+
+    dosfsck: don't complain about bad filenames when short filename
+    contains 7 or more characters with codes 128-255, see Debian
+    bug #596327.
+
+commit 3893857b841096de6a422ef5bed1b2618a7037d5
+Author: Mitch Rybczynski <mrybczynski@miovision.com>
+Date:   Mon Jul 5 14:45:54 2010 +0200
+
+    Adding __arm__ define check for some crosscompile toolchains.
+
+commit 7d03b3cc96b83b67638b463610a29abfd6f51f77
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Mar 14 16:42:32 2010 +0100
+
+    Modernizing dosfslabel manpage.
+
+commit 258049911c5df476fb434e0d87e0ece01b9ba137
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Mar 14 16:33:47 2010 +0100
+
+    Modernizing dosfsck manpage.
+
+commit 50d1d96b9666913a90e16904a63e29925675859c
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Mar 14 16:05:32 2010 +0100
+
+    Fixing spelling error in boot.c.
+
+commit 0e87c7890b598d78c6aa3d2a06b2306980e75a3d
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Jan 31 08:31:32 2010 +0100
+
+    Releasing upstream version 3.0.9.
+
 commit 9415707c2c9ad22b48660593915667dd228722fa
 Author: Daniel Kahn Gillmor <dkg@fifthhorseman.net>
 Date:   Sun Jan 31 00:11:41 2010 -0500
