@@ -1728,8 +1728,10 @@ main (int argc, char **argv)
   if (!create) {
     check_mount (device_name);	/* Is the device already mounted? */
     dev = open (device_name, O_EXCL|O_RDWR);	/* Is it a suitable device to build the FS on? */
-    if (dev < 0)
-      die ("unable to open %s");
+    if (dev < 0) {
+      fprintf (stderr, "%s: unable to open %s: %s\n", program_name, device_name, strerror(errno));
+      exit (1);			/* The error exit code is 1! */
+    }
   }
   else {
       loff_t offset = blocks*BLOCK_SIZE - 1;
