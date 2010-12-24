@@ -1,3 +1,26 @@
+commit bce60d1b0b739612b63852722d8504986096b40d
+Author: Michael Stapelberg <michael@stapelberg.de>
+Date:   Fri Nov 19 14:09:36 2010 +0100
+
+    Add better error message when the device cannot be opened.
+    
+    This is helpful for SD cards or other removable media which have an enabled
+    write lock -- without the "Permission denied" message, the user has to strace
+    mkdosfs to find out what's going on.
+
+commit ff45bd967e5d8ff7edc496adbad57257d4d5432b
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Fri Oct 8 13:38:16 2010 +0200
+
+    Unalign on s390x, see http://bugzilla.redhat.com/show_bug.cgi?id=624596 for
+    more information.
+
+commit 22874327372f914d2919490326c95f4607f8de74
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Sep 12 09:35:47 2010 +0200
+
+    Releasing upstream version 3.0.10.
+
 commit 8b7c9d94a4571142a77a587138bc26b39f8e2863
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Sun Sep 12 09:29:12 2010 +0200
