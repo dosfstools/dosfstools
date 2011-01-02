@@ -19,11 +19,10 @@
    can be found in /usr/share/common-licenses/GPL-3 file.
 */
 
-
 #ifndef _CHECK_H
 #define _CHECK_H
 
-loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern);
+loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern);
 
 /* Allocate a free slot in the root directory for a new file. The file name is
    constructed after 'pattern', which must include a %d type format for printf
@@ -31,7 +30,7 @@ loff_t alloc_rootdir_entry(DOS_FS *fs, DIR_ENT *de, const char *pattern);
    the 'de' structure, the rest of *de is cleared. The offset returned is to
    where in the filesystem the entry belongs. */
 
-int scan_root(DOS_FS *fs);
+int scan_root(DOS_FS * fs);
 
 /* Scans the root directory and recurses into all subdirectories. See check.c
    for all the details. Returns a non-zero integer if the file system has to
