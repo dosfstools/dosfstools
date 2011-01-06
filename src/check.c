@@ -381,7 +381,7 @@ static void auto_rename(DOS_FILE * file)
     number = 0;
     while (1) {
 	char num[8];
-	sprintf(num, "%07d", number);
+	sprintf(num, "%07lu", number);
 	memcpy(file->dir_ent.name, "FSCK", 4);
 	memcpy(file->dir_ent.name + 4, num, 4);
 	memcpy(file->dir_ent.ext, num + 4, 3);
@@ -626,7 +626,7 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	(unsigned long long)clusters * fs->cluster_size) {
 	printf
 	    ("%s\n  File size is %u bytes, cluster chain length is %llu bytes."
-	     "\n  Truncating file to %lu bytes.\n", path_name(file),
+	     "\n  Truncating file to %llu bytes.\n", path_name(file),
 	     CF_LE_L(file->dir_ent.size),
 	     (unsigned long long)clusters * fs->cluster_size,
 	     (unsigned long long)clusters * fs->cluster_size);
