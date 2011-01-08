@@ -760,7 +760,7 @@ static void setup_tables(void)
 	 * :-), then 6 bytes filler (ignored), then 3 byte serial number. */
 	memcpy(bs.system_id - 1, "mkdosf", 6);
     else
-	strcpy(bs.system_id, "mkdosfs");
+	strcpy((char*)bs.system_id, "mkdosfs");
     if (sectors_per_cluster)
 	bs.cluster_size = (char)sectors_per_cluster;
     if (size_fat == 32) {

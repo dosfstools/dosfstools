@@ -89,7 +89,7 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
     printf("Boot sector contents:\n");
     if (!atari_format) {
 	char id[9];
-	strncpy(id, b->system_id, 8);
+	strncpy(id, (const char*)b->system_id, 8);
 	id[8] = 0;
 	printf("System ID \"%s\"\n", id);
     } else {

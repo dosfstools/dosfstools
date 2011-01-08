@@ -75,7 +75,7 @@ char *file_name(unsigned char *fixed)
 		*p++ = ' ';
 	    put_char(&p, fixed[i]);
 	}
-    if (strncmp(fixed + 8, "   ", 3)) {
+    if (strncmp((const char*)(fixed + 8), "   ", 3)) {
 	*p++ = '.';
 	for (i = j = 0; i < 3; i++)
 	    if (fixed[i + 8] != ' ') {
@@ -162,7 +162,7 @@ void file_add(char *path, FD_TYPE type)
     while (1) {
 	if ((here = strchr(path, '/')))
 	    *here = 0;
-	if (!file_cvt(path, name))
+	if (!file_cvt((unsigned char*)path, (unsigned char*)name))
 	    exit(2);
 	for (walk = *current; walk; walk = walk->next)
 	    if (!here && (!strncmp(name, walk->name, MSDOS_NAME) || (type ==
@@ -245,12 +245,12 @@ void file_modify(FDSC ** curr, char *fixed)
 	die("Internal error: file_find failed");
     switch ((*this)->type) {
     case fdt_drop:
-	printf("Dropping %s\n", file_name(fixed));
+	printf("Dropping %s\n", file_name((unsigned char*)fixed));
 	*(unsigned char *)fixed = DELETED_FLAG;
 	break;
     case fdt_undelete:
 	*fixed = *(*this)->name;
-	printf("Undeleting %s\n", file_name(fixed));
+	printf("Undeleting %s\n", file_name((unsigned char*)fixed));
 	break;
     default:
 	die("Internal error: file_modify");
@@ -270,7 +270,7 @@ static void report_unused(FDSC * this)
 	    report_unused(this->first);
 	else if (this->type != fdt_none)
 	    printf("Warning: did not %s file %s\n", this->type == fdt_drop ?
-		   "drop" : "undelete", file_name(this->name));
+		   "drop" : "undelete", file_name((unsigned char*)this->name));
 	free(this);
 	this = next;
     }
