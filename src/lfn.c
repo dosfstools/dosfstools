@@ -120,10 +120,10 @@ static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
     }
     *cp = 0;
 
-    return (char*)out;
+    return (char *)out;
 }
 
-static void copy_lfn_part(unsigned char *dst, LFN_ENT *lfn)
+static void copy_lfn_part(unsigned char *dst, LFN_ENT * lfn)
 {
     memcpy(dst, lfn->name0_4, 10);
     memcpy(dst + 10, lfn->name5_10, 12);

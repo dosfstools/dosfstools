@@ -89,15 +89,15 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
     printf("Boot sector contents:\n");
     if (!atari_format) {
 	char id[9];
-	strncpy(id, (const char*)b->system_id, 8);
+	strncpy(id, (const char *)b->system_id, 8);
 	id[8] = 0;
 	printf("System ID \"%s\"\n", id);
     } else {
 	/* On Atari, a 24 bit serial number is stored at offset 8 of the boot
 	 * sector */
 	printf("Serial number 0x%x\n",
-	       b->system_id[5] | (b->system_id[6] << 8) | (b->
-							   system_id[7] << 16));
+	       b->system_id[5] | (b->
+				  system_id[6] << 8) | (b->system_id[7] << 16));
     }
     printf("Media byte 0x%02x (%s)\n", b->media, get_media_descr(b->media));
     printf("%10d bytes per logical sector\n", GET_UNALIGNED_W(b->sector_size));

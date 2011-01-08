@@ -132,11 +132,9 @@ void fs_read(loff_t pos, int size, void *data)
 	if (walk->pos < pos + size && walk->pos + walk->size > pos) {
 	    if (walk->pos < pos)
 		memcpy(data, (char *)walk->data + pos - walk->pos, min(size,
-								       walk->
-								       size -
-								       pos +
-								       walk->
-								       pos));
+								       walk->size
+								       - pos +
+								       walk->pos));
 	    else
 		memcpy((char *)data + walk->pos - pos, walk->data,
 		       min(walk->size, size + pos - walk->pos));
