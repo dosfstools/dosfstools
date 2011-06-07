@@ -305,6 +305,7 @@ static char *blank_sector;	/* Blank sector - all zeros */
 static int hidden_sectors = 0;	/* Number of hidden sectors */
 static int malloc_entire_fat = FALSE;	/* Whether we should malloc() the entire FAT or not */
 static int align_structures = TRUE;	/* Whether to enforce alignment */
+static int orphaned_sectors = 0;	/* Sectors that exist in the last block of filesystem */
 
 /* Function prototype definitions */
 
@@ -316,7 +317,7 @@ static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
 static int valid_offset(int fd, loff_t offset);
-static unsigned long long count_blocks(char *filename);
+static unsigned long long count_blocks(char *filename, int *remainder);
 static void check_mount(char *device_name);
 static void establish_params(int device_num, int size);
 static void setup_tables(void);
@@ -503,7 +504,8 @@ static int valid_offset(int fd, loff_t offset)
 
 /* Given a filename, look to see how many blocks of BLOCK_SIZE are present, returning the answer */
 
-static unsigned long long count_blocks(char *filename)
+static unsigned long long count_blocks(char *filename, int *remainder)
+
 {
     loff_t high, low;
     int fd;
@@ -529,7 +531,8 @@ static unsigned long long count_blocks(char *filename)
     }
 
     close(fd);
-    return low / BLOCK_SIZE;
+    *remainder = (low%BLOCK_SIZE)/sector_size;
+    return(low / BLOCK_SIZE);
 }
 
 /* Check to see if the specified device is currently mounted - abort if it is */
@@ -829,7 +832,8 @@ static void setup_tables(void)
 	memcpy(&bs.hidden, &hidden, 2);
     }
 
-    num_sectors = (long long)blocks *BLOCK_SIZE / sector_size;
+    num_sectors = (long long)(blocks *BLOCK_SIZE / sector_size)+orphaned_sectors;
+
     if (!atari_format) {
 	unsigned fatdata1216;	/* Sectors for FATs + data area (FAT12/16) */
 	unsigned fatdata32;	/* Sectors for FATs + data area (FAT32) */
@@ -1617,7 +1621,7 @@ int main(int argc, char **argv)
 	}
 
 	if (!create)
-	    cblocks = count_blocks(device_name);	/*  Have a look and see! */
+	    cblocks = count_blocks(device_name, &orphaned_sectors);	/*  Have a look and see! */
     }
     if (optind == argc - 2) {	/*  Either check the user specified number */
 	blocks = strtoull(argv[optind + 1], &tmp, 0);
