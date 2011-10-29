@@ -1,3 +1,74 @@
+commit 2e20319843ea85d77c51a9ce9a9b278662426d98
+Author: Michael Casadevall <mcasadevall@ubuntu.com>
+Date:   Tue Jun 7 19:19:30 2011 +0200
+
+    Correcting miscalculation of sector number in some cases.
+    
+    mkdosfs will incorrectly calculate the number of sectors of a
+    given FAT partition if the number sectors are odd due to
+    count_blocks incorrectly handling the remainder of a division
+    operation. This miscalculation causes the OMAP4 bootloader to
+    fail to boot.
+    
+    This bug can be observed by comparing the total sector size in
+    fdisk expert more to fsck.msdos; this discrepancy only shows up
+    when the number of sectors are odd.
+    
+    See https://bugs.launchpad.net/ubuntu/+source/dosfstools/+bug/794043
+    for more information.
+
+commit 45c3a5d8229ef998962e495f1efe7d2a6cd8a825
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Jan 8 23:38:59 2011 +0100
+
+    Re-running Nindent.
+
+commit 37115695884422e6f58ec490d11d460539715f8a
+Author: Sergey Gusarov <laborer2008@gmail.com>
+Date:   Sat Jan 8 23:36:11 2011 +0100
+
+    Fixing compiler warnings related to the mismatch of types "char *" / "unsigned
+    char *".
+    
+    These warnings appear when you compile the project with the option "-Wall", what
+    is done with the current default Makefile.
+
+commit a9055613f0d826021db65c79c2df87ac91e89215
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Thu Jan 6 22:35:00 2011 +0100
+
+    Fixing overflow bug in reclaim_file function, see
+    https://bugzilla.redhat.com/show_bug.cgi?id=660154 for more information.
+    
+    The problem is that alloc_rootdir_entry counts with 10000 files at max, but the
+    filename buffer is only 8 chars long. Due to pattern mask used it results to
+    only 10 files at max (FSCK0-9REC). If there is more than 10 files, it overflows
+    and hangs.
+
+commit 5a2b37f3ef664dbc7850f3d800890d7bb919b3cd
+Author: Sergey Gusarov <laborer2008@gmail.com>
+Date:   Thu Jan 6 22:31:39 2011 +0100
+
+    Fixing conversion specifiers in accordance with the type of expressions.
+
+commit 258e5ebbb24fd6293a86fe22d6bcda8ce1794dcd
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Jan 2 15:41:44 2011 +0100
+
+    Indenting source files.
+
+commit 9c22278dda0f8fc05aa537eb0bcb07e51f0dec6a
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sun Jan 2 15:39:03 2011 +0100
+
+    Adding Nindent script from syslinux.
+
+commit e6008ff5c15dc2e6d5b33f88a447d1159165c95d
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Fri Dec 24 17:58:29 2010 +0100
+
+    Releasing upstream version 3.0.11.
+
 commit bce60d1b0b739612b63852722d8504986096b40d
 Author: Michael Stapelberg <michael@stapelberg.de>
 Date:   Fri Nov 19 14:09:36 2010 +0100
