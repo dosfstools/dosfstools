@@ -1,3 +1,17 @@
+commit ab301a67cb54ec1d355e3d4aaff3897f005a9f3e
+Author: Jaroslav Škarvada <jskarvad@redhat.com>
+Date:   Sat Jun 30 19:09:11 2012 +0200
+
+    Fix 'dosfslabel throws "Seek to 114116076544:Invalid argument" error when labeling'.
+    
+    See https://bugzilla.redhat.com/show_bug.cgi?id=693662 for more information.
+
+commit 7f3903b870a72d979e42386e17a75c610d09742a
+Author: Daniel Baumann <daniel@debian.org>
+Date:   Sat Oct 29 08:40:53 2011 +0200
+
+    Releasing upstream version 3.0.12.
+
 commit 2e20319843ea85d77c51a9ce9a9b278662426d98
 Author: Michael Casadevall <mcasadevall@ubuntu.com>
 Date:   Tue Jun 7 19:19:30 2011 +0200
