@@ -305,7 +305,7 @@ static char print_fat_dirty_state(void)
     return '1';
 }
 
-static void check_fat_state_bit (DOS_FS *fs, void *b)
+static void check_fat_state_bit(DOS_FS *fs, void *b)
 {
     if (fs->fat_bits == 32) {
         struct boot_sector *b32 = b;

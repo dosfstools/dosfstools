@@ -42,16 +42,17 @@
 #include "check.h"
 
 int interactive = 0, rw = 0, list = 0, test = 0, verbose = 0, write_immed = 0;
-int atari_format = 0;
+int atari_format = 0, boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
 static void usage(char *name)
 {
-    fprintf(stderr, "usage: %s [-aAflrtvVwy] [-d path -d ...] "
+    fprintf(stderr, "usage: %s [-aAbflrtvVwy] [-d path -d ...] "
 	    "[-u path -u ...]\n%15sdevice\n", name, "");
     fprintf(stderr, "  -a       automatically repair the file system\n");
     fprintf(stderr, "  -A       toggle Atari file system format\n");
+    fprintf(stderr, "  -b       make read-only boot sector check\n");
     fprintf(stderr, "  -d path  drop that file\n");
     fprintf(stderr, "  -f       salvage unused chains to files\n");
     fprintf(stderr, "  -l       list path names\n");
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc, argv, "Aad:flnprtu:vVwy")) != EOF)
+    while ((c = getopt(argc, argv, "Aad:bflnprtu:vVwy")) != EOF)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
 	    atari_format = !atari_format;
@@ -119,6 +120,11 @@ int main(int argc, char **argv)
 	    rw = 1;
 	    interactive = 0;
 	    salvage_files = 1;
+	    break;
+	case 'b':
+	    rw = 0;
+	    interactive = 0;
+	    boot_only = 1;
 	    break;
 	case 'd':
 	    file_add(optarg, fdt_drop);
@@ -165,7 +171,11 @@ int main(int argc, char **argv)
 
     printf("dosfsck " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
     fs_open(argv[optind], rw);
+
     read_boot(&fs);
+    if (boot_only)
+        goto exit;
+
     if (verify)
 	printf("Starting check/repair pass.\n");
     while (read_fat(&fs), scan_root(&fs))
@@ -190,6 +200,7 @@ int main(int argc, char **argv)
 	n_files_verify = n_files;
     }
 
+exit:
     if (fs_changed()) {
 	if (rw) {
 	    if (interactive)
