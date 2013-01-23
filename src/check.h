@@ -1,6 +1,7 @@
 /* check.h - Check and repair a PC/MS-DOS file system
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
+   Copyright (C) 2008-2013 Daniel Baumann <mail@daniel-baumann.ch>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

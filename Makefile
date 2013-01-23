@@ -1,6 +1,6 @@
 # Makefile
 #
-# Copyright (C) 2008 Daniel Baumann <mail@daniel-baumann.ch>
+# Copyright (C) 2008-2013 Daniel Baumann <mail@daniel-baumann.ch>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 #
 # On Debian systems, the complete text of the GNU General Public License
 # can be found in /usr/share/common-licenses/GPL-3 file.
+
 
 DESTDIR =
 PREFIX = /usr/local
