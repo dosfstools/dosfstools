@@ -79,6 +79,8 @@ When \fBdosfsck\fR checks a filesystem, it accumulates all changes in memory and
 Automatically repair the filesystem. No user intervention is necessary. Whenever there is more than one method to solve a problem, the least destructive approach is used.
 .IP "\fB\-A\fR" 4
 Use Atari variation of the MS\-DOS filesystem. This is default if \fBdosfsck\fR is run on an Atari, then this option turns off Atari format. There are some minor differences in Atari format: Some boot sector fields are interpreted slightly different, and the special FAT entries for end\-of\-file and bad cluster can be different. Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but both systems recognize all values from 0xfff8...0xffff as end\-of\-file. MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7 are for this purpose (but the standard value is still 0xfff7).
+.IP "\fB-b\fR" 4
+Make read-only boot sector check.
 .IP "\fB\-d\fR" 4
 Delete the specified file. If more that one file with that name exists, the first one is deleted.
 .IP "\fB\-f\fR" 4
