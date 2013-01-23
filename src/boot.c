@@ -291,6 +291,45 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, int lss)
 	fs->free_clusters = CF_LE_L(i.free_clusters);
 }
 
+static char print_fat_dirty_state(void)
+{
+    printf("Dirty bit is set. Fs was not properly unmounted and"
+           " some data may be corrupt.\n");
+
+    if (interactive) {
+        printf("1) Remove dirty bit\n"
+               "2) No action\n");
+        return get_key("12", "?");
+    } else
+        printf(" Automaticaly removing dirty bit.\n");
+    return '1';
+}
+
+static void check_fat_state_bit (DOS_FS *fs, void *b)
+{
+    if (fs->fat_bits == 32) {
+        struct boot_sector *b32 = b;
+
+        if (b32->reserved3 & FAT_STATE_DIRTY) {
+            printf("0x41: ");
+            if (print_fat_dirty_state() == '1') {
+                b32->reserved3 &= ~FAT_STATE_DIRTY;
+                fs_write(0, sizeof(*b32), b32);
+            }
+        }
+    } else {
+        struct boot_sector_16 *b16 = b;
+
+        if (b16->reserved2 & FAT_STATE_DIRTY) {
+            printf("0x25: ");
+            if (print_fat_dirty_state() == '1') {
+                b16->reserved2 &= ~FAT_STATE_DIRTY;
+                fs_write(0, sizeof(*b16), b16);
+            }
+        }
+    }
+}
+
 void read_boot(DOS_FS * fs)
 {
     struct boot_sector b;
@@ -363,6 +402,7 @@ void read_boot(DOS_FS * fs)
 		   "  This may lead to problems on some systems.\n",
 		   fs->clusters, FAT16_THRESHOLD);
 
+	check_fat_state_bit(fs, &b);
 	fs->backupboot_start = CF_LE_W(b.backup_boot) * logical_sector_size;
 	check_backup_boot(fs, &b, logical_sector_size);
 
@@ -373,6 +413,7 @@ void read_boot(DOS_FS * fs)
 	fs->fat_bits = (fs->clusters >= FAT12_THRESHOLD) ? 16 : 12;
 	if (fs->clusters >= FAT16_THRESHOLD)
 	    die("Too many clusters (%lu) for FAT16 filesystem.", fs->clusters);
+	check_fat_state_bit(fs, &b);
     } else {
 	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
 	 * on floppies, and always 16 bit on harddisks. */
