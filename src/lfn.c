@@ -86,6 +86,22 @@ static unsigned char fat_uni2esc[64] = {
 	(cnv_unicode( lfn_unicode+(lfn_slot*CHARS_PER_LFN*2),	\
 		      lfn_parts*CHARS_PER_LFN, 0 ))
 
+#define BYTES_TO_WCHAR(cl,ch) ((wchar_t)((unsigned)(cl) + ((unsigned)(ch) << 8)))
+static size_t mbslen(wchar_t x)
+{
+    wchar_t wstr[] = { x, 0 };
+    return wcstombs(NULL, wstr, 0);
+}
+
+static size_t wctombs(char *dest, wchar_t x)
+{
+    wchar_t wstr[] = { x, 0 };
+    size_t size = wcstombs(NULL, wstr, 0);
+    if (size != (size_t) - 1)
+	size = wcstombs(dest, wstr, size + 1);
+    return size;
+}
+
 /* This function converts an unicode string to a normal ASCII string, assuming
  * ISO-8859-1 charset. Characters not in 8859-1 are converted to the same
  * escape notation as used by the kernel, i.e. the uuencode-like ":xxx" */
@@ -94,10 +110,13 @@ static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
     const unsigned char *up;
     unsigned char *out, *cp;
     int len, val;
+    size_t x;
 
     for (len = 0, up = uni; (up - uni) / 2 < maxlen && (up[0] || up[1]);
 	 up += 2) {
-	if (UNICODE_CONVERTABLE(up[0], up[1]))
+	if ((x = mbslen(BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
+	    len += x;
+	else if (UNICODE_CONVERTABLE(up[0], up[1]))
 	    ++len;
 	else
 	    len += 4;
@@ -105,7 +124,9 @@ static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
     cp = out = use_q ? qalloc(&mem_queue, len + 1) : alloc(len + 1);
 
     for (up = uni; (up - uni) / 2 < maxlen && (up[0] || up[1]); up += 2) {
-	if (UNICODE_CONVERTABLE(up[0], up[1]))
+	if ((x = wctombs(cp, BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
+	    cp += x;
+	else if (UNICODE_CONVERTABLE(up[0], up[1]))
 	    *cp++ = up[0];
 	else {
 	    /* here the same escape notation is used as in the Linux kernel */
