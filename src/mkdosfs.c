@@ -1685,10 +1685,10 @@ int main(int argc, char **argv)
 	 * the 'superfloppy' format.  As I don't know how to find out if
 	 * this is a MO disk I introduce a -I (ignore) switch.  -Joey
 	 */
-	if (!ignore_full_disk && ((statbuf.st_rdev & 0xff3f) == 0x0300 ||	/* hda, hdb */
-				  (statbuf.st_rdev & 0xff0f) == 0x0800 ||	/* sd */
-				  (statbuf.st_rdev & 0xff3f) == 0x0d00 ||	/* xd */
-				  (statbuf.st_rdev & 0xff3f) == 0x1600)	/* hdc, hdd */
+	if (!ignore_full_disk && ((statbuf.st_rdev & 0xffffff3f) == 0x0300 ||	/* hda, hdb */
+				  (statbuf.st_rdev & 0xffffff0f) == 0x0800 ||	/* sd */
+				  (statbuf.st_rdev & 0xffffff3f) == 0x0d00 ||	/* xd */
+				  (statbuf.st_rdev & 0xffffff3f) == 0x1600)	/* hdc, hdd */
 	)
 	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)");
 
