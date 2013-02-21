@@ -175,7 +175,10 @@ loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	offset = fs->root_start + next_free * sizeof(DIR_ENT);
 	memset(de, 0, sizeof(DIR_ENT));
 	while (1) {
-	    sprintf((char *)de->name, pattern, curr_num);
+	    char expanded[12];
+	    sprintf(expanded, pattern, curr_num);
+	    memcpy(de->name, expanded, 8);
+	    memcpy(de->ext, expanded + 8, 3);
 	    for (scan = 0; scan < fs->root_entries; scan++)
 		if (scan != next_free &&
 		    !strncmp((const char *)root[scan].name,

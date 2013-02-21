@@ -477,7 +477,7 @@ void reclaim_file(DOS_FS * fs)
 	    DIR_ENT de;
 	    loff_t offset;
 	    files++;
-	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04d");
+	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04dREC");
 	    de.start = CT_LE_W(i & 0xffff);
 	    if (fs->fat_bits == 32)
 		de.starthi = CT_LE_W(i >> 16);
