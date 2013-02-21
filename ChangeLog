@@ -1,4 +1,54 @@
-commit 0d8f0020cae997f22c222f83ae8c2f65ab939fdc
+commit c8f84fdcddf0982b86ef53250b08a005c80925ef
+Author: Alexander Korolkov <alexander.korolkov@gmail.com>
+Date:   Mon Feb 4 00:22:34 2013 +0400
+
+    Using wcstombs() to convert LFN unicode characters to printable text.
+    
+    This closes Debian bug #596336.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 154654555730874c1656bb6c63292a85a2260bdf
+Author: Alexander Korolkov <alexander.korolkov@gmail.com>
+Date:   Sun Sep 5 18:59:47 2010 +0400
+
+    Recode short filenames from DOS codepage (default 437).
+    
+    Recode short filenames from DOS codepage (default 437) to the current
+    character encoding. This makes messages of dosfsck more readable.
+    Partially closes Debian bug #596336.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit ad76cae648d3b7895e97e16f8212ae8089b8846b
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Thu Feb 21 14:40:52 2013 +0100
+
+    Fixing root directory allocation.
+    
+    See https://bugzilla.redhat.com/show_bug.cgi?id=674095 for more information.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit b8201b34eb83c2bf87bd1c2b1a7fa57a1dc28191
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Thu Feb 21 14:40:25 2013 +0100
+
+    Fixing device detection.
+    
+    See https://bugzilla.redhat.com/show_bug.cgi?id=710480 for more information.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 7a756385ed6bce393396c699e068b5f239053db6
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jan 23 13:22:01 2013 +0100
+
+    Releasing version 3.0.14.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 5bdd7ef95c7f18e9e6571bf0718a564bd15b30d5
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 13:16:20 2013 +0100
 
