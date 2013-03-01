@@ -64,35 +64,10 @@
 #include <time.h>
 #include <errno.h>
 #include <ctype.h>
+#include <endian.h>
 
 #include <asm/types.h>
 
-#if __BYTE_ORDER == __BIG_ENDIAN
-
-#include <asm/byteorder.h>
-#ifdef __le16_to_cpu
-/* ++roman: 2.1 kernel headers define these function, they're probably more
- * efficient then coding the swaps machine-independently. */
-#define CF_LE_W	__le16_to_cpu
-#define CF_LE_L	__le32_to_cpu
-#define CT_LE_W	__cpu_to_le16
-#define CT_LE_L	__cpu_to_le32
-#else
-#define CF_LE_W(v) ((((v) & 0xff) << 8) | (((v) >> 8) & 0xff))
-#define CF_LE_L(v) (((unsigned)(v)>>24) | (((unsigned)(v)>>8)&0xff00) | \
-               (((unsigned)(v)<<8)&0xff0000) | ((unsigned)(v)<<24))
-#define CT_LE_W(v) CF_LE_W(v)
-#define CT_LE_L(v) CF_LE_L(v)
-#endif /* defined(__le16_to_cpu) */
-
-#else
-
-#define CF_LE_W(v) (v)
-#define CF_LE_L(v) (v)
-#define CT_LE_W(v) (v)
-#define CT_LE_L(v) (v)
-
-#endif /* __BIG_ENDIAN */
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
@@ -601,8 +576,8 @@ static void establish_params(int device_num, int size)
 	    if (ioctl(dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
 		die("unable to get diskette geometry for '%s'");
 	}
-	bs.secs_track = CT_LE_W(param.sect);	/*  Set up the geometry information */
-	bs.heads = CT_LE_W(param.head);
+	bs.secs_track = htole16(param.sect);	/*  Set up the geometry information */
+	bs.heads = htole16(param.head);
 	switch (param.size) {	/*  Set up the media descriptor byte */
 	case 720:		/* 5.25", 2, 9, 40 - 360K */
 	    bs.media = (char)0xfd;
@@ -647,32 +622,32 @@ floppy_default:
 
 	switch (loop_size) {	/* Assuming the loop device -> floppy later */
 	case 720:		/* 5.25", 2, 9, 40 - 360K */
-	    bs.secs_track = CF_LE_W(9);
-	    bs.heads = CF_LE_W(2);
+	    bs.secs_track = le16toh(9);
+	    bs.heads = le16toh(2);
 	    bs.media = (char)0xfd;
 	    bs.cluster_size = (char)2;
 	    def_root_dir_entries = 112;
 	    break;
 
 	case 1440:		/* 3.5", 2, 9, 80 - 720K */
-	    bs.secs_track = CF_LE_W(9);
-	    bs.heads = CF_LE_W(2);
+	    bs.secs_track = le16toh(9);
+	    bs.heads = le16toh(2);
 	    bs.media = (char)0xf9;
 	    bs.cluster_size = (char)2;
 	    def_root_dir_entries = 112;
 	    break;
 
 	case 2400:		/* 5.25", 2, 15, 80 - 1200K */
-	    bs.secs_track = CF_LE_W(15);
-	    bs.heads = CF_LE_W(2);
+	    bs.secs_track = le16toh(15);
+	    bs.heads = le16toh(2);
 	    bs.media = (char)0xf9;
 	    bs.cluster_size = (char)(atari_format ? 2 : 1);
 	    def_root_dir_entries = 224;
 	    break;
 
 	case 5760:		/* 3.5", 2, 36, 80 - 2880K */
-	    bs.secs_track = CF_LE_W(36);
-	    bs.heads = CF_LE_W(2);
+	    bs.secs_track = le16toh(36);
+	    bs.heads = le16toh(2);
 	    bs.media = (char)0xf0;
 	    bs.cluster_size = (char)2;
 	    bs.dir_entries[0] = (char)224;
@@ -680,8 +655,8 @@ floppy_default:
 	    break;
 
 	case 2880:		/* 3.5", 2, 18, 80 - 1440K */
-	    bs.secs_track = CF_LE_W(18);
-	    bs.heads = CF_LE_W(2);
+	    bs.secs_track = le16toh(18);
+	    bs.heads = le16toh(2);
 	    bs.media = (char)0xf0;
 	    bs.cluster_size = (char)(atari_format ? 2 : 1);
 	    def_root_dir_entries = 224;
@@ -690,8 +665,8 @@ floppy_default:
 	default:		/* Anything else: default hd setup */
 	    printf("Loop device does not match a floppy size, using "
 		   "default hd params\n");
-	    bs.secs_track = CT_LE_W(32);	/* these are fake values... */
-	    bs.heads = CT_LE_W(64);
+	    bs.secs_track = htole16(32);	/* these are fake values... */
+	    bs.heads = htole16(64);
 	    goto def_hd_params;
 	}
     } else
@@ -702,11 +677,11 @@ floppy_default:
 	if (ioctl(dev, HDIO_GETGEO, &geometry) || geometry.sectors == 0
 	    || geometry.heads == 0) {
 	    printf("unable to get drive geometry, using default 255/63\n");
-	    bs.secs_track = CT_LE_W(63);
-	    bs.heads = CT_LE_W(255);
+	    bs.secs_track = htole16(63);
+	    bs.heads = htole16(255);
 	} else {
-	    bs.secs_track = CT_LE_W(geometry.sectors);	/* Set up the geometry information */
-	    bs.heads = CT_LE_W(geometry.heads);
+	    bs.secs_track = htole16(geometry.sectors);	/* Set up the geometry information */
+	    bs.heads = htole16(geometry.heads);
 	}
 def_hd_params:
 	bs.media = (char)0xf8;	/* Set up the media descriptor for a hard drive */
@@ -808,7 +783,7 @@ static void setup_tables(void)
 	} else {
 	    memcpy(bs.oldfat.boot_code, dummy_boot_code, BOOTCODE_SIZE);
 	}
-	bs.boot_sign = CT_LE_W(BOOT_SIGN);
+	bs.boot_sign = htole16(BOOT_SIGN);
     } else {
 	memcpy(bs.boot_jump, dummy_boot_jump_m68k, 2);
     }
@@ -822,15 +797,15 @@ static void setup_tables(void)
 	if (size_fat == 32 && reserved_sectors < 2)
 	    die("On FAT32 at least 2 reserved sectors are needed.");
     }
-    bs.reserved = CT_LE_W(reserved_sectors);
+    bs.reserved = htole16(reserved_sectors);
     if (verbose >= 2)
 	printf("Using %d reserved sectors\n", reserved_sectors);
     bs.fats = (char)nr_fats;
     if (!atari_format || size_fat == 32)
-	bs.hidden = CT_LE_L(hidden_sectors);
+	bs.hidden = htole32(hidden_sectors);
     else {
 	/* In Atari format, hidden is a 16 bit field */
-	__u16 hidden = CT_LE_W(hidden_sectors);
+	__u16 hidden = htole16(hidden_sectors);
 	if (hidden_sectors & ~0xffff)
 	    die("#hidden doesn't fit in 16bit field of Atari format\n");
 	memcpy(&bs.hidden, &hidden, 2);
@@ -971,7 +946,7 @@ static void setup_tables(void)
 	case 12:
 	    cluster_count = clust12;
 	    fat_length = fatlength12;
-	    bs.fat_length = CT_LE_W(fatlength12);
+	    bs.fat_length = htole16(fatlength12);
 	    memcpy(vi->fs_type, MSDOS_FAT12_SIGN, 8);
 	    break;
 
@@ -995,7 +970,7 @@ static void setup_tables(void)
 	    }
 	    cluster_count = clust16;
 	    fat_length = fatlength16;
-	    bs.fat_length = CT_LE_W(fatlength16);
+	    bs.fat_length = htole16(fatlength16);
 	    memcpy(vi->fs_type, MSDOS_FAT16_SIGN, 8);
 	    break;
 
@@ -1005,8 +980,8 @@ static void setup_tables(void)
 			"WARNING: Not enough clusters for a 32 bit FAT!\n");
 	    cluster_count = clust32;
 	    fat_length = fatlength32;
-	    bs.fat_length = CT_LE_W(0);
-	    bs.fat32.fat32_length = CT_LE_L(fatlength32);
+	    bs.fat_length = htole16(0);
+	    bs.fat32.fat32_length = htole32(fatlength32);
 	    memcpy(vi->fs_type, MSDOS_FAT32_SIGN, 8);
 	    root_dir_entries = 0;
 	    break;
@@ -1017,7 +992,7 @@ static void setup_tables(void)
 
 	/* Adjust the reserved number of sectors for alignment */
 	reserved_sectors = align_object(reserved_sectors, bs.cluster_size);
-	bs.reserved = CT_LE_W(reserved_sectors);
+	bs.reserved = htole16(reserved_sectors);
 
 	/* Adjust the number of root directory entries to help enforce alignment */
 	if (align_structures) {
@@ -1100,10 +1075,10 @@ static void setup_tables(void)
 
 	cluster_count = clusters;
 	if (size_fat != 32)
-	    bs.fat_length = CT_LE_W(fat_length);
+	    bs.fat_length = htole16(fat_length);
 	else {
 	    bs.fat_length = 0;
-	    bs.fat32.fat32_length = CT_LE_L(fat_length);
+	    bs.fat32.fat32_length = htole32(fat_length);
 	}
     }
 
@@ -1115,11 +1090,11 @@ static void setup_tables(void)
 
     if (size_fat == 32) {
 	/* set up additional FAT32 fields */
-	bs.fat32.flags = CT_LE_W(0);
+	bs.fat32.flags = htole16(0);
 	bs.fat32.version[0] = 0;
 	bs.fat32.version[1] = 0;
-	bs.fat32.root_cluster = CT_LE_L(2);
-	bs.fat32.info_sector = CT_LE_W(1);
+	bs.fat32.root_cluster = htole32(2);
+	bs.fat32.info_sector = htole16(1);
 	if (!backup_boot)
 	    backup_boot = (reserved_sectors >= 7) ? 6 :
 		(reserved_sectors >= 2) ? reserved_sectors - 1 : 0;
@@ -1132,7 +1107,7 @@ static void setup_tables(void)
 	if (verbose >= 2)
 	    printf("Using sector %d as backup boot sector (0 = none)\n",
 		   backup_boot);
-	bs.fat32.backup_boot = CT_LE_W(backup_boot);
+	bs.fat32.backup_boot = htole16(backup_boot);
 	memset(&bs.fat32.reserved2, 0, sizeof(bs.fat32.reserved2));
     }
 
@@ -1147,12 +1122,12 @@ static void setup_tables(void)
     if (num_sectors >= 65536) {
 	bs.sectors[0] = (char)0;
 	bs.sectors[1] = (char)0;
-	bs.total_sect = CT_LE_L(num_sectors);
+	bs.total_sect = htole32(num_sectors);
     } else {
 	bs.sectors[0] = (char)(num_sectors & 0x00ff);
 	bs.sectors[1] = (char)((num_sectors & 0xff00) >> 8);
 	if (!atari_format)
-	    bs.total_sect = CT_LE_L(0);
+	    bs.total_sect = htole32(0);
     }
 
     if (!atari_format)
@@ -1176,9 +1151,9 @@ static void setup_tables(void)
 
     if (verbose) {
 	printf("%s has %d head%s and %d sector%s per track,\n",
-	       device_name, CF_LE_W(bs.heads),
-	       (CF_LE_W(bs.heads) != 1) ? "s" : "", CF_LE_W(bs.secs_track),
-	       (CF_LE_W(bs.secs_track) != 1) ? "s" : "");
+	       device_name, le16toh(bs.heads),
+	       (le16toh(bs.heads) != 1) ? "s" : "", le16toh(bs.secs_track),
+	       (le16toh(bs.secs_track) != 1) ? "s" : "");
 	printf("logical sector size is %d,\n", sector_size);
 	printf("using 0x%02x media descriptor, with %d sectors;\n",
 	       (int)(bs.media), num_sectors);
@@ -1247,20 +1222,20 @@ static void setup_tables(void)
 	memcpy(de->ext, volume_name + 8, 3);
 	de->attr = ATTR_VOLUME;
 	ctime = localtime(&create_time);
-	de->time = CT_LE_W((unsigned short)((ctime->tm_sec >> 1) +
+	de->time = htole16((unsigned short)((ctime->tm_sec >> 1) +
 					    (ctime->tm_min << 5) +
 					    (ctime->tm_hour << 11)));
 	de->date =
-	    CT_LE_W((unsigned short)(ctime->tm_mday +
+	    htole16((unsigned short)(ctime->tm_mday +
 				     ((ctime->tm_mon + 1) << 5) +
 				     ((ctime->tm_year - 80) << 9)));
 	de->ctime_ms = 0;
 	de->ctime = de->time;
 	de->cdate = de->date;
 	de->adate = de->date;
-	de->starthi = CT_LE_W(0);
-	de->start = CT_LE_W(0);
-	de->size = CT_LE_L(0);
+	de->starthi = htole16(0);
+	de->start = htole16(0);
+	de->size = htole32(0);
     }
 
     if (size_fat == 32) {
@@ -1280,13 +1255,13 @@ static void setup_tables(void)
 	info_sector[3] = 'A';
 
 	/* Magic for fsinfo structure */
-	info->signature = CT_LE_L(0x61417272);
+	info->signature = htole32(0x61417272);
 	/* We've allocated cluster 2 for the root dir. */
-	info->free_clusters = CT_LE_L(cluster_count - 1);
-	info->next_cluster = CT_LE_L(2);
+	info->free_clusters = htole32(cluster_count - 1);
+	info->next_cluster = htole32(2);
 
 	/* Info sector also must have boot sign */
-	*(__u16 *) (info_sector + 0x1fe) = CT_LE_W(BOOT_SIGN);
+	*(__u16 *) (info_sector + 0x1fe) = htole16(BOOT_SIGN);
     }
 
     if (!(blank_sector = malloc(sector_size)))
@@ -1324,7 +1299,7 @@ static void write_tables(void)
     int fat_length;
 
     fat_length = (size_fat == 32) ?
-	CF_LE_L(bs.fat32.fat32_length) : CF_LE_W(bs.fat_length);
+	le32toh(bs.fat32.fat32_length) : le16toh(bs.fat_length);
 
     seekto(0, "start of device");
     /* clear all reserved sectors */
@@ -1335,7 +1310,7 @@ static void write_tables(void)
     writebuf((char *)&bs, sizeof(struct msdos_boot_sector), "boot sector");
     /* on FAT32, write the info sector and backup boot sector */
     if (size_fat == 32) {
-	seekto(CF_LE_W(bs.fat32.info_sector) * sector_size, "info sector");
+	seekto(le16toh(bs.fat32.info_sector) * sector_size, "info sector");
 	writebuf(info_sector, 512, "info sector");
 	if (backup_boot != 0) {
 	    seekto(backup_boot * sector_size, "backup boot sector");

@@ -388,7 +388,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 		     sizeof(lfn->reserved), &lfn->reserved);
 	}
     }
-    if (lfn->start != CT_LE_W(0)) {
+    if (lfn->start != htole16(0)) {
 	printf("Start cluster field in VFAT long filename slot is not 0 "
 	       "(but 0x%04x).\n", lfn->start);
 	if (interactive)
@@ -396,7 +396,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 	else
 	    printf("Auto-setting to 0.\n");
 	if (!interactive || get_key("12", "?") == '1') {
-	    lfn->start = CT_LE_W(0);
+	    lfn->start = htole16(0);
 	    fs_write(dir_offset + offsetof(LFN_ENT, start),
 		     sizeof(lfn->start), &lfn->start);
 	}

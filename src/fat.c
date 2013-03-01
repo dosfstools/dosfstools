@@ -54,13 +54,13 @@ void get_fat(FAT_ENTRY * entry, void *fat, unsigned long cluster, DOS_FS * fs)
 				(ptr[0] | ptr[1] << 8));
 	break;
     case 16:
-	entry->value = CF_LE_W(((unsigned short *)fat)[cluster]);
+	entry->value = le16toh(((unsigned short *)fat)[cluster]);
 	break;
     case 32:
 	/* According to M$, the high 4 bits of a FAT32 entry are reserved and
 	 * are not part of the cluster number. So we cut them off. */
 	{
-	    unsigned long e = CF_LE_L(((unsigned int *)fat)[cluster]);
+	    unsigned long e = le32toh(((unsigned int *)fat)[cluster]);
 	    entry->value = e & 0xfffffff;
 	    entry->reserved = e >> 28;
 	}
@@ -207,7 +207,7 @@ void set_fat(DOS_FS * fs, unsigned long cluster, unsigned long new)
     case 16:
 	data = fs->fat + cluster * 2;
 	offs = fs->fat_start + cluster * 2;
-	*(unsigned short *)data = CT_LE_W(new);
+	*(unsigned short *)data = htole16(new);
 	size = 2;
 	break;
     case 32:
@@ -219,7 +219,7 @@ void set_fat(DOS_FS * fs, unsigned long cluster, unsigned long new)
 	    offs = fs->fat_start + cluster * 4;
 	    /* According to M$, the high 4 bits of a FAT32 entry are reserved and
 	     * are not part of the cluster number. So we never touch them. */
-	    *(unsigned long *)data = CT_LE_L((new & 0xfffffff) |
+	    *(unsigned long *)data = htole32((new & 0xfffffff) |
 					     (curEntry.reserved << 28));
 	    size = 4;
 	}
@@ -478,12 +478,12 @@ void reclaim_file(DOS_FS * fs)
 	    loff_t offset;
 	    files++;
 	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04dREC");
-	    de.start = CT_LE_W(i & 0xffff);
+	    de.start = htole16(i & 0xffff);
 	    if (fs->fat_bits == 32)
-		de.starthi = CT_LE_W(i >> 16);
+		de.starthi = htole16(i >> 16);
 	    for (walk = i; walk > 0 && walk != -1;
 		 walk = next_cluster(fs, walk)) {
-		de.size = CT_LE_L(CF_LE_L(de.size) + fs->cluster_size);
+		de.size = htole32(le32toh(de.size) + fs->cluster_size);
 		reclaimed++;
 	    }
 	    fs_write(offset, sizeof(DIR_ENT), &de);
@@ -540,7 +540,7 @@ unsigned long update_free(DOS_FS * fs)
     }
 
     if (do_set) {
-	unsigned long le_free = CT_LE_L(free);
+	unsigned long le_free = htole32(free);
 	fs->free_clusters = free;
 	fs_write(fs->fsinfo_start + offsetof(struct info_sector, free_clusters),
 		 sizeof(le_free), &le_free);
