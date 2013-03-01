@@ -132,8 +132,8 @@ loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	while (1) {
 	    char expanded[12];
 	    sprintf(expanded, pattern, curr_num);
-	    memcpy(de->name + 4, expanded, 4);
-	    memcpy(de->ext, expanded + 4, 3);
+	    memcpy(de->name, expanded, 8);
+	    memcpy(de->ext, expanded + 8, 3);
 	    clu_num = fs->root_cluster;
 	    i = 0;
 	    offset2 = cluster_start(fs, clu_num);
