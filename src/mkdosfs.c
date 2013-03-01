@@ -107,6 +107,8 @@
 #define HARD_SECTOR_SIZE   512
 #define SECTORS_PER_BLOCK ( BLOCK_SIZE / HARD_SECTOR_SIZE )
 
+#define NO_NAME "NO NAME    "
+
 /* Macro definitions */
 
 /* Report a failure message and return a failure error code */
@@ -280,7 +282,7 @@ static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
 static time_t create_time;	/* Creation time */
 static struct timeval create_timeval;	/* Creation time */
-static char volume_name[] = "           ";	/* Volume name */
+static char volume_name[] = NO_NAME;	/* Volume name */
 static unsigned long long blocks;	/* Number of blocks in filesystem */
 static int sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
@@ -1200,7 +1202,7 @@ static void setup_tables(void)
 	}
 	printf("Volume ID is %08lx, ", volume_id &
 	       (atari_format ? 0x00ffffff : 0xffffffff));
-	if (strcmp(volume_name, "           "))
+	if (strcmp(volume_name, NO_NAME))
 	    printf("volume label %s.\n", volume_name);
 	else
 	    printf("no volume label.\n");
@@ -1239,7 +1241,7 @@ static void setup_tables(void)
     }
 
     memset(root_dir, 0, size_root_dir);
-    if (memcmp(volume_name, "           ", 11)) {
+    if (memcmp(volume_name, NO_NAME, 11)) {
 	struct msdos_dir_entry *de = &root_dir[0];
 	memcpy(de->name, volume_name, 8);
 	memcpy(de->ext, volume_name + 8, 3);
