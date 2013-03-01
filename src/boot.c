@@ -497,7 +497,7 @@ static void write_boot_label(DOS_FS * fs, char *label)
 	fs_write(fs->backupboot_start, sizeof(b), &b);
 }
 
-static loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
+loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 {
     unsigned long cluster;
     loff_t offset;

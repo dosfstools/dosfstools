@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
     char *device = NULL;
     char *label = NULL;
 
+    loff_t offset;
+    DIR_ENT de;
+
     check_atari();
 
     if (argc < 2 || argc > 3)
@@ -117,7 +120,11 @@ int main(int argc, char *argv[])
     if (fs.fat_bits == 32)
 	read_fat(&fs);
     if (!rw) {
-	fprintf(stdout, "%s\n", fs.label);
+        offset = find_volume_de(&fs, &de);
+        if (offset == 0)
+          fprintf(stdout, "%s\n", fs.label);
+        else
+          fprintf(stdout, "%.8s%.3s\n", de.name, de.ext);
 	exit(0);
     }
 
