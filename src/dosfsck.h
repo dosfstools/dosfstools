@@ -37,6 +37,7 @@
 
 #include <linux/msdos_fs.h>
 
+#include <stddef.h>
 #include <endian.h>
 
 #define VFAT_LN_ATTR (ATTR_RO | ATTR_HIDDEN | ATTR_SYS | ATTR_VOLUME)
@@ -172,9 +173,6 @@ typedef struct {
     char *label;
 } DOS_FS;
 
-#ifndef offsetof
-#define offsetof(t,e)	((int)&(((t *)0)->e))
-#endif
 
 extern int interactive, rw, list, verbose, test, write_immed;
 extern int atari_format;
