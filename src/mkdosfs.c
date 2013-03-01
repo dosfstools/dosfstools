@@ -63,6 +63,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <asm/types.h>
 
@@ -1562,6 +1563,9 @@ int main(int argc, char **argv)
 
 	case 'n':		/* n : Volume name */
 	    sprintf(volume_name, "%-11.11s", optarg);
+            for (i = 0; i < 11; i++)
+              volume_name[i] = toupper(volume_name[i]);
+
 	    break;
 
 	case 'r':		/* r : Root directory entries */
