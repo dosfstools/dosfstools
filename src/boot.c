@@ -35,6 +35,7 @@
 #include "fat.h"
 #include "io.h"
 #include "boot.h"
+#include "check.h"
 
 #define ROUND_TO_MULTIPLE(n,m) ((n) && (m) ? (n)+(m)-1-((n)-1)%(m) : 0)
     /* don't divide by zero */
@@ -532,12 +533,16 @@ static void write_volume_label(DOS_FS * fs, char *label)
     time_t now = time(NULL);
     struct tm *mtime = localtime(&now);
     loff_t offset;
+    int created;
     DIR_ENT de;
 
+    created = 0;
     offset = find_volume_de(fs, &de);
     if (offset == 0)
-	return;
-
+    {
+      created = 1;
+      offset = alloc_rootdir_entry(fs, &de, label);
+    }
     memcpy(de.name, label, 11);
     de.time = CT_LE_W((unsigned short)((mtime->tm_sec >> 1) +
 				       (mtime->tm_min << 5) +
@@ -545,6 +550,18 @@ static void write_volume_label(DOS_FS * fs, char *label)
     de.date = CT_LE_W((unsigned short)(mtime->tm_mday +
 				       ((mtime->tm_mon + 1) << 5) +
 				       ((mtime->tm_year - 80) << 9)));
+    if (created)
+    {
+      de.attr = ATTR_VOLUME;
+      de.ctime_ms = 0;
+      de.ctime = de.time;
+      de.cdate = de.date;
+      de.adate = de.date;
+      de.starthi = CT_LE_W(0);
+      de.start = CT_LE_W(0);
+      de.size = CT_LE_L(0);
+    }
+
     fs_write(offset, sizeof(DIR_ENT), &de);
 }
 
