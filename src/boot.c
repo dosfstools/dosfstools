@@ -557,9 +557,9 @@ static void write_volume_label(DOS_FS * fs, char *label)
       de.ctime = de.time;
       de.cdate = de.date;
       de.adate = de.date;
-      de.starthi = CT_LE_W(0);
-      de.start = CT_LE_W(0);
-      de.size = CT_LE_L(0);
+      de.starthi = 0;
+      de.start = 0;
+      de.size = 0;
     }
 
     fs_write(offset, sizeof(DIR_ENT), &de);
