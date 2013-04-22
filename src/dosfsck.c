@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     DOS_FS fs;
     int salvage_files, verify, c;
     unsigned n_files_check = 0, n_files_verify = 0;
-    unsigned long free_clusters;
+    unsigned long free_clusters = 0;
 
     memset(&fs, 0, sizeof(fs));
     rw = salvage_files = verify = 0;
@@ -217,8 +217,9 @@ exit:
 	    printf("Leaving file system unchanged.\n");
     }
 
-    printf("%s: %u files, %lu/%lu clusters\n", argv[optind],
-	   n_files, fs.clusters - free_clusters, fs.clusters);
+    if (!boot_only)
+	printf("%s: %u files, %lu/%lu clusters\n", argv[optind],
+	       n_files, fs.clusters - free_clusters, fs.clusters);
 
     return fs_close(rw) ? 1 : 0;
 }

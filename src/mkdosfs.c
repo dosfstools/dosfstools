@@ -96,7 +96,7 @@
 
 /* Compute ceil(a/b) */
 
-inline int cdiv(int a, int b)
+static inline int cdiv(int a, int b)
 {
     return (a + b - 1) / b;
 }
@@ -391,6 +391,8 @@ static long do_check(char *buffer, int try, off_t current_block)
 
 static void alarm_intr(int alnum)
 {
+    (void)alnum;
+
     if (currently_testing >= blocks)
 	return;
 
@@ -736,11 +738,13 @@ static void setup_tables(void)
     struct msdos_volume_info *vi =
 	(size_fat == 32 ? &bs.fat32.vi : &bs.oldfat.vi);
 
-    if (atari_format)
+    if (atari_format) {
 	/* On Atari, the first few bytes of the boot sector are assigned
 	 * differently: The jump code is only 2 bytes (and m68k machine code
 	 * :-), then 6 bytes filler (ignored), then 3 byte serial number. */
-	memcpy(bs.system_id - 1, "mkdosf", 6);
+	bs.boot_jump[2] = 'm';
+	strcpy((char *)bs.system_id, "kdosf");
+    }
     else
 	strcpy((char *)bs.system_id, "mkdosfs");
     if (sectors_per_cluster)
@@ -1341,7 +1345,7 @@ static void write_tables(void)
 
 /* Report the command usage and return a failure error code */
 
-void usage(void)
+static void usage(void)
 {
     fatal_error("\
 Usage: mkdosfs [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-sector]\n\

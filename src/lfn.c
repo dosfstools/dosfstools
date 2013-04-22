@@ -124,7 +124,7 @@ static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
     cp = out = use_q ? qalloc(&mem_queue, len + 1) : alloc(len + 1);
 
     for (up = uni; (up - uni) / 2 < maxlen && (up[0] || up[1]); up += 2) {
-	if ((x = wctombs(cp, BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
+	if ((x = wctombs((char *)cp, BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
 	    cp += x;
 	else if (UNICODE_CONVERTABLE(up[0], up[1]))
 	    *cp++ = up[0];
@@ -462,8 +462,10 @@ char *lfn_get(DIR_ENT * de, loff_t * lfn_offset)
 	}
     }
 
-    for (sum = 0, i = 0; i < 11; i++)
+    for (sum = 0, i = 0; i < 8; i++)
 	sum = (((sum & 1) << 7) | ((sum & 0xfe) >> 1)) + de->name[i];
+    for (i = 0; i < 3; i++)
+	sum = (((sum & 1) << 7) | ((sum & 0xfe) >> 1)) + de->ext[i];
     if (sum != lfn_checksum) {
 	/* checksum doesn't match, long name doesn't apply to this alias */
 	/* Causes: 1) alias renamed */

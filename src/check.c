@@ -230,7 +230,7 @@ static int day_n[] =
 
 /* Convert a MS-DOS time/date pair to a UNIX date (seconds since 1 1 70). */
 
-time_t date_dos2unix(unsigned short time, unsigned short date)
+static time_t date_dos2unix(unsigned short time, unsigned short date)
 {
     int month, year;
     time_t secs;
@@ -263,8 +263,9 @@ static char *file_stat(DOS_FILE * file)
 static int bad_name(DOS_FILE * file)
 {
     int i, spc, suspicious = 0;
-    char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
-    unsigned char *name = file->dir_ent.name;
+    const char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
+    const unsigned char *name = file->dir_ent.name;
+    const unsigned char *ext = file->dir_ent.ext;
 
     /* Do not complain about (and auto-correct) the extended attribute files
      * of OS/2. */
@@ -286,12 +287,12 @@ static int bad_name(DOS_FILE * file)
 	    return 1;
     }
 
-    for (i = 8; i < 11; i++) {
-	if (name[i] < ' ' || name[i] == 0x7f)
+    for (i = 0; i < 3; i++) {
+	if (ext[i] < ' ' || ext[i] == 0x7f)
 	    return 1;
-	if (name[i] > 0x7f)
+	if (ext[i] > 0x7f)
 	    ++suspicious;
-	if (strchr(bad_chars, name[i]))
+	if (strchr(bad_chars, ext[i]))
 	    return 1;
     }
 
@@ -306,11 +307,11 @@ static int bad_name(DOS_FILE * file)
     }
 
     spc = 0;
-    for (i = 8; i < 11; i++) {
-	if (name[i] == ' ')
+    for (i = 0; i < 3; i++) {
+	if (ext[i] == ' ')
 	    spc = 1;
 	else if (spc)
-	    /* non-space after a space not allowed, space terminates the name
+	    /* non-space after a space not allowed, space terminates the ext
 	     * part */
 	    return 1;
     }

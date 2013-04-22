@@ -60,18 +60,9 @@ static struct {
     0xfe, "5.25\" 160k floppy 1s/40tr/8sec"}, {
 0xff, "5.25\" 320k floppy 2s/40tr/8sec"},};
 
-#if defined __alpha || defined __arm || defined __arm__ || defined __ia64__ || defined __x86_64__ \
- || defined __ppc64__ || defined __bfin__ || defined __MICROBLAZE__
-/* Unaligned fields must first be copied byte-wise */
+/* Unaligned fields must first be accessed byte-wise */
 #define GET_UNALIGNED_W(f)			\
-    ({						\
-	unsigned short __v;			\
-	memcpy( &__v, &f, sizeof(__v) );	\
-	le16toh( *(unsigned short *)&__v );	\
-    })
-#else
-#define GET_UNALIGNED_W(f) le16toh( *(unsigned short *)&f )
-#endif
+    le16toh( (__u16)f[0] | ((__u16)f[1]<<8) )
 
 static char *get_media_descr(unsigned char media)
 {
@@ -473,29 +464,32 @@ void read_boot(DOS_FS * fs)
 
 static void write_boot_label(DOS_FS * fs, char *label)
 {
-    struct boot_sector b;
-    struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
-
-    fs_read(0, sizeof(b), &b);
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
-	if (b16->extended_sig != 0x29) {
-	    b16->extended_sig = 0x29;
-	    b16->serial = 0;
-	    memmove(b16->fs_type, fs->fat_bits == 12 ? "FAT12   " : "FAT16   ",
+	struct boot_sector_16 b16;
+
+	fs_read(0, sizeof(b16), &b16);
+	if (b16.extended_sig != 0x29) {
+	    b16.extended_sig = 0x29;
+	    b16.serial = 0;
+	    memmove(b16.fs_type, fs->fat_bits == 12 ? "FAT12   " : "FAT16   ",
 		    8);
 	}
-	memmove(b16->label, label, 11);
+	memmove(b16.label, label, 11);
+	fs_write(0, sizeof(b16), &b16);
     } else if (fs->fat_bits == 32) {
+	struct boot_sector b;
+
+	fs_read(0, sizeof(b), &b);
 	if (b.extended_sig != 0x29) {
 	    b.extended_sig = 0x29;
 	    b.serial = 0;
 	    memmove(b.fs_type, "FAT32   ", 8);
 	}
 	memmove(b.label, label, 11);
+	fs_write(0, sizeof(b), &b);
+	if (fs->backupboot_start)
+	    fs_write(fs->backupboot_start, sizeof(b), &b);
     }
-    fs_write(0, sizeof(b), &b);
-    if (fs->fat_bits == 32 && fs->backupboot_start)
-	fs_write(fs->backupboot_start, sizeof(b), &b);
 }
 
 loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
