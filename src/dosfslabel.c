@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 		    "dosfslabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
-        for (i = 0; i < 11; i++)
+        for (i = 0; label[i] && i < 11; i++)
           /* don't know if here should be more strict !uppercase(label[i])*/
           if (islower(label[i])) {
             fprintf(stderr,
