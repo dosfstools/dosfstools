@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     int i;
 
     char *device = NULL;
-    char *label = NULL;
+    char label[12] = {0};
 
     loff_t offset;
     DIR_ENT de;
@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
 
     device = argv[1];
     if (argc == 3) {
-	label = argv[2];
-	if (strlen(label) > 11) {
+	strncpy(label, argv[2], 11);
+	if (strlen(argv[2]) > 11) {
 	    fprintf(stderr,
 		    "dosfslabel: labels can be no longer than 11 characters\n");
 	    exit(1);
