@@ -1,4 +1,117 @@
-commit ac4d30646425e19e8682cf7c9055014cbdb54c6f
+commit 3aa88ed2a22d517d4a392bef3fc3f27b878ee8a6 (HEAD, origin/master, origin/HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed May 29 09:48:24 2013 +0200
+
+    Updating maximal lenght of a label in manpage to talk about bytes instead of characters, thanks to Francois Wendling <frwendling@gmail.com> (Closes: #655953).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 0916f8a0e0051ddfe1c4c96a399421a3832acd4f
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Wed May 29 09:56:08 2013 +0200
+
+    Fixing segfault in dosfslabel.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 4a265c67e036ee12a0393656b0167d3e7833cda8
+Author: James Byrne <jbyrne@aminocom.com>
+Date:   Mon Apr 22 12:29:51 2013 +0100
+
+    Allow operation on SH4 CPUs and remove compiler warnings.
+    
+    Simplify the GET_UNALIGNED_W macro and use it in all cases instead of making it
+    conditional on CPU types. This missed some CPUs that needed it (e.g. SH4), and
+    in any case the implementation caused "dereferencing type-punned pointer will
+    break strict-aliasing rules" warnings.
+    
+    Enable extra warnings, but disable signed comparison and missing field
+    initializer warnings as these are not helpful.
+    
+    Update write_boot_label() so that the boot_sector_16 and boot_sector cases are
+    handled separately instead of using an aliased pointer, as that causes
+    "dereferencing type-punned pointer will break strict-aliasing rules" warnings.
+    
+    Make date_dos2unix(), usage() and cdiv() static functions as they are only used
+    in the files in which they are declared.
+    
+    Update bad_name() and lfn_get() so that the extension is processed separately
+    instead of by indexing past the end of the name field as that causes "array
+    subscript is above array bounds" warnings.
+    
+    Update the dosfsck() main function to avoid a warning that free_clusters may
+    be used uninitialized. Do not print the final count of files and clusters when
+    dosfsck is run with the "-b" option because the used files and clusters have
+    not been counted in this case.
+    
+    Alter the setup_tables() function so that it does not cause an "array subscript
+    is below array bounds" warning.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit eb68a14005ec5230eed4615576a70406bc37f66d
+Author: James Byrne <jbyrne@aminocom.com>
+Date:   Mon Apr 22 13:32:01 2013 +0100
+
+    Add a .gitignore file.
+    
+    Add a .gitignore file so that the results of compilation do not appear as
+    changes.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 336e8f105a741767aa4daed3e40906e4a68abea1
+Author: James Byrne <jbyrne@aminocom.com>
+Date:   Mon Apr 22 12:38:52 2013 +0100
+
+    Finish cleanup of byteswap code.
+    
+    Commit 9ba8992 left three references to the old CT_LE_W macro.
+    Remove these since no conversion was needed as the value being
+    converted was zero.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 64b6227186d08a0a1c339fb0b894ca9c0050ffac
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Thu Apr 4 08:08:00 2013 +0200
+
+    Shortening links to upstream homepage.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 76304bef84f8aa5e99128b982d5c9dc5b90c09e5
+Author: Cristian Rodríguez <crrodriguez@opensuse.org>
+Date:   Fri Mar 1 08:23:34 2013 +0100
+
+    Fix offsetof definition.
+    
+      * include stddef.h to get the correct offsetof definition.
+      * remove local offsetof definition, systems not having it on stddef.h
+        are in violation of C89, C99, POSIX.1-2001.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 9ba8992e2e889d19b479a5f62ed41bb93bad8bb5
+Author: Cristian Rodríguez <crrodriguez@opensuse.org>
+Date:   Fri Mar 1 08:58:36 2013 +0100
+
+    Cleanup byteswap code.
+    
+    Remove all duplicate macro definitions for byteswapping routines
+    and replace them for proper usage of userspace endian(3).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 8733e12a3eb24bfbb56f3a40863053e1197039a6 (tag: v3.0.16)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed May 29 10:06:01 2013 +0200
+
+    Releasing version 3.0.16.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit a9fa87e758291fa2b4143ad6db07aa4a2ee72eb6
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:34:12 2013 +0100
 
@@ -10,7 +123,7 @@ Date:   Fri Mar 1 08:34:12 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7963bda123aa3bc6e4525a69b8fb82c4e92f7a52
+commit 92057f1731557ee90ad793567b3164478ac46106
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:33:18 2013 +0100
 
@@ -21,7 +134,7 @@ Date:   Fri Mar 1 08:33:18 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 23fd2911267f73ea8dd6b5e6cc7ffb60223063e5
+commit 5e265c42aab04a906f2dd8a570c5c26519860cb4
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:32:02 2013 +0100
 
@@ -32,7 +145,7 @@ Date:   Fri Mar 1 08:32:02 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit dbf11935d610b3b8d50480fc6c6257f8d8508635
+commit 5cec53c43cb453a0e1c1adc0369fdc5d45356384
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:30:21 2013 +0100
 
@@ -41,7 +154,7 @@ Date:   Fri Mar 1 08:30:21 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 6de7543008fb5b37017560448c45270dafb62ab8
+commit 63938f0606f896d979ccb7d8056e9a1275b961ef
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:29:00 2013 +0100
 
@@ -52,8 +165,8 @@ Date:   Fri Mar 1 08:29:00 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit feb90914727acd92e4518881a07c3d80d6d6ccfa
-Author: Daniel Baumann <daniel.baumann@progress-linux.org>
+commit 10c1c41fd8e2813fe42b279e5a3c6261da8d318c
+Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:58:15 2013 +0100
 
     Write uppercase letters in label.
@@ -63,7 +176,7 @@ Date:   Fri Mar 1 08:58:15 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a75fb1c838a47b8f54ff567ca2eb71e98ccb691c
+commit a75fb1c838a47b8f54ff567ca2eb71e98ccb691c (tag: v3.0.15)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Feb 21 15:06:52 2013 +0100
 
@@ -113,7 +226,7 @@ Date:   Thu Feb 21 14:40:25 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7a756385ed6bce393396c699e068b5f239053db6
+commit 7a756385ed6bce393396c699e068b5f239053db6 (tag: v3.0.14)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 13:22:01 2013 +0100
 
@@ -171,7 +284,7 @@ Date:   Wed Jan 23 12:17:20 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 13cdb4d262b4042ec2d94d706e30f45a63f1c029
+commit 13cdb4d262b4042ec2d94d706e30f45a63f1c029 (tag: v3.0.13)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jun 30 19:10:44 2012 +0200
 
@@ -189,7 +302,7 @@ Date:   Sat Jun 30 19:09:11 2012 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e243612ccd10ec10a9877fe32524acc8b7f3d2a4
+commit e243612ccd10ec10a9877fe32524acc8b7f3d2a4 (tag: v3.0.12)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Oct 29 08:40:53 2011 +0200
 
@@ -276,7 +389,7 @@ Date:   Sun Jan 2 15:39:03 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 66d55cd07420a7f6da3c96412b9159439823ff97
+commit 66d55cd07420a7f6da3c96412b9159439823ff97 (tag: v3.0.11)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Dec 24 17:58:29 2010 +0100
 
@@ -305,7 +418,7 @@ Date:   Fri Oct 8 13:38:16 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5ef7f1f78a13207fd4317a73dd0308c95faeaa44
+commit 5ef7f1f78a13207fd4317a73dd0308c95faeaa44 (tag: v3.0.10)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 12 09:35:47 2010 +0200
 
@@ -373,7 +486,7 @@ Date:   Sun Mar 14 16:05:32 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5b6849dc6268dfdede6e57c50d28f4179416b127
+commit 5b6849dc6268dfdede6e57c50d28f4179416b127 (tag: v3.0.9)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Jan 31 08:31:32 2010 +0100
 
@@ -390,7 +503,7 @@ Date:   Sun Jan 31 00:11:41 2010 -0500
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 2a3bef84fbee41ba055ecd57b6ded334e80b9b7f
+commit 2a3bef84fbee41ba055ecd57b6ded334e80b9b7f (tag: v3.0.8)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jan 23 10:16:18 2010 +0100
 
@@ -499,7 +612,7 @@ Date:   Wed Jan 6 11:18:55 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 171bc07b0c3eff0eec01d899326ac2a34ea51e72
+commit 171bc07b0c3eff0eec01d899326ac2a34ea51e72 (tag: v3.0.7)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Dec 24 10:53:36 2009 +0100
 
@@ -541,7 +654,7 @@ Date:   Thu Dec 24 09:31:41 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0657e018980f46932f7c438b4b1593c0ed10ccca
+commit 0657e018980f46932f7c438b4b1593c0ed10ccca (tag: v3.0.6)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Oct 4 10:59:33 2009 +0200
 
@@ -578,7 +691,7 @@ Date:   Sun Oct 4 08:32:30 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 16ba63f98a310d9743e5b9dbd0f9d7a4f4717455
+commit 16ba63f98a310d9743e5b9dbd0f9d7a4f4717455 (tag: v3.0.5)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Mon Jul 27 14:26:11 2009 +0200
 
@@ -606,7 +719,7 @@ Date:   Sun Jul 26 22:12:06 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit dd0f0b53926fbd3b0c262cc09b5d3e0fc19c7ec8
+commit dd0f0b53926fbd3b0c262cc09b5d3e0fc19c7ec8 (tag: v3.0.4)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Jul 21 08:10:52 2009 +0200
 
@@ -634,7 +747,7 @@ Date:   Tue May 19 10:37:52 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7c16098be2b04ab791a520bf4ca2319233f4bd73
+commit 7c16098be2b04ab791a520bf4ca2319233f4bd73 (tag: v3.0.3)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Mon May 18 15:12:04 2009 +0200
 
@@ -670,7 +783,7 @@ Date:   Thu Mar 5 07:03:36 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b54a8a46ef08e1993796673cfe6c732fe238f74d
+commit b54a8a46ef08e1993796673cfe6c732fe238f74d (tag: v3.0.2)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Feb 28 09:48:04 2009 +0100
 
@@ -710,7 +823,7 @@ Date:   Fri Jan 30 14:05:12 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit df2d2f17898cb5e13e9017aef1ccaae3b11a201b
+commit df2d2f17898cb5e13e9017aef1ccaae3b11a201b (tag: v3.0.1)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Nov 23 22:45:45 2008 +0100
 
@@ -756,7 +869,7 @@ Date:   Tue Sep 30 07:25:19 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 21e9ba0a43ed34e8424cac4fdb1d1d8d02e43336
+commit 21e9ba0a43ed34e8424cac4fdb1d1d8d02e43336 (tag: v3.0.0)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 28 11:43:19 2008 +0200
 
@@ -1140,7 +1253,7 @@ Date:   Fri Sep 26 13:40:47 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ba6774ae1dd5199a733dfaeaf438dff095284de7
+commit ba6774ae1dd5199a733dfaeaf438dff095284de7 (tag: v2.11)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Jun 26 12:45:36 2008 +0200
 
