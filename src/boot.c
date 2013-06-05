@@ -293,7 +293,7 @@ static char print_fat_dirty_state(void)
                "2) No action\n");
         return get_key("12", "?");
     } else
-        printf(" Automaticaly removing dirty bit.\n");
+        printf(" Automatically removing dirty bit.\n");
     return '1';
 }
 
