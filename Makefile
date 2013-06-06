@@ -18,6 +18,8 @@
 # On Debian systems, the complete text of the GNU General Public License
 # can be found in /usr/share/common-licenses/GPL-3 file.
 
+SHELL := sh -e
+LANGUAGES = $(shell cd manpages/po && ls)
 
 DESTDIR =
 PREFIX = /usr/local
@@ -68,8 +70,20 @@ install-doc:
 	install -p -m 0644 ChangeLog doc/* $(DESTDIR)/$(DOCDIR)/dosfstools
 
 install-man:
-	install -d -m 0755 $(DESTDIR)/$(MANDIR)/man8
-	install -p -m 0644 man/*.8 $(DESTDIR)/$(MANDIR)/man8
+	for MANPAGE in manpages/en/*; \
+	do \
+		SECTION="8"; \
+		install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(PREFIX)/share/man/man$${SECTION}/$$(basename $${MANPAGE}); \
+	done
+
+	for LANGUAGE in $(LANGUAGES); \
+	do \
+		for MANPAGE in manpages/$${LANGUAGE}/*; \
+		do \
+			SECTION="8"; \
+			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(PREFIX)/share/man/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
+		done; \
+	done
 
 	# legacy symlinks
 	ln -sf fatlabel.8 $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8
@@ -108,9 +122,20 @@ uninstall-doc:
 	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(DOCDIR)
 
 uninstall-man:
-	rm -f $(DESTDIR)/$(MANDIR)/man8/fatlabel.8
-	rm -f $(DESTDIR)/$(MANDIR)/man8/fsck.fat.8
-	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.fat.8
+	for MANPAGE in manpages/en/*; \
+	do \
+		SECTION="8"; \
+		rm -f $(DESTDIR)/$(PREFIX)/share/man/man$${SECTION}/$$(basename $${MANPAGE} .en.$${SECTION}).$${SECTION}; \
+	done
+
+	for LANGUAGE in $(LANGUAGES); \
+	do \
+		for MANPAGE in manpages/$${LANGUAGE}/*; \
+		do \
+			SECTION="8"; \
+			rm -f $(DESTDIR)/$(PREFIX)/share/man/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
+		done; \
+	done
 
 	# legacy symlinks
 	rm -f $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8
@@ -122,9 +147,6 @@ uninstall-man:
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkdosfs.8
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8
-
-	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(MANDIR)/man8
-	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(MANDIR)
 
 reinstall: distclean install
 

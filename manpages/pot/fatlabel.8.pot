@@ -1,0 +1,153 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the dosfstools package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dosfstools VERSION\n"
+"POT-Creation-Date: 2013-06-06 09:34+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: en/fatlabel.8:22
+#, no-wrap
+msgid "FATLABEL"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "2013-06-06"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "3.0.18"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "dosfstools"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:23
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:26
+msgid "B<fatlabel> - set or get MS-DOS filesystem label"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:26
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:29
+msgid "B<fatlabel> I<DEVICE> [I<LABEL>]"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:96
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:32
+msgid "B<fatlabel> set or gets a MS-DOS filesystem label from a given device."
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:34
+msgid ""
+"If the label is omitted, then the label name of the specified device is "
+"written on the standard output. A label can't be longer than 11 bytes."
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:106
+#, no-wrap
+msgid "OPTIONS"
+msgstr ""
+
+#. type: IP
+#: en/fatlabel.8:36
+#, no-wrap
+msgid "B<-h>, B<--help>"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:38
+msgid "Displays a help message."
+msgstr ""
+
+#. type: IP
+#: en/fatlabel.8:38
+#, no-wrap
+msgid "B<-V>, B<--version>"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:40
+msgid "Shows version."
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:41 en/fsck.fat.8:126 en/mkfs.fat.8:241
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:43
+msgid "B<fsck.fat>(8)"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:45 en/fsck.fat.8:130
+msgid "B<mkfs.fat>(8)"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:46 en/fsck.fat.8:131
+#, no-wrap
+msgid "HOMEPAGE"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:48
+msgid ""
+"More information about B<fatlabel> and B<dosfstools> can be found at "
+"E<lt>I<http://daniel-baumann.ch/software/dosfstools/>E<gt>."
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:49 en/fsck.fat.8:134
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:50 en/fsck.fat.8:135
+msgid ""
+"B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
+"almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."
+"uni-erlangen.de>E<gt>, and others. The current maintainer is Daniel Baumann "
+"E<lt>I<mail@daniel-baumann.ch>E<gt>."
+msgstr ""

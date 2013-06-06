@@ -1,0 +1,414 @@
+# SOME DESCRIPTIVE TITLE
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# This file is distributed under the same license as the dosfstools package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: dosfstools VERSION\n"
+"POT-Creation-Date: 2013-06-06 09:34+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "2013-06-06"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "3.0.18"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "dosfstools"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:23
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:26
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:96
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:106
+#, no-wrap
+msgid "OPTIONS"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:41 en/fsck.fat.8:126 en/mkfs.fat.8:241
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:78 en/mkfs.fat.8:107
+#, no-wrap
+msgid "B<-a>"
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:80 en/mkfs.fat.8:116
+#, no-wrap
+msgid "B<-A>"
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:100 en/mkfs.fat.8:220
+#, no-wrap
+msgid "B<-v>"
+msgstr ""
+
+#. type: SH
+#: en/fsck.fat.8:123 en/mkfs.fat.8:223
+#, no-wrap
+msgid "BUGS"
+msgstr ""
+
+#. type: TH
+#: en/mkfs.fat.8:22
+#, no-wrap
+msgid "MKFS.FAT"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:26
+msgid "B<mkfs.fat> - create an MS-DOS file system under Linux"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:96
+msgid ""
+"B<mkfs.fat> [ B<-a> ] [ B<-A> ] [ B<-b> I<sector-of-backup> ] [ B<-c> ] [ B<-"
+"l> I<filename> ] [ B<-C> ] [ B<-f> I<number-of-FATs> ] [ B<-F> I<FAT-size> ] "
+"[ B<-h> I<number-of-hidden-sectors> ] [ B<-i> I<volume-id> ] [B< -I >] [ B<-"
+"m> I<message-file> ] [ B<-n> I<volume-name> ] [ B<-r> I<root-dir-entries> ] "
+"[ B<-R> I<number-of-reserved-sectors> ] [ B<-s> I<sectors-per-cluster> ] "
+"[ B<-S> I<logical-sector-size> ] [ B<-v> ] I<device> [ I<block-count> ]"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:106
+msgid ""
+"B<mkfs.fat> is used to create an MS-DOS file system under Linux on a device "
+"(usually a disk partition).  I<device> is the special file corresponding to "
+"the device (e.g /dev/hdXX).  I<block-count> is the number of blocks on the "
+"device.  If omitted, B<mkfs.fat> automatically determines the file system "
+"size."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:116
+msgid ""
+"Normally, for any filesystem except very small ones, B<mkfs.fat> will align "
+"all the data structures to cluster size, to make sure that as long as the "
+"partition is properly aligned, so will all the data structures in the "
+"filesystem.  This option disables alignment; this may provide a handful of "
+"additional clusters of storage at the expense of a significant performance "
+"degradation on RAIDs, flash media or large-sector hard disks."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:131
+msgid ""
+"Use Atari variation of the MS-DOS file system. This is default if B<mkfs."
+"fat> is run on an Atari, then this option turns off Atari format. There are "
+"some differences when using Atari format: If not directed otherwise by the "
+"user, B<mkfs.fat> will always use 2 sectors per cluster, since GEMDOS "
+"doesn't like other values very much.  It will also obey the maximum number "
+"of sectors GEMDOS can handle.  Larger file systems are managed by raising "
+"the logical sector size.  Under Atari format, an Atari-compatible serial "
+"number for the file system is generated, and a 12 bit FAT is used only for "
+"file systems that have one of the usual floppy sizes (720k, 1.2M, 1.44M, "
+"2.88M), a 16 bit FAT otherwise. This can be overridden with the B<-F> "
+"option. Some PC-specific boot sector fields aren't written, and a boot "
+"message (option B<-m>) is ignored."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:131
+#, no-wrap
+msgid "B<-b>I< sector-of-backup >"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:136
+msgid ""
+"Selects the location of the backup boot sector for FAT32. Default depends on "
+"number of reserved sectors, but usually is sector 6. The backup must be "
+"within the range of reserved sectors."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:136
+#, no-wrap
+msgid "B<-c>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:139
+msgid "Check the device for bad blocks before creating the file system."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:139
+#, no-wrap
+msgid "B<-C>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:152
+msgid ""
+"Create the file given as I<device> on the command line, and write the to-be-"
+"created file system to it. This can be used to create the new file system in "
+"a file instead of on a real device, and to avoid using B<dd> in advance to "
+"create a file of appropriate size. With this option, the I<block-count> must "
+"be given, because otherwise the intended size of the file system wouldn't be "
+"known. The file created is a sparse file, which actually only contains the "
+"meta-data areas (boot sector, FATs, and root directory). The data portions "
+"won't be stored on the disk, but the file nevertheless will have the correct "
+"size. The resulting file can be copied later to a floppy disk or other "
+"device, or mounted through a loop device."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:152
+#, no-wrap
+msgid "B<-f>I< number-of-FATs>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:157
+msgid ""
+"Specify the number of file allocation tables in the file system.  The "
+"default is 2.  Currently the Linux MS-DOS file system does not support more "
+"than 2 FATs."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:157
+#, no-wrap
+msgid "B<-F>I< FAT-size>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:162
+msgid ""
+"Specifies the type of file allocation tables used (12, 16 or 32 bit).  If "
+"nothing is specified, B<mkfs.fat> will automatically select between 12, 16 "
+"and 32 bit, whatever fits better for the file system size."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:162
+#, no-wrap
+msgid "B<-h>I< number-of-hidden-sectors >"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:168
+msgid ""
+"Select the number of hidden sectors in the volume. Apparently some digital "
+"cameras get indigestion if you feed them a CF card without such hidden "
+"sectors, this option allows you to satisfy them. Assumes \\'0\\' if no value "
+"is given on the command line."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:168
+#, no-wrap
+msgid "I<-i  volume-id>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:174
+msgid ""
+"Sets the volume ID of the newly created file system; I<volume-id> is a 32-"
+"bit hexadecimal number (for example, 2e24ec82).  The default is a number "
+"which depends on the file system creation time."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:174
+#, no-wrap
+msgid "B<-I>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:183
+msgid ""
+"It is typical for fixed disk devices to be partitioned so, by default, you "
+"are not permitted to create a filesystem across the entire device.  B<mkfs."
+"fat> will complain and tell you that it refuses to work.  This is different "
+"when using MO disks.  One doesn't always need partitions on MO disks.  The "
+"file system can go directly to the whole disk.  Under other OSes this is "
+"known as the 'superfloppy' format."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:187
+msgid "This switch will force B<mkfs.fat> to work properly."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:187
+#, no-wrap
+msgid "B<-l>I< filename>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:191
+msgid "Read the bad blocks list from I<filename>."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:191
+#, no-wrap
+msgid "B<-m>I< message-file>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:198
+msgid ""
+"Sets the message the user receives on attempts to boot this file system "
+"without having properly installed an operating system.  The message file "
+"must not exceed 418 bytes once line feeds have been converted to carriage "
+"return-line feed combinations, and tabs have been expanded.  If the filename "
+"is a hyphen (-), the text is taken from standard input."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:198
+#, no-wrap
+msgid "B<-n>I< volume-name>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:202
+msgid ""
+"Sets the volume name (label) of the file system.  The volume name can be up "
+"to 11 characters long.  The default is no label."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:202
+#, no-wrap
+msgid "B<-r>I< root-dir-entries>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:206
+msgid ""
+"Select the number of entries available in the root directory.  The default "
+"is 112 or 224 for floppies and 512 for hard disks."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:206
+#, no-wrap
+msgid "B<-R>I< number-of-reserved-sectors >"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:211
+msgid ""
+"Select the number of reserved sectors. With FAT32 format at least 2 reserved "
+"sectors are needed, the default is 32. Otherwise the default is 1 (only the "
+"boot sector)."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:211
+#, no-wrap
+msgid "B<-s>I< sectors-per-cluster>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:215
+msgid ""
+"Specify the number of disk sectors per cluster.  Must be a power of 2, i.e. "
+"1, 2, 4, 8, ... 128."
+msgstr ""
+
+#. type: TP
+#: en/mkfs.fat.8:215
+#, no-wrap
+msgid "B<-S>I< logical-sector-size>"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:220
+msgid ""
+"Specify the number of bytes per logical sector.  Must be a power of 2 and "
+"greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192, 16384, or "
+"32768."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:223
+msgid "Verbose execution."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:230
+msgid ""
+"B<mkfs.fat> can not create boot-able file systems. This isn't as easy as you "
+"might think at first glance for various reasons and has been discussed a lot "
+"already.  B<mkfs.fat> simply will not support it ;)"
+msgstr ""
+
+#. type: SH
+#: en/mkfs.fat.8:230
+#, no-wrap
+msgid "AUTHOR"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:234
+msgid ""
+"Dave Hudson - E<lt>dave@humbug.demon.co.ukE<gt>; modified by Peter Anvin "
+"E<lt>hpa@yggdrasil.comE<gt>. Fixes and additions by Roman Hodek "
+"E<lt>roman@hodek.netE<gt> for Debian GNU/Linux."
+msgstr ""
+
+#. type: SH
+#: en/mkfs.fat.8:234
+#, no-wrap
+msgid "ACKNOWLEDGMENTS"
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:241
+msgid ""
+"B<mkfs.fat> is based on code from B<mke2fs> (written by Remy Card - "
+"E<lt>card@masi.ibp.frE<gt>) which is itself based on B<mkfs> (written by "
+"Linus Torvalds - E<lt>torvalds@cs.helsinki.fiE<gt>)."
+msgstr ""
+
+#. type: Plain text
+#: en/mkfs.fat.8:244
+msgid "B<fsck.fat>(8), B<fatlabel>(8), B<mkfs>(8)"
+msgstr ""

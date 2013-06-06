@@ -1,0 +1,533 @@
+# German translations for dosfstools package
+# Copyright (C) 2013 Free Software Foundation, Inc.
+# This file is distributed under the same license as the dosfstools package.
+# Automatically generated, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dosfstools VERSION\n"
+"POT-Creation-Date: 2013-06-06 09:34+0300\n"
+"PO-Revision-Date: 2013-06-06 09:34+0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "2013-06-06"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "3.0.18"
+msgstr ""
+
+#. type: TH
+#: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
+#, no-wrap
+msgid "dosfstools"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:23
+#, no-wrap
+msgid "NAME"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:26
+#, no-wrap
+msgid "SYNOPSIS"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:96
+#, no-wrap
+msgid "DESCRIPTION"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:106
+#, no-wrap
+msgid "OPTIONS"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:41 en/fsck.fat.8:126 en/mkfs.fat.8:241
+#, no-wrap
+msgid "SEE ALSO"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:45 en/fsck.fat.8:130
+msgid "B<mkfs.fat>(8)"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:46 en/fsck.fat.8:131
+#, no-wrap
+msgid "HOMEPAGE"
+msgstr ""
+
+#. type: SH
+#: en/fatlabel.8:49 en/fsck.fat.8:134
+#, no-wrap
+msgid "AUTHORS"
+msgstr ""
+
+#. type: Plain text
+#: en/fatlabel.8:50 en/fsck.fat.8:135
+msgid ""
+"B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
+"almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."
+"uni-erlangen.de>E<gt>, and others. The current maintainer is Daniel Baumann "
+"E<lt>I<mail@daniel-baumann.ch>E<gt>."
+msgstr ""
+
+#. type: TH
+#: en/fsck.fat.8:22
+#, no-wrap
+msgid "FSCK.FAT"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:26
+msgid "B<fsc.fat> - check and repair MS-DOS filesystems"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:29
+msgid ""
+"B<fsc.fat>|B<fsck.msdos>|B<fsck.vfat> [-aAflnrtvVwy] [-d I<PATH> -d\\ I<..."
+">] [-u\\ I<PATH> -u I<...>] I<DEVICE>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:32
+msgid ""
+"B<fsc.fat> verifies the consistency of MS-DOS filesystems and optionally "
+"tries to repair them."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:34
+msgid "The following filesystem problems can be corrected (in this order):"
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:34 en/fsck.fat.8:36 en/fsck.fat.8:38 en/fsck.fat.8:40
+#: en/fsck.fat.8:42 en/fsck.fat.8:44 en/fsck.fat.8:46 en/fsck.fat.8:48
+#: en/fsck.fat.8:50 en/fsck.fat.8:52 en/fsck.fat.8:54 en/fsck.fat.8:56
+#: en/fsck.fat.8:58 en/fsck.fat.8:60 en/fsck.fat.8:62 en/fsck.fat.8:64
+#: en/fsck.fat.8:66 en/fsck.fat.8:70 en/fsck.fat.8:72
+#, no-wrap
+msgid "*"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:36
+msgid "FAT contains invalid cluster numbers. Cluster is changed to EOF."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:38
+msgid "File's cluster chain contains a loop. The loop is broken."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:40
+msgid ""
+"Bad clusters (read errors). The clusters are marked bad and they are removed "
+"from files owning them. This check is optional."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:42
+msgid ""
+"Directories with a large number of bad entries (probably corrupt). The "
+"directory can be deleted."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:44
+msgid "Files . and .. are non-directories. They can be deleted or renamed."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:46
+msgid "Directories . and .. in root directory. They are deleted."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:48
+msgid "Bad filenames. They can be renamed."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:50
+msgid "Duplicate directory entries. They can be deleted or renamed."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:52
+msgid "Directories with non-zero size field. Size is set to zero."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:54
+msgid ""
+"Directory . does not point to parent directory. The start pointer is "
+"adjusted."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:56
+msgid ""
+"Directory .. does not point to parent of parent directory. The start pointer "
+"is adjusted."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:58
+msgid "Start cluster number of a file is invalid. The file is truncated."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:60
+msgid "File contains bad or free clusters. The file is truncated."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:62
+msgid ""
+"File's cluster chain is longer than indicated by the size fields. The file "
+"is truncated."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:64
+msgid ""
+"Two or more files share the same cluster(s). All but one of the files are "
+"truncated. If the file being truncated is a directory file that has already "
+"been read, the filesystem check is restarted after truncation."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:66
+msgid ""
+"File's cluster chain is shorter than indicated by the size fields. The file "
+"is truncated."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:68
+msgid ""
+"Clusters are marked as used but are not owned by a file. They are marked as "
+"free."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:70
+msgid "Additionally, the following problems are detected, but not repaired:"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:72
+msgid "Invalid parameters in boot sector."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:74
+msgid "Absence of . and .. entries in non-root directories"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:76
+msgid ""
+"When B<fsc.fat> checks a filesystem, it accumulates all changes in memory "
+"and performs them only after all checks are complete. This can be disabled "
+"with the B<-w> option."
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:78 en/mkfs.fat.8:107
+#, no-wrap
+msgid "B<-a>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:80
+msgid ""
+"Automatically repair the filesystem. No user intervention is necessary. "
+"Whenever there is more than one method to solve a problem, the least "
+"destructive approach is used."
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:80 en/mkfs.fat.8:116
+#, no-wrap
+msgid "B<-A>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:82
+msgid ""
+"Use Atari variation of the MS-DOS filesystem. This is default if B<fsc.fat> "
+"is run on an Atari, then this option turns off Atari format. There are some "
+"minor differences in Atari format: Some boot sector fields are interpreted "
+"slightly different, and the special FAT entries for end-of-file and bad "
+"cluster can be different. Under MS-DOS 0xfff8 is used for EOF and Atari "
+"employs 0xffff by default, but both systems recognize all values from "
+"0xfff8...0xffff as end-of-file. MS-DOS uses only 0xfff7 for bad clusters, "
+"where on Atari values 0xfff0...0xfff7 are for this purpose (but the standard "
+"value is still 0xfff7)."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:82
+#, no-wrap
+msgid "B<-b>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:84
+msgid "Make read-only boot sector check."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:84
+#, no-wrap
+msgid "B<-d>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:86
+msgid ""
+"Delete the specified file. If more that one file with that name exists, the "
+"first one is deleted."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:86
+#, no-wrap
+msgid "B<-f>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:88
+msgid ""
+"Salvage unused cluster chains to files. By default, unused clusters are "
+"added to the free disk space except in auto mode (B<-a>)."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:88
+#, no-wrap
+msgid "B<-l>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:90
+msgid "List path names of files being processed."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:90
+#, no-wrap
+msgid "B<-n>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:93
+msgid ""
+"No-operation mode: non-interactively check for errors, but don't write "
+"anything to the filesystem."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:93
+#, no-wrap
+msgid "B<-r>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:96
+msgid ""
+"Interactively repair the filesystem. The user is asked for advice whenever "
+"there is more than one approach to fix an inconsistency."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:96
+#, no-wrap
+msgid "B<-t>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:98
+msgid "Mark unreadable clusters as bad."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:98
+#, no-wrap
+msgid "B<-u>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:100
+msgid ""
+"Try to undelete the specified file. B<fsc.fat> tries to allocate a chain of "
+"contiguous unallocated clusters beginning with the start cluster of the "
+"undeleted file."
+msgstr ""
+
+#. type: TP
+#: en/fsck.fat.8:100 en/mkfs.fat.8:220
+#, no-wrap
+msgid "B<-v>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:102
+msgid "Verbose mode. Generates slightly more output."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:102
+#, no-wrap
+msgid "B<-V>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:104
+msgid ""
+"Perform a verification pass. The filesystem check is repeated after the "
+"first run. The second pass should never report any fixable errors. It may "
+"take considerably longer than the first pass, because the first pass may "
+"have generated long list of modifications that have to be scanned for each "
+"disk read."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:104
+#, no-wrap
+msgid "B<-w>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:106
+msgid "Write changes to disk immediately."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:106
+#, no-wrap
+msgid "B<-y>"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:108
+msgid ""
+"Same as B<-a> (automatically repair filesystem) for compatibility with other "
+"fsck tools."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:110
+msgid ""
+"B<Note:> If B<-a> and B<-r> are absent, the filesystem is only checked, but "
+"not repaired."
+msgstr ""
+
+#. type: SH
+#: en/fsck.fat.8:111
+#, no-wrap
+msgid "EXIT STATUS"
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:112
+#, no-wrap
+msgid "0"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:114
+msgid "No recoverable errors have been detected."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:114
+#, no-wrap
+msgid "1"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:116
+msgid ""
+"Recoverable errors have been detected or B<fsc.fat> has discovered an "
+"internal inconsistency."
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:116
+#, no-wrap
+msgid "2"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:118
+msgid "Usage error. B<fsc.fat> did not access the filesystem."
+msgstr ""
+
+#. type: SH
+#: en/fsck.fat.8:119
+#, no-wrap
+msgid "FILES"
+msgstr ""
+
+#. type: IP
+#: en/fsck.fat.8:120
+#, no-wrap
+msgid "fsck0000.rec, fsck0001.rec, ..."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:122
+msgid ""
+"When recovering from a corrupted filesystem, B<fsc.fat> dumps recovered data "
+"into files named 'fsckNNNN.rec' in the top level directory of the filesystem."
+msgstr ""
+
+#. type: SH
+#: en/fsck.fat.8:123 en/mkfs.fat.8:223
+#, no-wrap
+msgid "BUGS"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:125
+msgid ""
+"Does not create . and .. files where necessary. Does not remove entirely "
+"empty directories. Should give more diagnostic messages. Undeleting files "
+"should use a more sophisticated algorithm."
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:128
+msgid "B<fatlabel>(8)"
+msgstr ""
+
+#. type: Plain text
+#: en/fsck.fat.8:133
+msgid ""
+"More information about B<fsck.fat> and B<dosfstools> can be found at "
+"E<lt>I<http://daniel-baumann.ch/software/dosfstools/>E<gt>."
+msgstr ""
