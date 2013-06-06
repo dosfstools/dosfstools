@@ -31,7 +31,7 @@
 #include <time.h>
 
 #include "common.h"
-#include "dosfsck.h"
+#include "fsck.fat.h"
 #include "io.h"
 #include "fat.h"
 #include "file.h"

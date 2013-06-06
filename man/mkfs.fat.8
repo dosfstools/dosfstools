@@ -1,4 +1,4 @@
-.\" mkdosfs.8 - manpage for dosfsck
+.\" mkfs.fat.8 - manpage for fs.fatck
 .\"
 .\" Copyright (C) 2006-2013 Daniel Baumann <daniel@debian.org>
 .\"
@@ -19,12 +19,12 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH MKDOSFS 8 "5 May 1995" "Version 2.x"
+.TH MKFS.FAT 8 "5 May 1995" "Version 2.x"
 .SH NAME
-.B mkdosfs
+.B mkfs.fat
 \- create an MS-DOS file system under Linux
 .SH SYNOPSIS
-.B mkdosfs|mkfs.msdos|mkfs.vfat
+.B mkfs.fat
 [
 .B \-a
 ]
@@ -94,19 +94,19 @@
 .I block-count
 ]
 .SH DESCRIPTION
-.B mkdosfs
+.B mkfs.fat
 is used to create an MS-DOS file system under Linux on a device (usually
 a disk partition).
 .I device
 is the special file corresponding to the device (e.g /dev/hdXX).
 .I block-count
 is the number of blocks on the device.  If omitted,
-.B mkdosfs
+.B mkfs.fat
 automatically determines the file system size.
 .SH OPTIONS
 .TP
 .B \-a
-Normally, for any filesystem except very small ones, \fBmkdosfs\fP
+Normally, for any filesystem except very small ones, \fBmkfs.fat\fP
 will align all the data structures to cluster size, to make sure that
 as long as the partition is properly aligned, so will all the data
 structures in the filesystem.  This option disables alignment; this
@@ -116,9 +116,9 @@ large-sector hard disks.
 .TP
 .B \-A
 Use Atari variation of the MS-DOS file system. This is default if
-\fBmkdosfs\fP is run on an Atari, then this option turns off Atari
+\fBmkfs.fat\fP is run on an Atari, then this option turns off Atari
 format. There are some differences when using Atari format: If not
-directed otherwise by the user, \fBmkdosfs\fP will always use 2
+directed otherwise by the user, \fBmkfs.fat\fP will always use 2
 sectors per cluster, since GEMDOS doesn't like other values very much.
 It will also obey the maximum number of sectors GEMDOS can handle.
 Larger file systems are managed by raising the logical sector size.
@@ -157,7 +157,7 @@ more than 2 FATs.
 .TP
 .BI \-F " FAT-size"
 Specifies the type of file allocation tables used (12, 16 or 32 bit).
-If nothing is specified, \fBmkdosfs\fR will automatically select
+If nothing is specified, \fBmkfs.fat\fR will automatically select
 between 12, 16 and 32 bit, whatever fits better for the file system size.
 .TP
 .BI \-h " number-of-hidden-sectors "
@@ -175,14 +175,14 @@ is a number which depends on the file system creation time.
 .B \-I
 It is typical for fixed disk devices to be partitioned so, by default, you are
 not permitted to create a filesystem across the entire device.
-.B mkdosfs
+.B mkfs.fat
 will complain and tell you that it refuses to work.  This is different
 when using MO disks.  One doesn't always need partitions on MO disks.
 The file system can go directly to the whole disk.  Under other OSes
 this is known as the 'superfloppy' format.
 
 This switch will force
-.B mkdosfs
+.B mkfs.fat
 to work properly.
 .TP
 .BI \-l " filename"
@@ -221,24 +221,24 @@ and greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192,
 .B \-v
 Verbose execution.
 .SH BUGS
-.B mkdosfs
+.B mkfs.fat
 can not create boot-able file systems. This isn't as easy as you might
 think at first glance for various reasons and has been discussed a lot
 already.
-.B mkdosfs
+.B mkfs.fat
 simply will not support it ;)
 .SH AUTHOR
 Dave Hudson - <dave@humbug.demon.co.uk>; modified by Peter Anvin
 <hpa@yggdrasil.com>. Fixes and additions by Roman Hodek
 <roman@hodek.net> for Debian GNU/Linux.
 .SH ACKNOWLEDGMENTS
-.B mkdosfs
+.B mkfs.fat
 is based on code from
 .BR mke2fs
 (written by Remy Card - <card@masi.ibp.fr>) which is itself based on
 .BR mkfs
 (written by Linus Torvalds - <torvalds@cs.helsinki.fi>).
 .SH SEE ALSO
-.BR dosfsck (8),
-.BR dosfslabel (8),
+.BR fsck.fat (8),
+.BR fatlabel (8),
 .BR mkfs (8)

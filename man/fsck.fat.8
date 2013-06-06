@@ -1,4 +1,4 @@
-.\" dosfsck.8 - manpage for dosfsck
+.\" fsc.fat.8 - manpage for fsc.fat
 .\"
 .\" Copyright (C) 2006-2013 Daniel Baumann <daniel@debian.org>
 .\"
@@ -19,16 +19,16 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH DOSFSCK 8 "2010\-01\-31" "3.0.9" "check and repair MS\-DOS filesystems"
+.TH FSCK.FAT 8 "2010\-01\-31" "3.0.9" "check and repair MS\-DOS filesystems"
 
 .SH NAME
-\fBdosfsck\fR \- check and repair MS\-DOS filesystems
+\fBfsc.fat\fR \- check and repair MS\-DOS filesystems
 
 .SH SYNOPSIS
-\fBdosfsck\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflnrtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
+\fBfsc.fat\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflnrtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
 
 .SH DESCRIPTION
-\fBdosfsck\fR verifies the consistency of MS\-DOS filesystems and optionally tries to repair them.
+\fBfsc.fat\fR verifies the consistency of MS\-DOS filesystems and optionally tries to repair them.
 .PP
 The following filesystem problems can be corrected (in this order):
 .IP "*" 4
@@ -72,13 +72,13 @@ Invalid parameters in boot sector.
 .IP "*" 4
 Absence of . and .. entries in non\-root directories
 .PP
-When \fBdosfsck\fR checks a filesystem, it accumulates all changes in memory and performs them only after all checks are complete. This can be disabled with the \fB\-w\fR option.
+When \fBfsc.fat\fR checks a filesystem, it accumulates all changes in memory and performs them only after all checks are complete. This can be disabled with the \fB\-w\fR option.
 
 .SH OPTIONS
 .IP "\fB\-a\fR" 4
 Automatically repair the filesystem. No user intervention is necessary. Whenever there is more than one method to solve a problem, the least destructive approach is used.
 .IP "\fB\-A\fR" 4
-Use Atari variation of the MS\-DOS filesystem. This is default if \fBdosfsck\fR is run on an Atari, then this option turns off Atari format. There are some minor differences in Atari format: Some boot sector fields are interpreted slightly different, and the special FAT entries for end\-of\-file and bad cluster can be different. Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but both systems recognize all values from 0xfff8...0xffff as end\-of\-file. MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7 are for this purpose (but the standard value is still 0xfff7).
+Use Atari variation of the MS\-DOS filesystem. This is default if \fBfsc.fat\fR is run on an Atari, then this option turns off Atari format. There are some minor differences in Atari format: Some boot sector fields are interpreted slightly different, and the special FAT entries for end\-of\-file and bad cluster can be different. Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but both systems recognize all values from 0xfff8...0xffff as end\-of\-file. MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7 are for this purpose (but the standard value is still 0xfff7).
 .IP "\fB-b\fR" 4
 Make read-only boot sector check.
 .IP "\fB\-d\fR" 4
@@ -96,7 +96,7 @@ there is more than one approach to fix an inconsistency.
 .IP "\fB\-t\fR" 4
 Mark unreadable clusters as bad.
 .IP "\fB\-u\fR" 4
-Try to undelete the specified file. \fBdosfsck\fR tries to allocate a chain of contiguous unallocated clusters beginning with the start cluster of the undeleted file.
+Try to undelete the specified file. \fBfsc.fat\fR tries to allocate a chain of contiguous unallocated clusters beginning with the start cluster of the undeleted file.
 .IP "\fB\-v\fR" 4
 Verbose mode. Generates slightly more output.
 .IP "\fB\-V\fR" 4
@@ -112,24 +112,24 @@ Same as \fB\-a\fR (automatically repair filesystem) for compatibility with other
 .IP "0" 4
 No recoverable errors have been detected.
 .IP "1" 4
-Recoverable errors have been detected or \fBdosfsck\fR has discovered an internal inconsistency.
+Recoverable errors have been detected or \fBfsc.fat\fR has discovered an internal inconsistency.
 .IP "2" 4
-Usage error. \fBdosfsck\fR did not access the filesystem.
+Usage error. \fBfsc.fat\fR did not access the filesystem.
 
 .SH FILES
 .IP "fsck0000.rec, fsck0001.rec, ..." 4
-When recovering from a corrupted filesystem, \fBdosfsck\fR dumps recovered data into files named 'fsckNNNN.rec' in the top level directory of the filesystem.
+When recovering from a corrupted filesystem, \fBfsc.fat\fR dumps recovered data into files named 'fsckNNNN.rec' in the top level directory of the filesystem.
 
 .SH BUGS
 Does not create . and .. files where necessary. Does not remove entirely empty directories. Should give more diagnostic messages. Undeleting files should use a more sophisticated algorithm.
 
 .SH SEE ALSO
-\fBdosfslabel\fR(8)
+\fBfatlabel\fR(8)
 .br
-\fBmkdosfs\fR(8)
+\fBmkfs.fat\fR(8)
 
 .SH HOMEPAGE
-More information about \fBdosfsck\fR and \fBdosfstools\fR can be found at <\fIhttp://daniel\-baumann.ch/software/dosfstools/\fR>.
+More information about \fBfsck.fat\fR and \fBdosfstools\fR can be found at <\fIhttp://daniel\-baumann.ch/software/dosfstools/\fR>.
 
 .SH AUTHORS
 \fBdosfstools\fR were written by Werner Almesberger <\fIwerner.almesberger@lrc.di.epfl.ch\fR>, Roman Hodek <\fIRoman.Hodek@informatik.uni-erlangen.de\fR>, and others. The current maintainer is Daniel Baumann <\fImail@daniel-baumann.ch\fR>.

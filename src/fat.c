@@ -30,7 +30,7 @@
 #include <unistd.h>
 
 #include "common.h"
-#include "dosfsck.h"
+#include "fsck.fat.h"
 #include "io.h"
 #include "check.h"
 #include "fat.h"

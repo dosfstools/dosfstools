@@ -1,4 +1,4 @@
-/* dosfsck.h  -  Common data structures and global variables
+/* fsck.fat.h  -  Common data structures and global variables
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>

@@ -1,4 +1,4 @@
 *.o
-/dosfsck
-/dosfslabel
-/mkdosfs
+/fatlabel
+/fsck.fat
+/mkfs.fat

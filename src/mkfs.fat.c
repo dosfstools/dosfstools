@@ -1,4 +1,4 @@
-/* mkdosfs.c - utility to create FAT/MS-DOS filesystems
+/* mkfs.fat.c - utility to create FAT/MS-DOS filesystems
 
    Copyright (C) 1991 Linus Torvalds <torvalds@klaava.helsinki.fi>
    Copyright (C) 1992-1993 Remy Card <card@masi.ibp.fr>
@@ -28,7 +28,7 @@
    under Linux.  A lot of the basic structure of this program has been
    borrowed from Remy Card's "mke2fs" code.
 
-   As far as possible the aim here is to make the "mkdosfs" command
+   As far as possible the aim here is to make the "mkfs.fat" command
    look almost identical to the other Linux filesystem make utilties,
    eg bad blocks are still specified as blocks, not sectors, but when
    it comes down to it, DOS is tied to the idea of a sector (512 bytes
@@ -249,7 +249,7 @@ char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
 
 /* Global variables - the root of all evil :-) - see these and weep! */
 
-static char *program_name = "mkdosfs";	/* Name of the program */
+static char *program_name = "mkfs.fat";	/* Name of the program */
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
 static int atari_format = 0;	/* Use Atari variation of MS-DOS FS format */
 static int check = FALSE;	/* Default to no readablity checking */
@@ -746,7 +746,7 @@ static void setup_tables(void)
 	strcpy((char *)bs.system_id, "kdosf");
     }
     else
-	strcpy((char *)bs.system_id, "mkdosfs");
+	strcpy((char *)bs.system_id, "mkfs.fat");
     if (sectors_per_cluster)
 	bs.cluster_size = (char)sectors_per_cluster;
     if (size_fat == 32) {
@@ -1348,7 +1348,7 @@ static void write_tables(void)
 static void usage(void)
 {
     fatal_error("\
-Usage: mkdosfs [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-sector]\n\
+Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-sector]\n\
        [-m boot-msg-file][-n volume-name][-i volume-id]\n\
        [-s sectors-per-cluster][-S logical-sector-size][-f number-of-FATs]\n\
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\

@@ -28,7 +28,7 @@
 
 #include "common.h"
 #include "io.h"
-#include "dosfsck.h"
+#include "fsck.fat.h"
 #include "lfn.h"
 #include "file.h"
 

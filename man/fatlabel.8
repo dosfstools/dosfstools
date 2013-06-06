@@ -1,4 +1,4 @@
-.\" dosfslabel.8 - manpage for dosfsck
+.\" fatlabel.8 - manpage for fatlabel
 .\"
 .\" Copyright (C) 2006-2013 Daniel Baumann <daniel@debian.org>
 .\"
@@ -19,16 +19,16 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH DOSFSLABEL 8 "2010\-01\-31" "3.0.9" "set or get MS\-DOS filesystem label"
+.TH FATLABEL 8 "2010\-01\-31" "3.0.9" "set or get MS\-DOS filesystem label"
 
 .SH NAME
-\fBdosfslabel\fR \- set or get MS\-DOS filesystem label
+\fBfatlabel\fR \- set or get MS\-DOS filesystem label
 
 .SH SYNOPSIS
-\fBdosfslabel\fR \fIDEVICE\fR [\fILABEL\fR]
+\fBfatlabel\fR \fIDEVICE\fR [\fILABEL\fR]
 
 .SH DESCRIPTION
-\fBdosfslabel\fR set or gets a MS\-DOS filesystem label from a given device.
+\fBfatlabel\fR set or gets a MS\-DOS filesystem label from a given device.
 .PP
 If the label is omitted, then the label name of the specified device is written on the standard output. A label can't be longer than 11 bytes.
 
@@ -39,12 +39,12 @@ Displays a help message.
 Shows version.
 
 .SH SEE ALSO
-\fBdosfsck\fR(8)
+\fBfsck.fat\fR(8)
 .br
-\fBmkdosfs\fR(8)
+\fBmkfs.fat\fR(8)
 
 .SH HOMEPAGE
-More information about \fBdosfsck\fR and \fBdosfstools\fR can be found at <\fIhttp://daniel\-baumann.ch/software/dosfstools/\fR>.
+More information about \fBfatlabel\fR and \fBdosfstools\fR can be found at <\fIhttp://daniel\-baumann.ch/software/dosfstools/\fR>.
 
 .SH AUTHORS
 \fBdosfstools\fR were written by Werner Almesberger <\fIwerner.almesberger@lrc.di.epfl.ch\fR>, Roman Hodek <\fIRoman.Hodek@informatik.uni-erlangen.de\fR>, and others. The current maintainer is Daniel Baumann <\fImail@daniel-baumann.ch\fR>.

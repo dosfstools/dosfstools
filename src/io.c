@@ -42,7 +42,7 @@
 #include <fcntl.h>
 #include <linux/fd.h>
 
-#include "dosfsck.h"
+#include "fsck.fat.h"
 #include "common.h"
 #include "io.h"
 

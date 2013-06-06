@@ -1,4 +1,4 @@
-/* dosfslabel.c - User interface
+/* fatlabel.c - User interface
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
@@ -33,7 +33,7 @@
 #include <ctype.h>
 
 #include "common.h"
-#include "dosfsck.h"
+#include "fsck.fat.h"
 #include "io.h"
 #include "boot.h"
 #include "fat.h"
@@ -50,7 +50,7 @@ static void usage(int error)
     FILE *f = error ? stderr : stdout;
     int status = error ? 1 : 0;
 
-    fprintf(f, "usage: dosfslabel device [label]\n");
+    fprintf(f, "usage: fatlabel device [label]\n");
     exit(status);
 }
 
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
 	usage(0);
     else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version")) {
-	printf("dosfslabel " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
+	printf("fatlabel " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
 	exit(0);
     }
 
@@ -112,14 +112,14 @@ int main(int argc, char *argv[])
 	strncpy(label, argv[2], 11);
 	if (strlen(argv[2]) > 11) {
 	    fprintf(stderr,
-		    "dosfslabel: labels can be no longer than 11 characters\n");
+		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
         for (i = 0; label[i] && i < 11; i++)
           /* don't know if here should be more strict !uppercase(label[i])*/
           if (islower(label[i])) {
             fprintf(stderr,
-                    "dosfslabel: labels cannot contain lower case characters\n");
+                    "fatlabel: labels cannot contain lower case characters\n");
             exit(1);
           }
 	rw = 1;
