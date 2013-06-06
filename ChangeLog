@@ -1,4 +1,59 @@
-commit 3aa88ed2a22d517d4a392bef3fc3f27b878ee8a6 (HEAD, origin/master, origin/HEAD, master)
+commit d4e1180 (HEAD, origin/master, origin/HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Thu Jun 6 09:38:45 2013 +0200
+
+    Adding initial i18n support for manpages with po4a.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit ea8f712
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Thu Jun 6 09:17:13 2013 +0200
+
+    Renaming tools to sane namespace and keeping legacy symlinks in place.
+    
+    dosfslabel becomes fatlabel,
+    dosfsck becomes fsck.fat,
+    and mkdosfs becomes mkfs.fat.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit a42b127
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 5 07:12:03 2013 +0200
+
+    Correcting wrong spelling of Debian in mkdosfs manpage.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 2749084
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 5 07:10:50 2013 +0200
+
+    Correcting spelling typo in boot.c.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 6461c83
+Author: Martin Pitt <martinpitt@gnome.org>
+Date:   Fri May 24 09:35:44 2013 +0200
+
+    dosfslabel: Do not read beyond string length (Closes: #709587).
+    
+    When checking whether the label contains any lower-case characters, do not read
+    beyond the end of the string.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 4203a90 (tag: v3.0.17)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed May 29 10:14:09 2013 +0200
+
+    Releasing version 3.0.17.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 3aa88ed
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed May 29 09:48:24 2013 +0200
 
@@ -6,7 +61,7 @@ Date:   Wed May 29 09:48:24 2013 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0916f8a0e0051ddfe1c4c96a399421a3832acd4f
+commit 0916f8a
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Wed May 29 09:56:08 2013 +0200
 
@@ -14,7 +69,7 @@ Date:   Wed May 29 09:56:08 2013 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 4a265c67e036ee12a0393656b0167d3e7833cda8
+commit 4a265c6
 Author: James Byrne <jbyrne@aminocom.com>
 Date:   Mon Apr 22 12:29:51 2013 +0100
 
@@ -49,7 +104,7 @@ Date:   Mon Apr 22 12:29:51 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit eb68a14005ec5230eed4615576a70406bc37f66d
+commit eb68a14
 Author: James Byrne <jbyrne@aminocom.com>
 Date:   Mon Apr 22 13:32:01 2013 +0100
 
@@ -60,7 +115,7 @@ Date:   Mon Apr 22 13:32:01 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 336e8f105a741767aa4daed3e40906e4a68abea1
+commit 336e8f1
 Author: James Byrne <jbyrne@aminocom.com>
 Date:   Mon Apr 22 12:38:52 2013 +0100
 
@@ -72,7 +127,7 @@ Date:   Mon Apr 22 12:38:52 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 64b6227186d08a0a1c339fb0b894ca9c0050ffac
+commit 64b6227
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Apr 4 08:08:00 2013 +0200
 
@@ -80,7 +135,7 @@ Date:   Thu Apr 4 08:08:00 2013 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 76304bef84f8aa5e99128b982d5c9dc5b90c09e5
+commit 76304be
 Author: Cristian Rodríguez <crrodriguez@opensuse.org>
 Date:   Fri Mar 1 08:23:34 2013 +0100
 
@@ -92,7 +147,7 @@ Date:   Fri Mar 1 08:23:34 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 9ba8992e2e889d19b479a5f62ed41bb93bad8bb5
+commit 9ba8992
 Author: Cristian Rodríguez <crrodriguez@opensuse.org>
 Date:   Fri Mar 1 08:58:36 2013 +0100
 
@@ -103,7 +158,7 @@ Date:   Fri Mar 1 08:58:36 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 8733e12a3eb24bfbb56f3a40863053e1197039a6 (tag: v3.0.16)
+commit 8733e12 (tag: v3.0.16)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed May 29 10:06:01 2013 +0200
 
@@ -111,7 +166,7 @@ Date:   Wed May 29 10:06:01 2013 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a9fa87e758291fa2b4143ad6db07aa4a2ee72eb6
+commit a9fa87e
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:34:12 2013 +0100
 
@@ -123,7 +178,7 @@ Date:   Fri Mar 1 08:34:12 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 92057f1731557ee90ad793567b3164478ac46106
+commit 92057f1
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:33:18 2013 +0100
 
@@ -134,7 +189,7 @@ Date:   Fri Mar 1 08:33:18 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5e265c42aab04a906f2dd8a570c5c26519860cb4
+commit 5e265c4
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:32:02 2013 +0100
 
@@ -145,7 +200,7 @@ Date:   Fri Mar 1 08:32:02 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5cec53c43cb453a0e1c1adc0369fdc5d45356384
+commit 5cec53c
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:30:21 2013 +0100
 
@@ -154,7 +209,7 @@ Date:   Fri Mar 1 08:30:21 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 63938f0606f896d979ccb7d8056e9a1275b961ef
+commit 63938f0
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:29:00 2013 +0100
 
@@ -165,7 +220,7 @@ Date:   Fri Mar 1 08:29:00 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 10c1c41fd8e2813fe42b279e5a3c6261da8d318c
+commit 10c1c41
 Author: Petr Gajdos <pgajdos@suse.cz>
 Date:   Fri Mar 1 08:58:15 2013 +0100
 
@@ -176,7 +231,7 @@ Date:   Fri Mar 1 08:58:15 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a75fb1c838a47b8f54ff567ca2eb71e98ccb691c (tag: v3.0.15)
+commit a75fb1c (tag: v3.0.15)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Feb 21 15:06:52 2013 +0100
 
@@ -184,7 +239,7 @@ Date:   Thu Feb 21 15:06:52 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit c8f84fdcddf0982b86ef53250b08a005c80925ef
+commit c8f84fd
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Mon Feb 4 00:22:34 2013 +0400
 
@@ -194,7 +249,7 @@ Date:   Mon Feb 4 00:22:34 2013 +0400
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 154654555730874c1656bb6c63292a85a2260bdf
+commit 1546545
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Sun Sep 5 18:59:47 2010 +0400
 
@@ -206,7 +261,7 @@ Date:   Sun Sep 5 18:59:47 2010 +0400
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ad76cae648d3b7895e97e16f8212ae8089b8846b
+commit ad76cae
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Thu Feb 21 14:40:52 2013 +0100
 
@@ -216,7 +271,7 @@ Date:   Thu Feb 21 14:40:52 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b8201b34eb83c2bf87bd1c2b1a7fa57a1dc28191
+commit b8201b3
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Thu Feb 21 14:40:25 2013 +0100
 
@@ -226,7 +281,7 @@ Date:   Thu Feb 21 14:40:25 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7a756385ed6bce393396c699e068b5f239053db6 (tag: v3.0.14)
+commit 7a75638 (tag: v3.0.14)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 13:22:01 2013 +0100
 
@@ -234,7 +289,7 @@ Date:   Wed Jan 23 13:22:01 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5bdd7ef95c7f18e9e6571bf0718a564bd15b30d5
+commit 5bdd7ef
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 13:16:20 2013 +0100
 
@@ -242,7 +297,7 @@ Date:   Wed Jan 23 13:16:20 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a307be2b9cbfd0ed8c10dab79044cf6c7426ea18
+commit a307be2
 Author: Oleksij Rempel <bug-track@fisher-privat.net>
 Date:   Wed Jan 23 12:36:56 2013 +0100
 
@@ -255,7 +310,7 @@ Date:   Wed Jan 23 12:36:56 2013 +0100
     Signed-off-by: Oleksij Rempel <bug-track@fisher-privat.net>
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ce2f8dc349a8a6b2c26d1b3892cc9b5f0408bd34
+commit ce2f8dc
 Author: Oleksij Rempel <bug-track@fisher-privat.net>
 Date:   Wed Jan 23 12:35:13 2013 +0100
 
@@ -268,7 +323,7 @@ Date:   Wed Jan 23 12:35:13 2013 +0100
     Signed-off-by: Oleksij Rempel <bug-track@fisher-privat.net>
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f33ee8ca5640191e7666402d6676073712b9c988
+commit f33ee8c
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 12:25:59 2013 +0100
 
@@ -276,7 +331,7 @@ Date:   Wed Jan 23 12:25:59 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit bfe6d25c6297b2fbca174ead56dffee340668a06
+commit bfe6d25
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 23 12:17:20 2013 +0100
 
@@ -284,7 +339,7 @@ Date:   Wed Jan 23 12:17:20 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 13cdb4d262b4042ec2d94d706e30f45a63f1c029 (tag: v3.0.13)
+commit 13cdb4d (tag: v3.0.13)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jun 30 19:10:44 2012 +0200
 
@@ -292,7 +347,7 @@ Date:   Sat Jun 30 19:10:44 2012 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit d03948265679186dd89403da46d1aba1decafd55
+commit d039482
 Author: Jaroslav Škarvada <jskarvad@redhat.com>
 Date:   Sat Jun 30 19:09:11 2012 +0200
 
@@ -302,7 +357,7 @@ Date:   Sat Jun 30 19:09:11 2012 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e243612ccd10ec10a9877fe32524acc8b7f3d2a4 (tag: v3.0.12)
+commit e243612 (tag: v3.0.12)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Oct 29 08:40:53 2011 +0200
 
@@ -310,7 +365,7 @@ Date:   Sat Oct 29 08:40:53 2011 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 025b4f04fe3148b68c1857e3a26292d6330c748b
+commit 025b4f0
 Author: Michael Casadevall <mcasadevall@ubuntu.com>
 Date:   Tue Jun 7 19:19:30 2011 +0200
 
@@ -331,7 +386,7 @@ Date:   Tue Jun 7 19:19:30 2011 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 91a1fb9536b71133e6be9b0c09107c84d9cdfecb
+commit 91a1fb9
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jan 8 23:38:59 2011 +0100
 
@@ -339,7 +394,7 @@ Date:   Sat Jan 8 23:38:59 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0390c4c1c12094aedb46d3bf800c9ac5900f9f56
+commit 0390c4c
 Author: Sergey Gusarov <laborer2008@gmail.com>
 Date:   Sat Jan 8 23:36:11 2011 +0100
 
@@ -351,7 +406,7 @@ Date:   Sat Jan 8 23:36:11 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 4a8f8a66459f6d311672c42f8a9ac3661fb79208
+commit 4a8f8a6
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Thu Jan 6 22:35:00 2011 +0100
 
@@ -365,7 +420,7 @@ Date:   Thu Jan 6 22:35:00 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e0366dac9736a1a60459b33c2259785e8d08d647
+commit e0366da
 Author: Sergey Gusarov <laborer2008@gmail.com>
 Date:   Thu Jan 6 22:31:39 2011 +0100
 
@@ -373,7 +428,7 @@ Date:   Thu Jan 6 22:31:39 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 2d8be9c62869c220be6426ef9f37662b4e671454
+commit 2d8be9c
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Jan 2 15:41:44 2011 +0100
 
@@ -381,7 +436,7 @@ Date:   Sun Jan 2 15:41:44 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 697af859b69def125555403dc5521224c0813369
+commit 697af85
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Jan 2 15:39:03 2011 +0100
 
@@ -389,7 +444,7 @@ Date:   Sun Jan 2 15:39:03 2011 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 66d55cd07420a7f6da3c96412b9159439823ff97 (tag: v3.0.11)
+commit 66d55cd (tag: v3.0.11)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Dec 24 17:58:29 2010 +0100
 
@@ -397,7 +452,7 @@ Date:   Fri Dec 24 17:58:29 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit d57980204ef78b863130e9ef75f8e9f66bb677ec
+commit d579802
 Author: Michael Stapelberg <michael@stapelberg.de>
 Date:   Fri Nov 19 14:09:36 2010 +0100
 
@@ -409,7 +464,7 @@ Date:   Fri Nov 19 14:09:36 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit bb6000fc30809ad8025bac5eb173d46f56223a7e
+commit bb6000f
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Fri Oct 8 13:38:16 2010 +0200
 
@@ -418,7 +473,7 @@ Date:   Fri Oct 8 13:38:16 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5ef7f1f78a13207fd4317a73dd0308c95faeaa44 (tag: v3.0.10)
+commit 5ef7f1f (tag: v3.0.10)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 12 09:35:47 2010 +0200
 
@@ -426,7 +481,7 @@ Date:   Sun Sep 12 09:35:47 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ea41797c7a7a0f56774f326beb916815541e62ae
+commit ea41797
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Sun Sep 12 09:29:12 2010 +0200
 
@@ -435,7 +490,7 @@ Date:   Sun Sep 12 09:29:12 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e56ff72c1659a6a34c981d4ff6ce7841c773d0a8
+commit e56ff72
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Sun Sep 12 09:27:07 2010 +0200
 
@@ -444,7 +499,7 @@ Date:   Sun Sep 12 09:27:07 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f0a42d0634302c3fbdbe4bb717b0a9a17235a828
+commit f0a42d0
 Author: Alexander Korolkov <alexander.korolkov@gmail.com>
 Date:   Sun Sep 12 09:24:47 2010 +0200
 
@@ -454,7 +509,7 @@ Date:   Sun Sep 12 09:24:47 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0113c5bd145749772e2c808224f7c571024eb5fa
+commit 0113c5b
 Author: Mitch Rybczynski <mrybczynski@miovision.com>
 Date:   Mon Jul 5 14:45:54 2010 +0200
 
@@ -462,7 +517,7 @@ Date:   Mon Jul 5 14:45:54 2010 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 88cb84f1402d23bdf94f3cfd934792e7a04333fc
+commit 88cb84f
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Mar 14 16:42:32 2010 +0100
 
@@ -470,7 +525,7 @@ Date:   Sun Mar 14 16:42:32 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5aa7ec4f2d0e02207709eb0b4f1487ea9193dd26
+commit 5aa7ec4
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Mar 14 16:33:47 2010 +0100
 
@@ -478,7 +533,7 @@ Date:   Sun Mar 14 16:33:47 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 807ed8028357ebb5ec78d92c405c7c80c8f3d749
+commit 807ed80
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Mar 14 16:05:32 2010 +0100
 
@@ -486,7 +541,7 @@ Date:   Sun Mar 14 16:05:32 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 5b6849dc6268dfdede6e57c50d28f4179416b127 (tag: v3.0.9)
+commit 5b6849d (tag: v3.0.9)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Jan 31 08:31:32 2010 +0100
 
@@ -494,7 +549,7 @@ Date:   Sun Jan 31 08:31:32 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 33bca7d6b5157ad7cde134f7edb3d6677317e15c
+commit 33bca7d
 Author: Daniel Kahn Gillmor <dkg@fifthhorseman.net>
 Date:   Sun Jan 31 00:11:41 2010 -0500
 
@@ -503,7 +558,7 @@ Date:   Sun Jan 31 00:11:41 2010 -0500
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 2a3bef84fbee41ba055ecd57b6ded334e80b9b7f (tag: v3.0.8)
+commit 2a3bef8 (tag: v3.0.8)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jan 23 10:16:18 2010 +0100
 
@@ -511,7 +566,7 @@ Date:   Sat Jan 23 10:16:18 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 726c02daf6f8d1f3bf47467bb3989357241ee24f
+commit 726c02d
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Jan 23 10:15:01 2010 +0100
 
@@ -519,7 +574,7 @@ Date:   Sat Jan 23 10:15:01 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a5961d734410944ed88a7d67d6d27850e2ed065e
+commit a5961d7
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Thu Jan 21 16:58:11 2010 +0100
 
@@ -540,7 +595,7 @@ Date:   Thu Jan 21 16:58:11 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit bbb25bf11aeda92f6cc75d32a5fdb5789348bb08
+commit bbb25bf
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Thu Jan 21 16:56:26 2010 +0100
 
@@ -549,7 +604,7 @@ Date:   Thu Jan 21 16:56:26 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 1cae726e2da261e669557bb4a118371c8b836ad5
+commit 1cae726
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Thu Jan 21 16:55:30 2010 +0100
 
@@ -558,7 +613,7 @@ Date:   Thu Jan 21 16:55:30 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 62f806a2921a9ed0a44c3dd4d83a786b19924b72
+commit 62f806a
 Author: H. Peter Anvin <hpa@zytor.com>
 Date:   Fri Jan 8 09:16:38 2010 +0100
 
@@ -578,7 +633,7 @@ Date:   Fri Jan 8 09:16:38 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 8825bda33bdce3ce30458dad26f7800b667516d3
+commit 8825bda
 Author: H. Peter Anvin <hpa@zytor.com>
 Date:   Wed Jan 6 20:55:36 2010 +0100
 
@@ -589,7 +644,7 @@ Date:   Wed Jan 6 20:55:36 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 21d3f8192aaa9958c626b87bcb9d94727b38ba80
+commit 21d3f81
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jan 6 11:27:25 2010 +0100
 
@@ -597,7 +652,7 @@ Date:   Wed Jan 6 11:27:25 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 247ba068d4ceea886ca16c95ab4a8eb772dc4f7a
+commit 247ba06
 Author: H. Peter Anvin <hpa@zytor.com>
 Date:   Wed Jan 6 11:18:55 2010 +0100
 
@@ -612,7 +667,7 @@ Date:   Wed Jan 6 11:18:55 2010 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 171bc07b0c3eff0eec01d899326ac2a34ea51e72 (tag: v3.0.7)
+commit 171bc07 (tag: v3.0.7)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Dec 24 10:53:36 2009 +0100
 
@@ -620,7 +675,7 @@ Date:   Thu Dec 24 10:53:36 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 28708fc8a66e571eb61d3fc2592c17b85f463b40
+commit 28708fc
 Author: Ben Hutchings <ben@decadent.org.uk>
 Date:   Thu Dec 24 09:55:52 2009 +0100
 
@@ -629,7 +684,7 @@ Date:   Thu Dec 24 09:55:52 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 2c405dd8da0f7a1a006aaf91e548676a023bab92
+commit 2c405dd
 Author: Lubomir Rintel <lkundrak@v3.sk>
 Date:   Thu Dec 24 09:39:39 2009 +0100
 
@@ -646,7 +701,7 @@ Date:   Thu Dec 24 09:39:39 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b8f3efed9cb0265968d0d5f2310eb9241a1b5650
+commit b8f3efe
 Author: San Mehat <san@google.com>
 Date:   Thu Dec 24 09:31:41 2009 +0100
 
@@ -654,7 +709,7 @@ Date:   Thu Dec 24 09:31:41 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0657e018980f46932f7c438b4b1593c0ed10ccca (tag: v3.0.6)
+commit 0657e01 (tag: v3.0.6)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Oct 4 10:59:33 2009 +0200
 
@@ -662,7 +717,7 @@ Date:   Sun Oct 4 10:59:33 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit bc842544573e4a6c4dcf14892ffd82aa7d590ae1
+commit bc84254
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Sun Oct 4 10:58:43 2009 +0200
 
@@ -671,7 +726,7 @@ Date:   Sun Oct 4 10:58:43 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 8054b4a371a69eab1cb9c3c639dc38f5d3c03ddb
+commit 8054b4a
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Sun Oct 4 08:37:19 2009 +0200
 
@@ -682,7 +737,7 @@ Date:   Sun Oct 4 08:37:19 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e51af88eed55631b35578c4a30f234ba6f829528
+commit e51af88
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Sun Oct 4 08:32:30 2009 +0200
 
@@ -691,7 +746,7 @@ Date:   Sun Oct 4 08:32:30 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 16ba63f98a310d9743e5b9dbd0f9d7a4f4717455 (tag: v3.0.5)
+commit 16ba63f (tag: v3.0.5)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Mon Jul 27 14:26:11 2009 +0200
 
@@ -699,7 +754,7 @@ Date:   Mon Jul 27 14:26:11 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 28ff9d967c23caa8da10479c91d0ba8cc55397ea
+commit 28ff9d9
 Author: Piotr Kaczuba <pepe@attika.ath.cx>
 Date:   Sun Jul 26 22:21:25 2009 +0200
 
@@ -708,7 +763,7 @@ Date:   Sun Jul 26 22:21:25 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit d42a27373ac20030dac3849d532e79a5841fa957
+commit d42a273
 Author: Andrew Tridgell <tridge@samba.org>
 Date:   Sun Jul 26 22:12:06 2009 +0200
 
@@ -719,7 +774,7 @@ Date:   Sun Jul 26 22:12:06 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit dd0f0b53926fbd3b0c262cc09b5d3e0fc19c7ec8 (tag: v3.0.4)
+commit dd0f0b5 (tag: v3.0.4)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Jul 21 08:10:52 2009 +0200
 
@@ -727,7 +782,7 @@ Date:   Tue Jul 21 08:10:52 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b9f37a61a63b8552806042328c1eb67fd4c8a5d2
+commit b9f37a6
 Author: Andrew Tridgell <tridge@samba.org>
 Date:   Tue Jul 21 07:59:22 2009 +0200
 
@@ -739,7 +794,7 @@ Date:   Tue Jul 21 07:59:22 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ecd15e86e8c1b9d24443e4fc1948c6effbcfaac3
+commit ecd15e8
 Author: Paul Rupe <prupe@nc.rr.com>
 Date:   Tue May 19 10:37:52 2009 +0200
 
@@ -747,7 +802,7 @@ Date:   Tue May 19 10:37:52 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7c16098be2b04ab791a520bf4ca2319233f4bd73 (tag: v3.0.3)
+commit 7c16098 (tag: v3.0.3)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Mon May 18 15:12:04 2009 +0200
 
@@ -755,7 +810,7 @@ Date:   Mon May 18 15:12:04 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b396dcfb09dba6c55575aaa4b94a408604febd27
+commit b396dcf
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Mon May 18 15:10:55 2009 +0200
 
@@ -763,7 +818,7 @@ Date:   Mon May 18 15:10:55 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ff1b24e91db6df1076dc5c053f34ff1a3924578d
+commit ff1b24e
 Author: Steven J. Magnani <steve@digidescorp.com>
 Date:   Mon May 18 15:01:49 2009 +0200
 
@@ -775,7 +830,7 @@ Date:   Mon May 18 15:01:49 2009 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 89f0b727b56f544e40d8066d7711734fc57a051f
+commit 89f0b72
 Author: Mike Frysinger <vapier@gentoo.org>
 Date:   Thu Mar 5 07:03:36 2009 +0100
 
@@ -783,7 +838,7 @@ Date:   Thu Mar 5 07:03:36 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b54a8a46ef08e1993796673cfe6c732fe238f74d (tag: v3.0.2)
+commit b54a8a4 (tag: v3.0.2)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Feb 28 09:48:04 2009 +0100
 
@@ -791,7 +846,7 @@ Date:   Sat Feb 28 09:48:04 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 95005294d8356b81401101e5f0473f49f45d05b7
+commit 9500529
 Author: Hiroaki Ishizawa <hiroaki.ishizawa@gmail.com>
 Date:   Fri Feb 13 10:00:46 2009 +0100
 
@@ -799,7 +854,7 @@ Date:   Fri Feb 13 10:00:46 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 043f8a8fb1decf9f6d4b6fcf23267264422a8dab
+commit 043f8a8
 Author: Stepan Kasal <skasal@redhat.com>
 Date:   Fri Jan 30 14:56:33 2009 +0100
 
@@ -807,7 +862,7 @@ Date:   Fri Jan 30 14:56:33 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 017da27f1a2b7845cab5fb4e1259d3e0739ef777
+commit 017da27
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Jan 30 14:06:01 2009 +0100
 
@@ -815,7 +870,7 @@ Date:   Fri Jan 30 14:06:01 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 1c76f0faf837f203dc2b1353ce202111ca9183f0
+commit 1c76f0f
 Author: Stepan Kasal <skasal@redhat.com>
 Date:   Fri Jan 30 14:05:12 2009 +0100
 
@@ -823,7 +878,7 @@ Date:   Fri Jan 30 14:05:12 2009 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit df2d2f17898cb5e13e9017aef1ccaae3b11a201b (tag: v3.0.1)
+commit df2d2f1 (tag: v3.0.1)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Nov 23 22:45:45 2008 +0100
 
@@ -831,7 +886,7 @@ Date:   Sun Nov 23 22:45:45 2008 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 17b269b03d758b3946451e2724708d72a8882ed4
+commit 17b269b
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Nov 23 18:41:01 2008 +0100
 
@@ -841,7 +896,7 @@ Date:   Sun Nov 23 18:41:01 2008 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e597cafef44da9ca46eb2d4999a98c7e23072e46
+commit e597caf
 Author: Ulrich Mueller <ulm@gentoo.org>
 Date:   Tue Oct 7 07:55:37 2008 +0200
 
@@ -860,7 +915,7 @@ Date:   Tue Oct 7 07:55:37 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 90102bcd5447abbb7a155e25bb953a9e690c279c
+commit 90102bc
 Author: Dann Frazier <dannf@hp.com>
 Date:   Tue Sep 30 07:25:19 2008 +0200
 
@@ -869,7 +924,7 @@ Date:   Tue Sep 30 07:25:19 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 21e9ba0a43ed34e8424cac4fdb1d1d8d02e43336 (tag: v3.0.0)
+commit 21e9ba0 (tag: v3.0.0)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 28 11:43:19 2008 +0200
 
@@ -877,7 +932,7 @@ Date:   Sun Sep 28 11:43:19 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit eaf145d51bd47f34f0c1d36ea72242edae8660d5
+commit eaf145d
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 28 11:29:01 2008 +0200
 
@@ -885,7 +940,7 @@ Date:   Sun Sep 28 11:29:01 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0826117103ea3e87f7b2cbd6f6daaa842f780b9f
+commit 0826117
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sun Sep 28 10:51:55 2008 +0200
 
@@ -893,7 +948,7 @@ Date:   Sun Sep 28 10:51:55 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f8d6127d8ba4cd6c02ea698e14afa7f1bca59fb2
+commit f8d6127
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 23:31:12 2008 +0200
 
@@ -901,7 +956,7 @@ Date:   Fri Sep 26 23:31:12 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit b4feb7319f6c506f21346e1faea060e1d8429ccb
+commit b4feb73
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Sat Sep 27 00:17:38 2008 +0200
 
@@ -909,7 +964,7 @@ Date:   Sat Sep 27 00:17:38 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 1410138d03618ac4a8f4a670bec1e6640c3dfe12
+commit 1410138
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 23:48:56 2008 +0200
 
@@ -918,7 +973,7 @@ Date:   Fri Sep 26 23:48:56 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f62e7f27a7f7bcc51c30860ab0422deb273353bf
+commit f62e7f2
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:36:04 2008 +0200
 
@@ -926,7 +981,7 @@ Date:   Fri Sep 26 18:36:04 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 32e5952f4f3610b5f28f427717d838c6e28307d6
+commit 32e5952
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:19:36 2008 +0200
 
@@ -934,7 +989,7 @@ Date:   Fri Sep 26 18:19:36 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 25a433bd3d6d9f8bca75ea44afd101e8cf965308
+commit 25a433b
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:07:47 2008 +0200
 
@@ -942,7 +997,7 @@ Date:   Fri Sep 26 18:07:47 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit acac13fb85ed10120420be7a7bd15463389c9759
+commit acac13f
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:18:39 2008 +0200
 
@@ -950,7 +1005,7 @@ Date:   Fri Sep 26 18:18:39 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 3ecdd2122504642e014916b2849e675dbdcddd73
+commit 3ecdd21
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:19:16 2008 +0200
 
@@ -958,7 +1013,7 @@ Date:   Fri Sep 26 18:19:16 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f183d0eaa90668e70ce1e0f092baf66e88a213c9
+commit f183d0e
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:21:57 2008 +0200
 
@@ -966,7 +1021,7 @@ Date:   Fri Sep 26 18:21:57 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 61e7466965387a881671c74156a14659362c3a4e
+commit 61e7466
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:04:02 2008 +0200
 
@@ -974,7 +1029,7 @@ Date:   Fri Sep 26 18:04:02 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 7552d5752706db94db069c40e844e6a01844cbae
+commit 7552d57
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:05:27 2008 +0200
 
@@ -982,7 +1037,7 @@ Date:   Fri Sep 26 18:05:27 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 124598b2bdfc9901ce4a612f4ef4e4c916a2faa3
+commit 124598b
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 18:12:29 2008 +0200
 
@@ -990,7 +1045,7 @@ Date:   Fri Sep 26 18:12:29 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit fb9c46b59a1fdcea7360008abfe22136f0069d8b
+commit fb9c46b
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:39:51 2008 +0200
 
@@ -1001,7 +1056,7 @@ Date:   Fri Sep 26 15:39:51 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit aaa40a9bbc615e7947569e52724c2c5dae36577a
+commit aaa40a9
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:49:43 2008 +0200
 
@@ -1012,7 +1067,7 @@ Date:   Fri Sep 26 15:49:43 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 251626dd60a085675bf8120c047458312bb21f49
+commit 251626d
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:37:34 2008 +0200
 
@@ -1025,7 +1080,7 @@ Date:   Fri Sep 26 15:37:34 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit e670ea82c9a0da446a0d7c88c580c4d2c8be7b59
+commit e670ea8
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:33:36 2008 +0200
 
@@ -1038,7 +1093,7 @@ Date:   Fri Sep 26 15:33:36 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit a6dc6a4d4bb89ec3997a72fd084a83147c6e66b6
+commit a6dc6a4
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:22:06 2008 +0200
 
@@ -1050,7 +1105,7 @@ Date:   Fri Sep 26 15:22:06 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit f74695618bd347cc42632794c278b208e464d6e9
+commit f746956
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:18:35 2008 +0200
 
@@ -1064,7 +1119,7 @@ Date:   Fri Sep 26 15:18:35 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit cf243e4a84f10db0f42ddadd663cb013c0f47e85
+commit cf243e4
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:15:40 2008 +0200
 
@@ -1073,7 +1128,7 @@ Date:   Fri Sep 26 15:15:40 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 2d4f18457e65556277fe203aeee2bc6e20f87a44
+commit 2d4f184
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:11:50 2008 +0200
 
@@ -1085,7 +1140,7 @@ Date:   Fri Sep 26 15:11:50 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 739a6fb2880643a575c5b6d39444a2d0eca7badf
+commit 739a6fb
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 15:05:00 2008 +0200
 
@@ -1094,7 +1149,7 @@ Date:   Fri Sep 26 15:05:00 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 3b5ed8a4b186e8b5c1b72a20cbb07b36596550c8
+commit 3b5ed8a
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:26:41 2008 +0200
 
@@ -1105,7 +1160,7 @@ Date:   Fri Sep 26 14:26:41 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 3b6a8634f4dd9500c16edff2b883ecac6cde8e88
+commit 3b6a863
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:34:42 2008 +0200
 
@@ -1116,7 +1171,7 @@ Date:   Fri Sep 26 14:34:42 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 1b2c8ca3b4b1b308b684a032c794799c0d967536
+commit 1b2c8ca
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:34:17 2008 +0200
 
@@ -1131,7 +1186,7 @@ Date:   Fri Sep 26 14:34:17 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit eec8585c731da25a24b731a500720a56d39df64e
+commit eec8585
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:33:54 2008 +0200
 
@@ -1142,7 +1197,7 @@ Date:   Fri Sep 26 14:33:54 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 06bd6697f3776156d646891fdef1cebb95c48ddc
+commit 06bd669
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:33:28 2008 +0200
 
@@ -1153,7 +1208,7 @@ Date:   Fri Sep 26 14:33:28 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 42d340d05672d12a0cd001f89bfb508e05066f47
+commit 42d340d
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:32:46 2008 +0200
 
@@ -1165,7 +1220,7 @@ Date:   Fri Sep 26 14:32:46 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 0f5ce0d8f6bd5c7027e799a82f9fe6b814c0be6f
+commit 0f5ce0d
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:32:23 2008 +0200
 
@@ -1177,7 +1232,7 @@ Date:   Fri Sep 26 14:32:23 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 8ec54ddfee9aa394a32bcaaa1945eb6273047d18
+commit 8ec54dd
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:31:50 2008 +0200
 
@@ -1186,7 +1241,7 @@ Date:   Fri Sep 26 14:31:50 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 4371588cfac03a516447e95164b19a6945efb7a7
+commit 4371588
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:30:31 2008 +0200
 
@@ -1198,7 +1253,7 @@ Date:   Fri Sep 26 14:30:31 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit fc92e197f870c2f161035fd0c90da5a3ae361be3
+commit fc92e19
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:30:03 2008 +0200
 
@@ -1209,7 +1264,7 @@ Date:   Fri Sep 26 14:30:03 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 30846972f9d956b74ec1a3b6749798ab5191ce5a
+commit 3084697
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 14:29:36 2008 +0200
 
@@ -1222,7 +1277,7 @@ Date:   Fri Sep 26 14:29:36 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 6d5c09188c4549a1438656dd574b6142542174dd
+commit 6d5c091
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 13:47:40 2008 +0200
 
@@ -1231,7 +1286,7 @@ Date:   Fri Sep 26 13:47:40 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 07ef48724795f7d415bd07850d2440c327b28541
+commit 07ef487
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 13:41:14 2008 +0200
 
@@ -1244,7 +1299,7 @@ Date:   Fri Sep 26 13:41:14 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 78f9dca40b2ba699daab0f7d8e7a2ff833919f94
+commit 78f9dca
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Sep 26 13:40:47 2008 +0200
 
@@ -1253,7 +1308,7 @@ Date:   Fri Sep 26 13:40:47 2008 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit ba6774ae1dd5199a733dfaeaf438dff095284de7 (tag: v2.11)
+commit ba6774a (tag: v2.11)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Thu Jun 26 12:45:36 2008 +0200
 
