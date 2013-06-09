@@ -98,20 +98,20 @@ msgstr ""
 
 #. type: Plain text
 #: en/fsck.fat.8:26
-msgid "B<fsc.fat> - check and repair MS-DOS filesystems"
+msgid "B<fsck.fat> - check and repair MS-DOS filesystems"
 msgstr ""
 
 #. type: Plain text
 #: en/fsck.fat.8:29
 msgid ""
-"B<fsc.fat>|B<fsck.msdos>|B<fsck.vfat> [-aAflnrtvVwy] [-d I<PATH> -d\\ I<..."
+"B<fsck.fat>|B<fsck.msdos>|B<fsck.vfat> [-aAflnrtvVwy] [-d I<PATH> -d\\ I<..."
 ">] [-u\\ I<PATH> -u I<...>] I<DEVICE>"
 msgstr ""
 
 #. type: Plain text
 #: en/fsck.fat.8:32
 msgid ""
-"B<fsc.fat> verifies the consistency of MS-DOS filesystems and optionally "
+"B<fsck.fat> verifies the consistency of MS-DOS filesystems and optionally "
 "tries to repair them."
 msgstr ""
 
@@ -250,7 +250,7 @@ msgstr ""
 #. type: Plain text
 #: en/fsck.fat.8:76
 msgid ""
-"When B<fsc.fat> checks a filesystem, it accumulates all changes in memory "
+"When B<fsck.fat> checks a filesystem, it accumulates all changes in memory "
 "and performs them only after all checks are complete. This can be disabled "
 "with the B<-w> option."
 msgstr ""
@@ -278,7 +278,7 @@ msgstr ""
 #. type: Plain text
 #: en/fsck.fat.8:82
 msgid ""
-"Use Atari variation of the MS-DOS filesystem. This is default if B<fsc.fat> "
+"Use Atari variation of the MS-DOS filesystem. This is default if B<fsck.fat> "
 "is run on an Atari, then this option turns off Atari format. There are some "
 "minor differences in Atari format: Some boot sector fields are interpreted "
 "slightly different, and the special FAT entries for end-of-file and bad "
@@ -383,7 +383,7 @@ msgstr ""
 #. type: Plain text
 #: en/fsck.fat.8:100
 msgid ""
-"Try to undelete the specified file. B<fsc.fat> tries to allocate a chain of "
+"Try to undelete the specified file. B<fsck.fat> tries to allocate a chain of "
 "contiguous unallocated clusters beginning with the start cluster of the "
 "undeleted file."
 msgstr ""
@@ -472,7 +472,7 @@ msgstr ""
 #. type: Plain text
 #: en/fsck.fat.8:116
 msgid ""
-"Recoverable errors have been detected or B<fsc.fat> has discovered an "
+"Recoverable errors have been detected or B<fsck.fat> has discovered an "
 "internal inconsistency."
 msgstr ""
 
@@ -484,7 +484,7 @@ msgstr ""
 
 #. type: Plain text
 #: en/fsck.fat.8:118
-msgid "Usage error. B<fsc.fat> did not access the filesystem."
+msgid "Usage error. B<fsck.fat> did not access the filesystem."
 msgstr ""
 
 #. type: SH
@@ -502,8 +502,9 @@ msgstr ""
 #. type: Plain text
 #: en/fsck.fat.8:122
 msgid ""
-"When recovering from a corrupted filesystem, B<fsc.fat> dumps recovered data "
-"into files named 'fsckNNNN.rec' in the top level directory of the filesystem."
+"When recovering from a corrupted filesystem, B<fsck.fat> dumps recovered "
+"data into files named 'fsckNNNN.rec' in the top level directory of the "
+"filesystem."
 msgstr ""
 
 #. type: SH
