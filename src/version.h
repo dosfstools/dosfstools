@@ -23,7 +23,7 @@
 #ifndef _version_h
 #define _version_h
 
-#define VERSION "3.0.18"
-#define VERSION_DATE "06 Jun 2013"
+#define VERSION "3.0.19"
+#define VERSION_DATE "11 Jun 2013"
 
 #endif
