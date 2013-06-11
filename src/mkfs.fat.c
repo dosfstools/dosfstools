@@ -525,7 +525,7 @@ static void check_mount(char *device_name)
 	return;
     while ((mnt = getmntent(f)) != NULL)
 	if (strcmp(device_name, mnt->mnt_fsname) == 0)
-	    die("%s contains a mounted file system.");
+	    die("%s contains a mounted filesystem.");
     endmntent(f);
 }
 
@@ -967,7 +967,7 @@ static void setup_tables(void)
 			    "the total number of clusters becomes less than the "
 			    "threshold value for\n"
 			    "distinction between 12 and 16 bit FATs.\n");
-		    die("Make the file system a bit smaller manually.");
+		    die("Make the filesystem a bit smaller manually.");
 		}
 	    }
 	    cluster_count = clust16;
@@ -1005,7 +1005,7 @@ static void setup_tables(void)
 	unsigned clusters, maxclust, fatdata;
 
 	/* GEMDOS always uses a 12 bit FAT on floppies, and always a 16 bit FAT on
-	 * hard disks. So use 12 bit if the size of the file system suggests that
+	 * hard disks. So use 12 bit if the size of the filesystem suggests that
 	 * this fs is for a floppy disk, if the user hasn't explicitly requested a
 	 * size.
 	 */
@@ -1137,9 +1137,9 @@ static void setup_tables(void)
 
     if (!cluster_count) {
 	if (sectors_per_cluster)	/* If yes, die if we'd spec'd sectors per cluster */
-	    die("Too many clusters for file system - try more sectors per cluster");
+	    die("Too many clusters for filesystem - try more sectors per cluster");
 	else
-	    die("Attempting to create a too large file system");
+	    die("Attempting to create a too large filesystem");
     }
 
     /* The two following vars are in hard sectors, i.e. 512 byte sectors! */
@@ -1148,8 +1148,8 @@ static void setup_tables(void)
     start_data_block = (start_data_sector + SECTORS_PER_BLOCK - 1) /
 	SECTORS_PER_BLOCK;
 
-    if (blocks < start_data_block + 32)	/* Arbitrary undersize file system! */
-	die("Too few blocks for viable file system");
+    if (blocks < start_data_block + 32)	/* Arbitrary undersize filesystem! */
+	die("Too few blocks for viable filesystem");
 
     if (verbose) {
 	printf("%s has %d head%s and %d sector%s per track,\n",
@@ -1159,7 +1159,7 @@ static void setup_tables(void)
 	printf("logical sector size is %d,\n", sector_size);
 	printf("using 0x%02x media descriptor, with %d sectors;\n",
 	       (int)(bs.media), num_sectors);
-	printf("file system has %d %d-bit FAT%s and %d sector%s per cluster.\n",
+	printf("filesystem has %d %d-bit FAT%s and %d sector%s per cluster.\n",
 	       (int)(bs.fats), size_fat, (bs.fats != 1) ? "s" : "",
 	       (int)(bs.cluster_size), (bs.cluster_size != 1) ? "s" : "");
 	printf("FAT size is %d sector%s, and provides %d cluster%s.\n",
@@ -1698,14 +1698,14 @@ int main(int argc, char **argv)
     establish_params(statbuf.st_rdev, statbuf.st_size);
     /* Establish the media parameters */
 
-    setup_tables();		/* Establish the file system tables */
+    setup_tables();		/* Establish the filesystem tables */
 
     if (check)			/* Determine any bad block locations and mark them */
 	check_blocks();
     else if (listfile)
 	get_list_blocks(listfile);
 
-    write_tables();		/* Write the file system tables away! */
+    write_tables();		/* Write the filesystem tables away! */
 
     exit(0);			/* Terminate with no errors! */
 }

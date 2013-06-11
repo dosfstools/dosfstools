@@ -223,7 +223,7 @@ int fs_close(int write)
 	    changes = next;
 	}
     if (close(fd) < 0)
-	pdie("closing file system");
+	pdie("closing filesystem");
     return changed || did_change;
 }
 

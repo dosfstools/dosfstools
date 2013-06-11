@@ -35,7 +35,7 @@ loff_t llseek(int fd, loff_t offset, int whence);
 
 void fs_open(char *path, int rw);
 
-/* Opens the file system PATH. If RW is zero, the file system is opened
+/* Opens the filesystem PATH. If RW is zero, the filesystem is opened
    read-only, otherwise, it is opened read-write. */
 
 void fs_read(loff_t pos, int size, void *data);
@@ -56,13 +56,13 @@ void fs_write(loff_t pos, int size, void *data);
 
 int fs_close(int write);
 
-/* Closes the file system, performs all pending changes if WRITE is non-zero
+/* Closes the filesystem, performs all pending changes if WRITE is non-zero
    and removes the list of changes. Returns a non-zero integer if the file
    system has been changed since the last fs_open, zero otherwise. */
 
 int fs_changed(void);
 
-/* Determines whether the file system has changed. See fs_close. */
+/* Determines whether the filesystem has changed. See fs_close. */
 
 extern unsigned device_no;
 

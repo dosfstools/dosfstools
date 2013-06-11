@@ -1,4 +1,4 @@
-/* check.c - Check and repair a PC/MS-DOS file system
+/* check.c - Check and repair a PC/MS-DOS filesystem
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>

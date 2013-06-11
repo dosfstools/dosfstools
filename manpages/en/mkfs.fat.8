@@ -22,7 +22,7 @@
 .TH MKFS.FAT 8 2013\-06\-11 3.0.19 "dosfstools"
 .SH NAME
 .B mkfs.fat
-\- create an MS-DOS file system under Linux
+\- create an MS-DOS filesystem under Linux
 .SH SYNOPSIS
 .B mkfs.fat
 [
@@ -95,14 +95,14 @@
 ]
 .SH DESCRIPTION
 .B mkfs.fat
-is used to create an MS-DOS file system under Linux on a device (usually
+is used to create an MS-DOS filesystem under Linux on a device (usually
 a disk partition).
 .I device
 is the special file corresponding to the device (e.g /dev/hdXX).
 .I block-count
 is the number of blocks on the device.  If omitted,
 .B mkfs.fat
-automatically determines the file system size.
+automatically determines the filesystem size.
 .SH OPTIONS
 .TP
 .B \-a
@@ -115,15 +115,15 @@ of a significant performance degradation on RAIDs, flash media or
 large-sector hard disks.
 .TP
 .B \-A
-Use Atari variation of the MS-DOS file system. This is default if
+Use Atari variation of the MS-DOS filesystem. This is default if
 \fBmkfs.fat\fP is run on an Atari, then this option turns off Atari
 format. There are some differences when using Atari format: If not
 directed otherwise by the user, \fBmkfs.fat\fP will always use 2
 sectors per cluster, since GEMDOS doesn't like other values very much.
 It will also obey the maximum number of sectors GEMDOS can handle.
-Larger file systems are managed by raising the logical sector size.
+Larger filesystems are managed by raising the logical sector size.
 Under Atari format, an Atari-compatible serial number for the
-file system is generated, and a 12 bit FAT is used only for file systems
+filesystem is generated, and a 12 bit FAT is used only for filesystems
 that have one of the usual floppy sizes (720k, 1.2M, 1.44M, 2.88M), a
 16 bit FAT otherwise. This can be overridden with the \fB\-F\fP
 option. Some PC-specific boot sector fields aren't written, and a boot
@@ -135,15 +135,15 @@ depends on number of reserved sectors, but usually is sector 6. The
 backup must be within the range of reserved sectors.
 .TP
 .B \-c
-Check the device for bad blocks before creating the file system.
+Check the device for bad blocks before creating the filesystem.
 .TP
 .B \-C
 Create the file given as \fIdevice\fP on the command line, and write
-the to-be-created file system to it. This can be used to create the
-new file system in a file instead of on a real device, and to avoid
+the to-be-created filesystem to it. This can be used to create the
+new filesystem in a file instead of on a real device, and to avoid
 using \fBdd\fP in advance to create a file of appropriate size. With
 this option, the \fIblock-count\fP must be given, because otherwise
-the intended size of the file system wouldn't be known. The file
+the intended size of the filesystem wouldn't be known. The file
 created is a sparse file, which actually only contains the meta-data
 areas (boot sector, FATs, and root directory). The data portions won't
 be stored on the disk, but the file nevertheless will have the
@@ -151,14 +151,14 @@ correct size. The resulting file can be copied later to a floppy disk
 or other device, or mounted through a loop device.
 .TP
 .BI \-f " number-of-FATs"
-Specify the number of file allocation tables in the file system.  The
-default is 2.  Currently the Linux MS-DOS file system does not support
+Specify the number of file allocation tables in the filesystem.  The
+default is 2.  Currently the Linux MS-DOS filesystem does not support
 more than 2 FATs.
 .TP
 .BI \-F " FAT-size"
 Specifies the type of file allocation tables used (12, 16 or 32 bit).
 If nothing is specified, \fBmkfs.fat\fR will automatically select
-between 12, 16 and 32 bit, whatever fits better for the file system size.
+between 12, 16 and 32 bit, whatever fits better for the filesystem size.
 .TP
 .BI \-h " number-of-hidden-sectors "
 Select the number of hidden sectors in the volume. Apparently some
@@ -167,10 +167,10 @@ such hidden sectors, this option allows you to satisfy them. Assumes
 \'0\' if no value is given on the command line.
 .TP
 .I \-i " volume-id"
-Sets the volume ID of the newly created file system;
+Sets the volume ID of the newly created filesystem;
 .I volume-id
 is a 32-bit hexadecimal number (for example, 2e24ec82).  The default
-is a number which depends on the file system creation time.
+is a number which depends on the filesystem creation time.
 .TP
 .B \-I
 It is typical for fixed disk devices to be partitioned so, by default, you are
@@ -178,7 +178,7 @@ not permitted to create a filesystem across the entire device.
 .B mkfs.fat
 will complain and tell you that it refuses to work.  This is different
 when using MO disks.  One doesn't always need partitions on MO disks.
-The file system can go directly to the whole disk.  Under other OSes
+The filesystem can go directly to the whole disk.  Under other OSes
 this is known as the 'superfloppy' format.
 
 This switch will force
@@ -190,14 +190,14 @@ Read the bad blocks list from
 .IR filename .
 .TP
 .BI \-m " message-file"
-Sets the message the user receives on attempts to boot this file system
+Sets the message the user receives on attempts to boot this filesystem
 without having properly installed an operating system.  The message
 file must not exceed 418 bytes once line feeds have been converted to
 carriage return-line feed combinations, and tabs have been expanded.
 If the filename is a hyphen (-), the text is taken from standard input.
 .TP
 .BI \-n " volume-name"
-Sets the volume name (label) of the file system.  The volume name can
+Sets the volume name (label) of the filesystem.  The volume name can
 be up to 11 characters long.  The default is no label.
 .TP
 .BI \-r " root-dir-entries"
@@ -222,7 +222,7 @@ and greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192,
 Verbose execution.
 .SH BUGS
 .B mkfs.fat
-can not create boot-able file systems. This isn't as easy as you might
+can not create boot-able filesystems. This isn't as easy as you might
 think at first glance for various reasons and has been discussed a lot
 already.
 .B mkfs.fat

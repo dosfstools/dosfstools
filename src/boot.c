@@ -441,7 +441,7 @@ void read_boot(DOS_FS * fs)
 
     if (fs->clusters >
 	((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2)
-	die("File system has %d clusters but only space for %d FAT entries.",
+	die("Filesystem has %d clusters but only space for %d FAT entries.",
 	    fs->clusters,
 	    ((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2);
     if (!fs->root_entries && !fs->root_cluster)

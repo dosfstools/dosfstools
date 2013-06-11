@@ -51,8 +51,8 @@ static void usage(char *name)
 {
     fprintf(stderr, "usage: %s [-aAbflrtvVwy] [-d path -d ...] "
 	    "[-u path -u ...]\n%15sdevice\n", name, "");
-    fprintf(stderr, "  -a       automatically repair the file system\n");
-    fprintf(stderr, "  -A       toggle Atari file system format\n");
+    fprintf(stderr, "  -a       automatically repair the filesystem\n");
+    fprintf(stderr, "  -A       toggle Atari filesystem format\n");
     fprintf(stderr, "  -b       make read-only boot sector check\n");
     fprintf(stderr,
 	    "  -c N     use DOS codepage N to decode short file names (default: %d)\n",
@@ -63,7 +63,7 @@ static void usage(char *name)
     fprintf(stderr,
 	    "  -n       no-op, check non-interactively without changing\n");
     fprintf(stderr, "  -p       same as -a, for compat with other *fsck\n");
-    fprintf(stderr, "  -r       interactively repair the file system\n");
+    fprintf(stderr, "  -r       interactively repair the filesystem\n");
     fprintf(stderr, "  -t       test for bad clusters\n");
     fprintf(stderr, "  -u path  try to undelete that (non-directory) file\n");
     fprintf(stderr, "  -v       verbose mode\n");
@@ -216,7 +216,7 @@ exit:
 	    else
 		printf("Performing changes.\n");
 	} else
-	    printf("Leaving file system unchanged.\n");
+	    printf("Leaving filesystem unchanged.\n");
     }
 
     if (!boot_only)
