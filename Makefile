@@ -48,22 +48,11 @@ mkfs.fat: mkfs.fat.o
 
 rebuild: distclean build
 
-install: install-bin install-doc install-man
+install: install-bin install-doc install-man install-symlinks
 
 install-bin: build
 	install -d -m 0755 $(DESTDIR)/$(SBINDIR)
 	install -m 0755 fatlabel fsck.fat mkfs.fat $(DESTDIR)/$(SBINDIR)
-
-	# legacy symlinks
-	ln -sf fatlabel $(DESTDIR)/$(SBINDIR)/dosfslabel
-
-	ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/dosfsck
-	ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/fsck.msdos
-	ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/fsck.vfat
-
-	ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkdosfs
-	ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkfs.msdos
-	ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkfs.vfat
 
 install-doc:
 	install -d -m 0755 $(DESTDIR)/$(DOCDIR)/dosfstools
@@ -84,17 +73,41 @@ install-man:
 			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(PREFIX)/share/man/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
 		done; \
 	done
+install-symlinks:
+	if [ -e $(DESTDIR)/$(SBINDIR)/fatlabel ]; \
+	then \
+		ln -sf fatlabel $(DESTDIR)/$(SBINDIR)/dosfslabel; \
+		if [ -e $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8 ]; \
+		then \
+			ln -sf fatlabel.8 $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8; \
+		fi; \
+	fi
 
-	# legacy symlinks
-	ln -sf fatlabel.8 $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8
+	if [ -e $(DESTDIR)/$(SBINDIR)/fsck.fat ]; \
+	then \
+		ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/dosfsck; \
+		ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/fsck.msdos; \
+		ln -sf fsck.fat $(DESTDIR)/$(SBINDIR)/fsck.vfat; \
+		if [ -e $(DESTDIR)/$(MANDIR)/man8/fsck.fat.8 ]; \
+		then \
+			ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/dosfsck.8; \
+			ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8; \
+			ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8; \
+		fi; \
+	fi
 
-	ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/dosfsck.8
-	ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8
-	ln -sf fsck.fat.8 $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8
-
-	ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkdosfs.8
-	ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8
-	ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8
+	if [ -e $(DESTDIR)/$(SBINDIR)/mkfs.fat ]; \
+	then \
+		ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkdosfs; \
+		ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkfs.msdos; \
+		ln -sf mkfs.fat $(DESTDIR)/$(SBINDIR)/mkfs.vfat; \
+		if [ -e $(DESTDIR)/$(MANDIR)/man8/mkfs.fat.8 ]; \
+		then \
+			ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkdosfs.8; \
+			ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8; \
+			ln -sf mkfs.fat.8 $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8; \
+		fi; \
+	fi
 
 uninstall: uninstall-bin uninstall-doc uninstall-man
 
