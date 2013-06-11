@@ -84,13 +84,13 @@ static void check_atari(void)
 
 int main(int argc, char *argv[])
 {
-    DOS_FS fs = {0};
+    DOS_FS fs = { 0 };
     rw = 0;
 
     int i;
 
     char *device = NULL;
-    char label[12] = {0};
+    char label[12] = { 0 };
 
     loff_t offset;
     DIR_ENT de;
@@ -115,13 +115,13 @@ int main(int argc, char *argv[])
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
-        for (i = 0; label[i] && i < 11; i++)
-          /* don't know if here should be more strict !uppercase(label[i])*/
-          if (islower(label[i])) {
-            fprintf(stderr,
-                    "fatlabel: labels cannot contain lower case characters\n");
-            exit(1);
-          }
+	for (i = 0; label[i] && i < 11; i++)
+	    /* don't know if here should be more strict !uppercase(label[i]) */
+	    if (islower(label[i])) {
+		fprintf(stderr,
+			"fatlabel: labels cannot contain lower case characters\n");
+		exit(1);
+	    }
 	rw = 1;
     }
 
@@ -130,11 +130,11 @@ int main(int argc, char *argv[])
     if (fs.fat_bits == 32)
 	read_fat(&fs);
     if (!rw) {
-        offset = find_volume_de(&fs, &de);
-        if (offset == 0)
-          fprintf(stdout, "%s\n", fs.label);
-        else
-          fprintf(stdout, "%.8s%.3s\n", de.name, de.ext);
+	offset = find_volume_de(&fs, &de);
+	if (offset == 0)
+	    fprintf(stdout, "%s\n", fs.label);
+	else
+	    fprintf(stdout, "%.8s%.3s\n", de.name, de.ext);
 	exit(0);
     }
 

@@ -54,7 +54,9 @@ static void usage(char *name)
     fprintf(stderr, "  -a       automatically repair the file system\n");
     fprintf(stderr, "  -A       toggle Atari file system format\n");
     fprintf(stderr, "  -b       make read-only boot sector check\n");
-    fprintf(stderr, "  -c N     use DOS codepage N to decode short file names (default: %d)\n", DEFAULT_DOS_CODEPAGE);
+    fprintf(stderr,
+	    "  -c N     use DOS codepage N to decode short file names (default: %d)\n",
+	    DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -d path  drop that file\n");
     fprintf(stderr, "  -f       salvage unused chains to files\n");
     fprintf(stderr, "  -l       list path names\n");
@@ -180,7 +182,7 @@ int main(int argc, char **argv)
 
     read_boot(&fs);
     if (boot_only)
-        goto exit;
+	goto exit;
 
     if (verify)
 	printf("Starting check/repair pass.\n");

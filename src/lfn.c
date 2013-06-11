@@ -124,7 +124,8 @@ static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
     cp = out = use_q ? qalloc(&mem_queue, len + 1) : alloc(len + 1);
 
     for (up = uni; (up - uni) / 2 < maxlen && (up[0] || up[1]); up += 2) {
-	if ((x = wctombs((char *)cp, BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
+	if ((x =
+	     wctombs((char *)cp, BYTES_TO_WCHAR(up[0], up[1]))) != (size_t) - 1)
 	    cp += x;
 	else if (UNICODE_CONVERTABLE(up[0], up[1]))
 	    *cp++ = up[0];

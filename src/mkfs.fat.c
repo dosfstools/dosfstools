@@ -68,7 +68,6 @@
 
 #include <asm/types.h>
 
-
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
 #define llseek lseek
@@ -486,7 +485,6 @@ static int valid_offset(int fd, loff_t offset)
 /* Given a filename, look to see how many blocks of BLOCK_SIZE are present, returning the answer */
 
 static unsigned long long count_blocks(char *filename, int *remainder)
-
 {
     loff_t high, low;
     int fd;
@@ -512,8 +510,8 @@ static unsigned long long count_blocks(char *filename, int *remainder)
     }
 
     close(fd);
-    *remainder = (low%BLOCK_SIZE)/sector_size;
-    return(low / BLOCK_SIZE);
+    *remainder = (low % BLOCK_SIZE) / sector_size;
+    return (low / BLOCK_SIZE);
 }
 
 /* Check to see if the specified device is currently mounted - abort if it is */
@@ -744,8 +742,7 @@ static void setup_tables(void)
 	 * :-), then 6 bytes filler (ignored), then 3 byte serial number. */
 	bs.boot_jump[2] = 'm';
 	memcpy((char *)bs.system_id, "kdosf", strlen("kdosf"));
-    }
-    else
+    } else
 	memcpy((char *)bs.system_id, "mkfs.fat", strlen("mkfs.fat"));
     if (sectors_per_cluster)
 	bs.cluster_size = (char)sectors_per_cluster;
@@ -815,7 +812,8 @@ static void setup_tables(void)
 	memcpy(&bs.hidden, &hidden, 2);
     }
 
-    num_sectors = (long long)(blocks *BLOCK_SIZE / sector_size)+orphaned_sectors;
+    num_sectors =
+	(long long)(blocks * BLOCK_SIZE / sector_size) + orphaned_sectors;
 
     if (!atari_format) {
 	unsigned fatdata1216;	/* Sectors for FATs + data area (FAT12/16) */
@@ -1544,8 +1542,8 @@ int main(int argc, char **argv)
 
 	case 'n':		/* n : Volume name */
 	    sprintf(volume_name, "%-11.11s", optarg);
-            for (i = 0; i < 11; i++)
-              volume_name[i] = toupper(volume_name[i]);
+	    for (i = 0; i < 11; i++)
+		volume_name[i] = toupper(volume_name[i]);
 
 	    break;
 
