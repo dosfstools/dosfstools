@@ -24,6 +24,6 @@
 #define _version_h
 
 #define VERSION "3.0.20"
-#define VERSION_DATE "12 Jun 2013"
+#define VERSION_DATE "2013-06-12"
 
 #endif
