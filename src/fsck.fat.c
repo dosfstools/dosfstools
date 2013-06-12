@@ -1,4 +1,4 @@
-/* mkfs.fat.c - User interface
+/* fsck.fat.c - User interface
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 	    break;
 	case 'v':
 	    verbose = 1;
-	    printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
+	    printf("fsck.fat " VERSION " (" VERSION_DATE ")\n");
 	    break;
 	case 'V':
 	    verify = 1;
@@ -177,7 +177,7 @@ int main(int argc, char **argv)
     if (optind != argc - 1)
 	usage(argv[0]);
 
-    printf("mkfs.fat " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
+    printf("fsck.fat " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
     fs_open(argv[optind], rw);
 
     read_boot(&fs);
