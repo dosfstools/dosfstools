@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
 	usage(0);
     else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version")) {
-	printf("fatlabel " VERSION ", " VERSION_DATE ", FAT32, LFN\n");
+	printf("fatlabel " VERSION " (" VERSION_DATE ")\n");
 	exit(0);
     }
 

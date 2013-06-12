@@ -1402,7 +1402,7 @@ int main(int argc, char **argv)
     volume_id = (u_int32_t) ((create_timeval.tv_sec << 20) | create_timeval.tv_usec);	/* Default volume ID = creation time, fudged for more uniqueness */
     check_atari();
 
-    printf("%s " VERSION " (" VERSION_DATE ")\n", program_name);
+    printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
     while ((c = getopt(argc, argv, "aAb:cCf:F:Ii:l:m:n:r:R:s:S:h:v")) != EOF)
 	/* Scan the command line for options */
