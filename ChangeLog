@@ -1,4 +1,108 @@
-commit 2c88f35 (HEAD, origin/master, origin/HEAD, master)
+commit 1a5d99f (HEAD, origin/master, origin/HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 12 12:07:58 2013 +0200
+
+    Softening message about different boot sectors a bit (Closes: #704198).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 4727286
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 12 11:42:52 2013 +0200
+
+    Harmonizing program name output.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 17c956c
+Author: Martin Wilck <mwilck@arcor.de>
+Date:   Wed Jun 12 11:38:00 2013 +0200
+
+    Don't align FAT to cluster size.
+    
+    See previous patch for explanation.
+    
+    With this patch and the previous two, the
+    mkdosfs generated FAT32 file systems work well in my extremely
+    picky TechniSat device. Of course, they're also detected cleanly
+    by Linux and Windows.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit d63e0d6
+Author: Martin Wilck <mwilck@arcor.de>
+Date:   Wed Jun 12 11:36:08 2013 +0200
+
+    Don't align FAT32 reserved sectors to cluster size.
+    
+    For certain file system sizes (in particular, exact GB sizes -
+    don't ask me why) a Technisat HD S2 Plus DVB receiver will still
+    choke on mkdosfs generated file systems, even if the sectors per
+    cluster problem is fixed.
+    
+    By comparing the properties of generated FAT32 FS with results
+    of the Windows tool "h2format" (www.heise.de/download/h2format.html),
+    I found that the remaining problems were caused by rounding of the
+    reserved sectors and FAT space to cluster size (the h2format tool
+    doesn't do this).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit e048a8d
+Author: Martin Wilck <mwilck@arcor.de>
+Date:   Wed Jun 12 11:33:33 2013 +0200
+
+    Fixing default sectors per cluster for FAT32 (Closes: #690062).
+    
+    The default sectors per cluster calculated by mkdosfs are outdated,
+    see http://technet.microsoft.com/en-us/library/cc938438.aspx.
+    
+    The deviations may cause some 3rd party devices (e.g. TechniSat DVB
+    receivers) to hang when reading mkdosfs generated file systems.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 86509aa
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Jun 11 20:19:09 2013 +0200
+
+    Splitting out legacy symlink creation in toplevel Makefile to own target.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit da37dd1
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 12 11:29:12 2013 +0200
+
+    Correcting wrong toolname in fsck.fat.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit b29a722
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Jun 11 19:51:47 2013 +0200
+
+    Consistently spelling filesystem as filesystem, and not file system.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 977d7aa
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Jun 11 19:30:19 2013 +0200
+
+    Removing Debian reference in GPL license headers.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 5505cc2 (tag: v3.0.19)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Jun 11 18:46:03 2013 +0200
+
+    Releasing version 3.0.19.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 2c88f35
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Jun 11 18:44:50 2013 +0200
 
