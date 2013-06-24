@@ -62,7 +62,7 @@ install-man:
 	for MANPAGE in manpages/en/*; \
 	do \
 		SECTION="8"; \
-		install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(PREFIX)/share/man/man$${SECTION}/$$(basename $${MANPAGE}); \
+		install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/man$${SECTION}/$$(basename $${MANPAGE}); \
 	done
 
 	for LANGUAGE in $(LANGUAGES); \
@@ -70,7 +70,7 @@ install-man:
 		for MANPAGE in manpages/$${LANGUAGE}/*; \
 		do \
 			SECTION="8"; \
-			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(PREFIX)/share/man/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
+			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
 		done; \
 	done
 install-symlinks: install-bin
@@ -138,7 +138,7 @@ uninstall-man:
 	for MANPAGE in manpages/en/*; \
 	do \
 		SECTION="8"; \
-		rm -f $(DESTDIR)/$(PREFIX)/share/man/man$${SECTION}/$$(basename $${MANPAGE} .en.$${SECTION}).$${SECTION}; \
+		rm -f $(DESTDIR)/$(MANDIR}/man$${SECTION}/$$(basename $${MANPAGE} .en.$${SECTION}).$${SECTION}; \
 	done
 
 	for LANGUAGE in $(LANGUAGES); \
@@ -146,7 +146,7 @@ uninstall-man:
 		for MANPAGE in manpages/$${LANGUAGE}/*; \
 		do \
 			SECTION="8"; \
-			rm -f $(DESTDIR)/$(PREFIX)/share/man/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
+			rm -f $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
 		done; \
 	done
 
