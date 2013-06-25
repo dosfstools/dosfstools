@@ -25,7 +25,7 @@
 \fBfsck.fat\fR \- check and repair MS\-DOS filesystems
 
 .SH SYNOPSIS
-\fBfsck.fat\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflnrtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
+\fBfsck.fat\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflnprtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
 
 .SH DESCRIPTION
 \fBfsck.fat\fR verifies the consistency of MS\-DOS filesystems and optionally tries to repair them.
@@ -90,6 +90,8 @@ List path names of files being processed.
 .IP "\fB\-n\fR" 4
 No\-operation mode: non\-interactively check for errors, but don't write
 anything to the filesystem.
+.IP "\fB\-p\fR" 4
+Same as (\fB\-a\fR), for compatibility with other *fsck.
 .IP "\fB\-r\fR" 4
 Interactively repair the filesystem. The user is asked for advice whenever
 there is more than one approach to fix an inconsistency.
