@@ -1,4 +1,44 @@
-commit 1a5d99f (HEAD, origin/master, origin/HEAD, master)
+commit a74c12c (HEAD, origin/master, origin/HEAD, master)
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Tue Jun 25 14:53:14 2013 +0200
+
+    Adding the missing -p option to the fsck manpage (to be consistent with the output of the tool).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 25e03c9
+Author: Patrick J. Volkerding <volkerdi@slackware.com>
+Date:   Mon Jun 24 14:23:00 2013 +0200
+
+    Using $MANDIR instead of hardcoded ${PREFIX}/share/man in the Makefile.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 7fd9cf7
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jun 14 18:50:31 2013 +0200
+
+    Making install-symlinks Makefile target depend on install-bin to not break when using make in parallel, thanks to David Walser <luigiwalser@yahoo.com>.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit a76bbcd
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 12 13:00:10 2013 +0200
+
+    Using US digit date format in version date, rather than name abbrev.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit a64195f (tag: v3.0.20)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jun 12 12:25:32 2013 +0200
+
+    Releasing version 3.0.20.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 1a5d99f
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Wed Jun 12 12:07:58 2013 +0200
 

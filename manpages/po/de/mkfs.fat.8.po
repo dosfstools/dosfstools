@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-06-11 19:49+0300\n"
+"POT-Creation-Date: 2013-07-16 08:33+0300\n"
 "PO-Revision-Date: 2013-06-06 09:34+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -19,13 +19,13 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-06-11"
+msgid "2013-07-16"
 msgstr ""
 
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "3.0.19"
+msgid "3.0.21"
 msgstr ""
 
 #. type: TH

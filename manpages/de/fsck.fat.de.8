@@ -24,13 +24,13 @@
 .\" This file was generated with po4a. Translate the source file.
 .\"
 .\"*******************************************************************
-.TH FSCK.FAT 8 2013\-06\-11 3.0.19 dosfstools
+.TH FSCK.FAT 8 2013\-07\-16 3.0.21 dosfstools
 
 .SH NAME
 \fBfsck.fat\fP \- check and repair MS\-DOS filesystems
 
 .SH SYNOPSIS
-\fBfsck.fat\fP|\fBfsck.msdos\fP|\fBfsck.vfat\fP [\-aAflnrtvVwy] [\-d \fIPATH\fP \-d\ \&\fI...\fP] [\-u\ \fIPATH\fP \-u \fI...\fP] \fIDEVICE\fP
+\fBfsck.fat\fP|\fBfsck.msdos\fP|\fBfsck.vfat\fP [\-aAflnprtvVwy] [\-d \fIPATH\fP \-d\ \&\fI...\fP] [\-u\ \fIPATH\fP \-u \fI...\fP] \fIDEVICE\fP
 
 .SH DESCRIPTION
 \fBfsck.fat\fP verifies the consistency of MS\-DOS filesystems and optionally
@@ -119,6 +119,8 @@ List path names of files being processed.
 .IP \fB\-n\fP 4
 No\-operation mode: non\-interactively check for errors, but don't write
 anything to the filesystem.
+.IP \fB\-p\fP 4
+Same as (\fB\-a\fP), for compatibility with other *fsck.
 .IP \fB\-r\fP 4
 Interactively repair the filesystem. The user is asked for advice whenever
 there is more than one approach to fix an inconsistency.

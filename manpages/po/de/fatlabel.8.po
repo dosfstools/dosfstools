@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-06-11 18:45+0300\n"
+"POT-Creation-Date: 2013-07-16 08:33+0300\n"
 "PO-Revision-Date: 2013-06-06 09:34+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,13 +25,13 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-06-11"
+msgid "2013-07-16"
 msgstr ""
 
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "3.0.19"
+msgid "3.0.21"
 msgstr ""
 
 #. type: TH
@@ -109,7 +109,7 @@ msgid "Shows version."
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:126 en/mkfs.fat.8:241
+#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:241
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
@@ -120,12 +120,12 @@ msgid "B<fsck.fat>(8)"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:45 en/fsck.fat.8:130
+#: en/fatlabel.8:45 en/fsck.fat.8:132
 msgid "B<mkfs.fat>(8)"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:46 en/fsck.fat.8:131
+#: en/fatlabel.8:46 en/fsck.fat.8:133
 #, no-wrap
 msgid "HOMEPAGE"
 msgstr ""
@@ -138,13 +138,13 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:49 en/fsck.fat.8:134
+#: en/fatlabel.8:49 en/fsck.fat.8:136
 #, no-wrap
 msgid "AUTHORS"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:50 en/fsck.fat.8:135
+#: en/fatlabel.8:50 en/fsck.fat.8:137
 msgid ""
 "B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
 "almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."
