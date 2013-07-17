@@ -77,7 +77,7 @@ install-symlinks: install-bin
 	if [ -e $(DESTDIR)/$(SBINDIR)/fatlabel ]; \
 	then \
 		ln -sf fatlabel $(DESTDIR)/$(SBINDIR)/dosfslabel; \
-		if [ -e $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8 ]; \
+		if [ -e $(DESTDIR)/$(MANDIR)/man8/fatlabel.8 ]; \
 		then \
 			ln -sf fatlabel.8 $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8; \
 		fi; \
