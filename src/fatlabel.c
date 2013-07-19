@@ -119,8 +119,8 @@ int main(int argc, char *argv[])
 	    /* don't know if here should be more strict !uppercase(label[i]) */
 	    if (islower(label[i])) {
 		fprintf(stderr,
-			"fatlabel: labels cannot contain lower case characters\n");
-		exit(1);
+			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
+		break;
 	    }
 	rw = 1;
     }
