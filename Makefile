@@ -73,7 +73,7 @@ install-man:
 			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
 		done; \
 	done
-install-symlinks: install-bin
+install-symlinks: install-bin install-man
 	if [ -e $(DESTDIR)/$(SBINDIR)/fatlabel ]; \
 	then \
 		ln -sf fatlabel $(DESTDIR)/$(SBINDIR)/dosfslabel; \
