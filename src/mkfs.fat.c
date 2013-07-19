@@ -281,6 +281,10 @@ static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
 static char *blank_sector;	/* Blank sector - all zeros */
 static int hidden_sectors = 0;	/* Number of hidden sectors */
+static int hidden_sectors_by_user = 0;	/* -h option invoked */
+static int drive_number_option = 0;	/* drive number */
+static int drive_number_by_user = 0;	/* drive number option invoked */
+static int fat_media_byte = 0;	/* media byte in header and starting FAT */
 static int malloc_entire_fat = FALSE;	/* Whether we should malloc() the entire FAT or not */
 static int align_structures = TRUE;	/* Whether to enforce alignment */
 static int orphaned_sectors = 0;	/* Sectors that exist in the last block of filesystem */
@@ -682,6 +686,8 @@ floppy_default:
 	} else {
 	    bs.secs_track = htole16(geometry.sectors);	/* Set up the geometry information */
 	    bs.heads = htole16(geometry.heads);
+	    if (!hidden_sectors_by_user)
+		hidden_sectors = htole32(geometry.start);
 	}
 def_hd_params:
 	bs.media = (char)0xf8;	/* Set up the media descriptor for a hard drive */
@@ -746,6 +752,18 @@ static void setup_tables(void)
 	memcpy((char *)bs.system_id, "mkfs.fat", strlen("mkfs.fat"));
     if (sectors_per_cluster)
 	bs.cluster_size = (char)sectors_per_cluster;
+
+    if (fat_media_byte)
+	bs.media = (char) fat_media_byte;
+
+    if (bs.media == 0xf8)
+	vi->drive_number=0x80;
+    else
+	vi->drive_number=0x00;
+
+    if (drive_number_by_user)
+	vi->drive_number= (char) drive_number_option;
+
     if (size_fat == 32) {
 	/* Under FAT32, the root dir is in a cluster chain, and this is
 	 * signalled by bs.dir_entries being 0. */
@@ -1150,9 +1168,11 @@ static void setup_tables(void)
 	       device_name, le16toh(bs.heads),
 	       (le16toh(bs.heads) != 1) ? "s" : "", le16toh(bs.secs_track),
 	       (le16toh(bs.secs_track) != 1) ? "s" : "");
+	printf("hidden sectors 0x%04x;\n",  hidden_sectors);
 	printf("logical sector size is %d,\n", sector_size);
 	printf("using 0x%02x media descriptor, with %d sectors;\n",
 	       (int)(bs.media), num_sectors);
+	printf("drive number 0x%02x;\n", (int) (vi->drive_number));
 	printf("filesystem has %d %d-bit FAT%s and %d sector%s per cluster.\n",
 	       (int)(bs.fats), size_fat, (bs.fats != 1) ? "s" : "",
 	       (int)(bs.cluster_size), (bs.cluster_size != 1) ? "s" : "");
@@ -1344,6 +1364,7 @@ Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-secto
        [-m boot-msg-file][-n volume-name][-i volume-id]\n\
        [-s sectors-per-cluster][-S logical-sector-size][-f number-of-FATs]\n\
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\
+       [-M FAT-media-byte][-D drive_number]\n\
        /dev/name [blocks]\n");
 }
 
@@ -1404,7 +1425,7 @@ int main(int argc, char **argv)
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
-    while ((c = getopt(argc, argv, "aAb:cCf:F:Ii:l:m:n:r:R:s:S:h:v")) != EOF)
+    while ((c = getopt(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v")) != EOF)
 	/* Scan the command line for options */
 	switch (c) {
 	case 'A':		/* toggle Atari format */
@@ -1432,6 +1453,15 @@ int main(int argc, char **argv)
 	    create = TRUE;
 	    break;
 
+	case 'D':		/* D : Choose Drive Number */
+	    drive_number_option = (int) strtol (optarg, &tmp, 0);
+	    if (*tmp || (drive_number_option != 0 && drive_number_option != 0x80)) {
+		printf ("Drive number must be 0 or 0x80: %s\n", optarg);
+		usage ();
+	    }
+	    drive_number_by_user=1;
+	    break;
+
 	case 'f':		/* f : Choose number of FATs */
 	    nr_fats = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || nr_fats < 1 || nr_fats > 4) {
@@ -1455,6 +1485,7 @@ int main(int argc, char **argv)
 		printf("Bad number of hidden sectors : %s\n", optarg);
 		usage();
 	    }
+	    hidden_sectors_by_user = 1;
 	    break;
 
 	case 'I':
@@ -1531,6 +1562,14 @@ int main(int argc, char **argv)
 
 		if (msgfile != stdin)
 		    fclose(msgfile);
+	    }
+	    break;
+
+	case 'M':		/* M : FAT Media byte */
+	    fat_media_byte = (int) strtol (optarg, &tmp, 0);
+	    if (*tmp || fat_media_byte < 248 || fat_media_byte > 255) {
+		printf ("FAT Media byte must be between 0xF8 and 0xFF : %s\n", optarg);
+		usage ();
 	    }
 	    break;
 

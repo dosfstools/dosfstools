@@ -87,6 +87,14 @@
 .I logical-sector-size
 ]
 [
+.B \-D
+.I drive-number
+]
+[
+.B \-M
+.I FAT-media-type
+]
+[
 .B \-v
 ]
 .I device
@@ -150,6 +158,11 @@ be stored on the disk, but the file nevertheless will have the
 correct size. The resulting file can be copied later to a floppy disk
 or other device, or mounted through a loop device.
 .TP
+.BI \-D " drive-number"
+Specify the BIOS drive number to be stored in the FAT boot sector.
+This value is usually 0x80 for hard disks and 0x00 for floppy devices
+or partitions to be used for floppy emulation.
+.TP
 .BI \-f " number-of-FATs"
 Specify the number of file allocation tables in the filesystem.  The
 default is 2.  Currently the Linux MS-DOS filesystem does not support
@@ -163,8 +176,7 @@ between 12, 16 and 32 bit, whatever fits better for the filesystem size.
 .BI \-h " number-of-hidden-sectors "
 Select the number of hidden sectors in the volume. Apparently some
 digital cameras get indigestion if you feed them a CF card without
-such hidden sectors, this option allows you to satisfy them. Assumes
-\'0\' if no value is given on the command line.
+such hidden sectors, this option allows you to satisfy them.
 .TP
 .I \-i " volume-id"
 Sets the volume ID of the newly created filesystem;
@@ -195,6 +207,11 @@ without having properly installed an operating system.  The message
 file must not exceed 418 bytes once line feeds have been converted to
 carriage return-line feed combinations, and tabs have been expanded.
 If the filename is a hyphen (-), the text is taken from standard input.
+.TP
+.BI \-M " FAT-media-type"
+Specify the media type to be stored in the FAT boot sector.
+This value is usually 0xF8 for hard disks and has a value from 0xF9
+to 0xFF for floppies or partitions to be used for floppy emulation.
 .TP
 .BI \-n " volume-name"
 Sets the volume name (label) of the filesystem.  The volume name can
