@@ -109,23 +109,12 @@ install-symlinks: install-bin
 		fi; \
 	fi
 
-uninstall: uninstall-bin uninstall-doc uninstall-man
+uninstall: uninstall-symlinks uninstall-man uninstall-doc uninstall-bin
 
 uninstall-bin:
 	rm -f $(DESTDIR)/$(SBINDIR)/fatlabel
 	rm -f $(DESTDIR)/$(SBINDIR)/fsck.fat
 	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.fat
-
-	# legacy symlinks
-	rm -f $(DESTDIR)/$(SBINDIR)/dosfslabel
-
-	rm -f $(DESTDIR)/$(SBINDIR)/dosfsck
-	rm -f $(DESTDIR)/$(SBINDIR)/fsck.msdos
-	rm -f $(DESTDIR)/$(SBINDIR)/fsck.vfat
-
-	rm -f $(DESTDIR)/$(SBINDIR)/mkdosfs
-	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.msdos
-	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.vfat
 
 	rmdir --ignore-fail-on-non-empty $(DESTDIR)/$(SBINDIR)
 
@@ -150,15 +139,22 @@ uninstall-man:
 		done; \
 	done
 
-	# legacy symlinks
+uninstall-symlinks:
+	rm -f $(DESTDIR)/$(SBINDIR)/dosfslabel
 	rm -f $(DESTDIR)/$(MANDIR)/man8/dosfslabel.8
 
+	rm -f $(DESTDIR)/$(SBINDIR)/dosfsck
 	rm -f $(DESTDIR)/$(MANDIR)/man8/dosfsck.8
+	rm -f $(DESTDIR)/$(SBINDIR)/fsck.msdos
 	rm -f $(DESTDIR)/$(MANDIR)/man8/fsck.msdos.8
+	rm -f $(DESTDIR)/$(SBINDIR)/fsck.vfat
 	rm -f $(DESTDIR)/$(MANDIR)/man8/fsck.vfat.8
 
+	rm -f $(DESTDIR)/$(SBINDIR)/mkdosfs
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkdosfs.8
+	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.msdos
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.msdos.8
+	rm -f $(DESTDIR)/$(SBINDIR)/mkfs.vfat
 	rm -f $(DESTDIR)/$(MANDIR)/man8/mkfs.vfat.8
 
 reinstall: distclean install
@@ -169,4 +165,4 @@ clean:
 distclean: clean
 	rm -f fatlabel fsck.fat mkfs.fat
 
-.PHONY: build rebuild install install-bin install-doc install-man uninstall uninstall-bin uninstall-doc uninstall-man reinstall clean distclean
+.PHONY: build rebuild install install-bin install-doc install-man uninstall uninstall-bin uninstall-doc uninstall-man uninstall-symlinks reinstall clean distclean
