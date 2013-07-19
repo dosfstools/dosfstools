@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-07-16 08:33+0300\n"
+"POT-Creation-Date: 2013-07-19 07:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,13 +19,13 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-07-16"
+msgid "2013-07-19"
 msgstr ""
 
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "3.0.21"
+msgid "3.0.22"
 msgstr ""
 
 #. type: TH
@@ -47,19 +47,19 @@ msgid "SYNOPSIS"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:96
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:104
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:106
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:114
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:241
+#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:258
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
@@ -256,7 +256,7 @@ msgid ""
 msgstr ""
 
 #. type: TP
-#: en/fsck.fat.8:78 en/mkfs.fat.8:107
+#: en/fsck.fat.8:78 en/mkfs.fat.8:115
 #, no-wrap
 msgid "B<-a>"
 msgstr ""
@@ -270,7 +270,7 @@ msgid ""
 msgstr ""
 
 #. type: TP
-#: en/fsck.fat.8:80 en/mkfs.fat.8:116
+#: en/fsck.fat.8:80 en/mkfs.fat.8:124
 #, no-wrap
 msgid "B<-A>"
 msgstr ""
@@ -400,7 +400,7 @@ msgid ""
 msgstr ""
 
 #. type: TP
-#: en/fsck.fat.8:102 en/mkfs.fat.8:220
+#: en/fsck.fat.8:102 en/mkfs.fat.8:237
 #, no-wrap
 msgid "B<-v>"
 msgstr ""
@@ -519,7 +519,7 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fsck.fat.8:125 en/mkfs.fat.8:223
+#: en/fsck.fat.8:125 en/mkfs.fat.8:240
 #, no-wrap
 msgid "BUGS"
 msgstr ""

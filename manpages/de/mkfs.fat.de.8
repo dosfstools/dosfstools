@@ -24,7 +24,7 @@
 .\" This file was generated with po4a. Translate the source file.
 .\"
 .\"*******************************************************************
-.TH MKFS.FAT 8 2013\-07\-16 3.0.21 dosfstools
+.TH MKFS.FAT 8 2013\-07\-19 3.0.22 dosfstools
 .SH NAME
 \fBmkfs.fat\fP \- create an MS\-DOS filesystem under Linux
 .SH SYNOPSIS
@@ -33,8 +33,9 @@
 \fIFAT\-size\fP ] [ \fB\-h\fP \fInumber\-of\-hidden\-sectors\fP ] [ \fB\-i\fP \fIvolume\-id\fP ]
 [\fB \-I \fP] [ \fB\-m\fP \fImessage\-file\fP ] [ \fB\-n\fP \fIvolume\-name\fP ] [ \fB\-r\fP
 \fIroot\-dir\-entries\fP ] [ \fB\-R\fP \fInumber\-of\-reserved\-sectors\fP ] [ \fB\-s\fP
-\fIsectors\-per\-cluster\fP ] [ \fB\-S\fP \fIlogical\-sector\-size\fP ] [ \fB\-v\fP ]
-\fIdevice\fP [ \fIblock\-count\fP ]
+\fIsectors\-per\-cluster\fP ] [ \fB\-S\fP \fIlogical\-sector\-size\fP ] [ \fB\-D\fP
+\fIdrive\-number\fP ] [ \fB\-M\fP \fIFAT\-media\-type\fP ] [ \fB\-v\fP ] \fIdevice\fP [
+\fIblock\-count\fP ]
 .SH DESCRIPTION
 \fBmkfs.fat\fP is used to create an MS\-DOS filesystem under Linux on a device
 (usually a disk partition).  \fIdevice\fP is the special file corresponding to
@@ -85,6 +86,11 @@ directory). The data portions won't be stored on the disk, but the file
 nevertheless will have the correct size. The resulting file can be copied
 later to a floppy disk or other device, or mounted through a loop device.
 .TP 
+\fB\-D\fP\fI drive\-number\fP
+Specify the BIOS drive number to be stored in the FAT boot sector.  This
+value is usually 0x80 for hard disks and 0x00 for floppy devices or
+partitions to be used for floppy emulation.
+.TP 
 \fB\-f\fP\fI number\-of\-FATs\fP
 Specify the number of file allocation tables in the filesystem.  The default
 is 2.  Currently the Linux MS\-DOS filesystem does not support more than 2
@@ -98,8 +104,7 @@ and 32 bit, whatever fits better for the filesystem size.
 \fB\-h\fP\fI number\-of\-hidden\-sectors \fP
 Select the number of hidden sectors in the volume. Apparently some digital
 cameras get indigestion if you feed them a CF card without such hidden
-sectors, this option allows you to satisfy them. Assumes \'0\' if no value
-is given on the command line.
+sectors, this option allows you to satisfy them.
 .TP 
 \fI\-i  volume\-id\fP
 Sets the volume ID of the newly created filesystem; \fIvolume\-id\fP is a 32\-bit
@@ -125,6 +130,11 @@ without having properly installed an operating system.  The message file
 must not exceed 418 bytes once line feeds have been converted to carriage
 return\-line feed combinations, and tabs have been expanded.  If the filename
 is a hyphen (\-), the text is taken from standard input.
+.TP 
+\fB\-M\fP\fI FAT\-media\-type\fP
+Specify the media type to be stored in the FAT boot sector.  This value is
+usually 0xF8 for hard disks and has a value from 0xF9 to 0xFF for floppies
+or partitions to be used for floppy emulation.
 .TP 
 \fB\-n\fP\fI volume\-name\fP
 Sets the volume name (label) of the filesystem.  The volume name can be up

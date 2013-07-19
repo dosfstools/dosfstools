@@ -1,4 +1,62 @@
-commit a74c12c (HEAD, origin/master, origin/HEAD, master)
+commit 3dc5560 (HEAD, origin/master, origin/HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jul 19 06:55:24 2013 +0200
+
+    Addding install-symlinks target to phony targets in Makefile.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit c6c0581
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jul 19 06:55:00 2013 +0200
+
+    Adding uninstall-symlinks target in Makefile.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 465dd8c
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jul 19 06:45:40 2013 +0200
+
+    Allowing fatlabel to write labels in all lowercase but give a warning about DOS/Windows (Closes: #714971).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 3621b30
+Author: John S Gruber <JohnSGruber@gmail.com>
+Date:   Fri Jul 19 06:40:21 2013 +0200
+
+    Add options and make dos boot sector more compatible with reference system (Closes: #552673).
+    
+    Unless overridden by the user sets the DOS boot sector's
+    hidden-sectors field to match the start of a hard disk's
+    partition.
+    
+    Initialize DOS boot sector drive_number according to FAT media type
+    Addresses LP: #398241 and Debian #552673
+    
+    Adds options to override the DOS boot sector device_number and
+    the FAT media type.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit be1eed5
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Wed Jul 17 12:52:20 2013 +0200
+
+    Correcting wrong check preventing installation of fatlabel legacy manpage symlink.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit d0065d3 (tag: v3.0.21)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Jul 16 08:34:28 2013 +0200
+
+    Releasing version 3.0.21.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit a74c12c
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Tue Jun 25 14:53:14 2013 +0200
 

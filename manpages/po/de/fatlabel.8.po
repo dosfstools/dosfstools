@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-07-16 08:33+0300\n"
+"POT-Creation-Date: 2013-07-19 07:00+0300\n"
 "PO-Revision-Date: 2013-06-06 09:34+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -25,13 +25,13 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-07-16"
+msgid "2013-07-19"
 msgstr ""
 
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "3.0.21"
+msgid "3.0.22"
 msgstr ""
 
 #. type: TH
@@ -63,7 +63,7 @@ msgid "B<fatlabel> I<DEVICE> [I<LABEL>]"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:96
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:104
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr ""
@@ -81,7 +81,7 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:106
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:114
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
@@ -109,7 +109,7 @@ msgid "Shows version."
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:241
+#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:258
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
