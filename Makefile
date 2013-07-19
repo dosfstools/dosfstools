@@ -165,4 +165,4 @@ clean:
 distclean: clean
 	rm -f fatlabel fsck.fat mkfs.fat
 
-.PHONY: build rebuild install install-bin install-doc install-man uninstall uninstall-bin uninstall-doc uninstall-man uninstall-symlinks reinstall clean distclean
+.PHONY: build rebuild install install-bin install-doc install-man install-symlinks uninstall uninstall-bin uninstall-doc uninstall-man uninstall-symlinks reinstall clean distclean
