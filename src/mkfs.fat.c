@@ -1575,8 +1575,13 @@ int main(int argc, char **argv)
 
 	case 'n':		/* n : Volume name */
 	    sprintf(volume_name, "%-11.11s", optarg);
-	    for (i = 0; i < 11; i++)
-		volume_name[i] = toupper(volume_name[i]);
+	    for (i = 0; volume_name[i] && i < 11; i++)
+		/* don't know if here should be more strict !uppercase(label[i]) */
+		if (islower(volume_name[i])) {
+		    fprintf(stderr,
+		            "mkfs.fat: warning - lowercase labels might not work properly with DOS or Windows\n");
+		    break;
+		}
 
 	    break;
 
