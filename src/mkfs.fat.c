@@ -709,7 +709,7 @@ def_hd_params:
 								 BLOCK_SIZE_BITS);
 	    bs.cluster_size =
 		sz_mb >= 32 * 1024 ? 64 : sz_mb >= 16 * 1024 ? 32 : sz_mb >=
-		8 * 1024 ? 16 : 8;
+		8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
 	} else {
 	    /* FAT12 and FAT16: start at 4 sectors per cluster */
 	    bs.cluster_size = (char)4;
