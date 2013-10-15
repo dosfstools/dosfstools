@@ -1,4 +1,54 @@
-commit 3dc5560 (HEAD, origin/master, origin/HEAD, master)
+commit 07d85ff (HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Oct 15 08:04:11 2013 +0200
+
+    Reformating mkfs.fat manpage.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 137552f (origin/master, origin/HEAD)
+Author: Michael Shigorin <mike@altlinux.org>
+Date:   Tue Oct 15 01:29:33 2013 +0400
+
+    Fixing "Fixing default sectors per cluster for FAT32" for UEFI.
+    
+    FAT32 "EFI System Partition" is basically required for UEFI boot;
+    commit ge048a8d broke that for me with both virtualbox-4.2 and
+    real hardware (ASUS C60M1-I to be exact) given ~250Mb filesystem.
+    
+    This commit amends that one by reverting its effects for these
+    small sizes by restoring 512b cluster size for <= 260Mb FAT32.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 2000696
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Aug 9 09:38:13 2013 +0200
+
+    Also allowing lowercase labels in mkfs (with warning message) consistent with the recent fsck change, thanks to Michael Baum <mbaum@devonit.com>.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 9b04807
+Author: Tim Harder <radhermit@gentoo.org>
+Date:   Fri Jul 19 18:15:21 2013 +0200
+
+    Add install-man dependency to install-symlinks Makefile target.
+    
+    This fixes a race condition during parallel installs where man page
+    symlinks won't be installed because install-man hasn't been run yet.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 651f91c (tag: v3.0.22)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jul 19 07:01:19 2013 +0200
+
+    Releasing version 3.0.22.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 3dc5560
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Jul 19 06:55:24 2013 +0200
 
