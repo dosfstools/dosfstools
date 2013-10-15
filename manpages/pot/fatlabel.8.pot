@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-07-19 07:00+0300\n"
+"POT-Creation-Date: 2013-10-15 08:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,7 +25,7 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-07-19"
+msgid "2013-10-15"
 msgstr ""
 
 #. type: TH
@@ -41,7 +41,7 @@ msgid "dosfstools"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:23
+#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:24
 #, no-wrap
 msgid "NAME"
 msgstr ""
@@ -52,7 +52,7 @@ msgid "B<fatlabel> - set or get MS-DOS filesystem label"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:26
+#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:27
 #, no-wrap
 msgid "SYNOPSIS"
 msgstr ""
@@ -63,7 +63,7 @@ msgid "B<fatlabel> I<DEVICE> [I<LABEL>]"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:104
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:30
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr ""
@@ -81,7 +81,7 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:114
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:33
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
@@ -109,13 +109,13 @@ msgid "Shows version."
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:258
+#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:78
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:43
+#: en/fatlabel.8:43 en/mkfs.fat.8:82
 msgid "B<fsck.fat>(8)"
 msgstr ""
 
@@ -125,7 +125,7 @@ msgid "B<mkfs.fat>(8)"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:46 en/fsck.fat.8:133
+#: en/fatlabel.8:46 en/fsck.fat.8:133 en/mkfs.fat.8:83
 #, no-wrap
 msgid "HOMEPAGE"
 msgstr ""
@@ -138,13 +138,13 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:49 en/fsck.fat.8:136
+#: en/fatlabel.8:49 en/fsck.fat.8:136 en/mkfs.fat.8:86
 #, no-wrap
 msgid "AUTHORS"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:50 en/fsck.fat.8:137
+#: en/fatlabel.8:50 en/fsck.fat.8:137 en/mkfs.fat.8:87
 msgid ""
 "B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
 "almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."

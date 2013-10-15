@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2013-07-19 07:00+0300\n"
+"POT-Creation-Date: 2013-10-15 08:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 #. type: TH
 #: en/fatlabel.8:22 en/fsck.fat.8:22 en/mkfs.fat.8:22
 #, no-wrap
-msgid "2013-07-19"
+msgid "2013-10-15"
 msgstr ""
 
 #. type: TH
@@ -35,31 +35,31 @@ msgid "dosfstools"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:23
+#: en/fatlabel.8:24 en/fsck.fat.8:24 en/mkfs.fat.8:24
 #, no-wrap
 msgid "NAME"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:26
+#: en/fatlabel.8:27 en/fsck.fat.8:27 en/mkfs.fat.8:27
 #, no-wrap
 msgid "SYNOPSIS"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:104
+#: en/fatlabel.8:30 en/fsck.fat.8:30 en/mkfs.fat.8:30
 #, no-wrap
 msgid "DESCRIPTION"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:114
+#: en/fatlabel.8:35 en/fsck.fat.8:77 en/mkfs.fat.8:33
 #, no-wrap
 msgid "OPTIONS"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:258
+#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:78
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
@@ -70,19 +70,19 @@ msgid "B<mkfs.fat>(8)"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:46 en/fsck.fat.8:133
+#: en/fatlabel.8:46 en/fsck.fat.8:133 en/mkfs.fat.8:83
 #, no-wrap
 msgid "HOMEPAGE"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:49 en/fsck.fat.8:136
+#: en/fatlabel.8:49 en/fsck.fat.8:136 en/mkfs.fat.8:86
 #, no-wrap
 msgid "AUTHORS"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:50 en/fsck.fat.8:137
+#: en/fatlabel.8:50 en/fsck.fat.8:137 en/mkfs.fat.8:87
 msgid ""
 "B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
 "almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."
@@ -255,8 +255,8 @@ msgid ""
 "with the B<-w> option."
 msgstr ""
 
-#. type: TP
-#: en/fsck.fat.8:78 en/mkfs.fat.8:115
+#. type: IP
+#: en/fsck.fat.8:78 en/mkfs.fat.8:34
 #, no-wrap
 msgid "B<-a>"
 msgstr ""
@@ -269,8 +269,8 @@ msgid ""
 "destructive approach is used."
 msgstr ""
 
-#. type: TP
-#: en/fsck.fat.8:80 en/mkfs.fat.8:124
+#. type: IP
+#: en/fsck.fat.8:80
 #, no-wrap
 msgid "B<-A>"
 msgstr ""
@@ -399,8 +399,8 @@ msgid ""
 "undeleted file."
 msgstr ""
 
-#. type: TP
-#: en/fsck.fat.8:102 en/mkfs.fat.8:237
+#. type: IP
+#: en/fsck.fat.8:102 en/mkfs.fat.8:72
 #, no-wrap
 msgid "B<-v>"
 msgstr ""
@@ -519,7 +519,7 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fsck.fat.8:125 en/mkfs.fat.8:240
+#: en/fsck.fat.8:125 en/mkfs.fat.8:75
 #, no-wrap
 msgid "BUGS"
 msgstr ""
@@ -533,12 +533,12 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:130
+#: en/fsck.fat.8:130 en/mkfs.fat.8:80
 msgid "B<fatlabel>(8)"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:135
+#: en/fsck.fat.8:135 en/mkfs.fat.8:85
 msgid ""
 "More information about B<fsck.fat> and B<dosfstools> can be found at "
 "E<lt>I<http://daniel-baumann.ch/software/dosfstools/>E<gt>."
