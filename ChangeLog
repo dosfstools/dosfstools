@@ -1,4 +1,25 @@
-commit 07d85ff (HEAD, master)
+commit 55bd7b7 (HEAD, master)
+Author: Jaroslav Skarvada <jskarvad@redhat.com>
+Date:   Sat Nov 23 10:34:48 2013 +0100
+
+    Fixed dosfsck on big endian platforms (Resolves: rhbz#1029695).
+    
+    It seems there is problem in the double conversion on big endians.
+    The first conversion is done by the explicit conversion to __u16
+    in the GET_UNALIGNED_W macro, so the secondary conversion by le16toh
+    seems to be redundant (and wrong).
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 6debb4a (tag: v3.0.23, origin/master, origin/HEAD)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Tue Oct 15 08:05:46 2013 +0200
+
+    Releasing version 3.0.23.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 07d85ff
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Oct 15 08:04:11 2013 +0200
 
@@ -6,7 +27,7 @@ Date:   Tue Oct 15 08:04:11 2013 +0200
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 137552f (origin/master, origin/HEAD)
+commit 137552f
 Author: Michael Shigorin <mike@altlinux.org>
 Date:   Tue Oct 15 01:29:33 2013 +0400
 
