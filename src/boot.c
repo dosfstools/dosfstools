@@ -62,7 +62,7 @@ static struct {
 
 /* Unaligned fields must first be accessed byte-wise */
 #define GET_UNALIGNED_W(f)			\
-    le16toh( (__u16)f[0] | ((__u16)f[1]<<8) )
+    ( (__u16)f[0] | ((__u16)f[1]<<8) )
 
 static char *get_media_descr(unsigned char media)
 {
