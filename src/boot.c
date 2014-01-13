@@ -110,12 +110,12 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
 	printf("%10d root directory entries\n", fs->root_entries);
     } else {
 	printf("Root directory start at cluster %lu (arbitrary size)\n",
-	       fs->root_cluster);
+	       (unsigned long)fs->root_cluster);
     }
     printf("Data area starts at byte %llu (sector %llu)\n",
 	   (unsigned long long)fs->data_start,
 	   (unsigned long long)fs->data_start / lss);
-    printf("%10lu data clusters (%llu bytes)\n", fs->clusters,
+    printf("%10lu data clusters (%llu bytes)\n", (unsigned long)fs->clusters,
 	   (unsigned long long)fs->clusters * fs->cluster_size);
     printf("%u sectors/track, %u heads\n", le16toh(b->secs_track),
 	   le16toh(b->heads));
@@ -391,7 +391,7 @@ void read_boot(DOS_FS * fs)
 		   "  but has only %lu clusters, less than the required "
 		   "minimum of %d.\n"
 		   "  This may lead to problems on some systems.\n",
-		   fs->clusters, FAT16_THRESHOLD);
+		   (unsigned long)fs->clusters, FAT16_THRESHOLD);
 
 	check_fat_state_bit(fs, &b);
 	fs->backupboot_start = le16toh(b.backup_boot) * logical_sector_size;
@@ -440,7 +440,7 @@ void read_boot(DOS_FS * fs)
     }
 
     if (fs->clusters >
-	((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2)
+	((uint64_t)fs->fat_size * 8 / fs->fat_bits) - 2)
 	die("Filesystem has %d clusters but only space for %d FAT entries.",
 	    fs->clusters,
 	    ((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2);
@@ -493,7 +493,7 @@ static void write_boot_label(DOS_FS * fs, char *label)
 
 loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 {
-    unsigned long cluster;
+    uint32_t cluster;
     loff_t offset;
     int i;
 

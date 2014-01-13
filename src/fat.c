@@ -43,7 +43,7 @@
  * @param[in]	cluster     Cluster of interest
  * @param[in]	fs          Information from the FAT boot sectors (bits per FAT entry)
  */
-void get_fat(FAT_ENTRY * entry, void *fat, unsigned long cluster, DOS_FS * fs)
+void get_fat(FAT_ENTRY * entry, void *fat, uint32_t cluster, DOS_FS * fs)
 {
     unsigned char *ptr;
 
@@ -60,7 +60,7 @@ void get_fat(FAT_ENTRY * entry, void *fat, unsigned long cluster, DOS_FS * fs)
 	/* According to M$, the high 4 bits of a FAT32 entry are reserved and
 	 * are not part of the cluster number. So we cut them off. */
 	{
-	    unsigned long e = le32toh(((unsigned int *)fat)[cluster]);
+	    uint32_t e = le32toh(((unsigned int *)fat)[cluster]);
 	    entry->value = e & 0xfffffff;
 	    entry->reserved = e >> 28;
 	}
@@ -81,10 +81,10 @@ void get_fat(FAT_ENTRY * entry, void *fat, unsigned long cluster, DOS_FS * fs)
 void read_fat(DOS_FS * fs)
 {
     int eff_size;
-    unsigned long i;
+    uint32_t i;
     void *first, *second = NULL;
     int first_ok, second_ok;
-    unsigned long total_num_clusters;
+    uint32_t total_num_clusters;
 
     /* Clean up from previous pass */
     if (fs->fat)
@@ -151,13 +151,13 @@ void read_fat(DOS_FS * fs)
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 	if (curEntry.value == 1) {
-	    printf("Cluster %ld out of range (1). Setting to EOF.\n", i - 2);
+	    printf("Cluster %ld out of range (1). Setting to EOF.\n", (long)(i - 2));
 	    set_fat(fs, i, -1);
 	}
 	if (curEntry.value >= fs->clusters + 2 &&
 	    (curEntry.value < FAT_MIN_BAD(fs))) {
 	    printf("Cluster %ld out of range (%ld > %ld). Setting to EOF.\n",
-		   i - 2, curEntry.value, fs->clusters + 2 - 1);
+		   (long)(i - 2), (long)curEntry.value, (long)(fs->clusters + 2 - 1));
 	    set_fat(fs, i, -1);
 	}
     }
@@ -176,13 +176,13 @@ void read_fat(DOS_FS * fs)
  *				  -1 == end-of-chain
  *				  -2 == bad cluster
  */
-void set_fat(DOS_FS * fs, unsigned long cluster, unsigned long new)
+void set_fat(DOS_FS * fs, uint32_t cluster, int32_t new)
 {
     unsigned char *data = NULL;
     int size;
     loff_t offs;
 
-    if ((long)new == -1)
+    if (new == -1)
 	new = FAT_EOF(fs);
     else if ((long)new == -2)
 	new = FAT_BAD(fs);
@@ -233,7 +233,7 @@ void set_fat(DOS_FS * fs, unsigned long cluster, unsigned long new)
     }
 }
 
-int bad_cluster(DOS_FS * fs, unsigned long cluster)
+int bad_cluster(DOS_FS * fs, uint32_t cluster)
 {
     FAT_ENTRY curEntry;
     get_fat(&curEntry, fs->fat, cluster, fs);
@@ -251,9 +251,9 @@ int bad_cluster(DOS_FS * fs, unsigned long cluster)
  * @return  -1              'cluster' is at the end of the chain
  * @return  Other values    Next cluster in this chain
  */
-unsigned long next_cluster(DOS_FS * fs, unsigned long cluster)
+uint32_t next_cluster(DOS_FS * fs, uint32_t cluster)
 {
-    unsigned long value;
+    uint32_t value;
     FAT_ENTRY curEntry;
 
     get_fat(&curEntry, fs->fat, cluster, fs);
@@ -264,10 +264,10 @@ unsigned long next_cluster(DOS_FS * fs, unsigned long cluster)
     return FAT_IS_EOF(fs, value) ? -1 : value;
 }
 
-loff_t cluster_start(DOS_FS * fs, unsigned long cluster)
+loff_t cluster_start(DOS_FS * fs, uint32_t cluster)
 {
     return fs->data_start + ((loff_t) cluster -
-			     2) * (unsigned long long)fs->cluster_size;
+			     2) * (uint64_t)fs->cluster_size;
 }
 
 /**
@@ -279,7 +279,7 @@ loff_t cluster_start(DOS_FS * fs, unsigned long cluster)
  * @param[in]	    owner       Information on dentry that owns this cluster
  *                              (may be NULL)
  */
-void set_owner(DOS_FS * fs, unsigned long cluster, DOS_FILE * owner)
+void set_owner(DOS_FS * fs, uint32_t cluster, DOS_FILE * owner)
 {
     if (fs->cluster_owner == NULL)
 	die("Internal error: attempt to set owner in non-existent table");
@@ -290,7 +290,7 @@ void set_owner(DOS_FS * fs, unsigned long cluster, DOS_FILE * owner)
     fs->cluster_owner[cluster] = owner;
 }
 
-DOS_FILE *get_owner(DOS_FS * fs, unsigned long cluster)
+DOS_FILE *get_owner(DOS_FS * fs, uint32_t cluster)
 {
     if (fs->cluster_owner == NULL)
 	return NULL;
@@ -300,7 +300,7 @@ DOS_FILE *get_owner(DOS_FS * fs, unsigned long cluster)
 
 void fix_bad(DOS_FS * fs)
 {
-    unsigned long i;
+    uint32_t i;
 
     if (verbose)
 	printf("Checking for bad clusters.\n");
@@ -310,7 +310,7 @@ void fix_bad(DOS_FS * fs)
 
 	if (!get_owner(fs, i) && !FAT_IS_BAD(fs, curEntry.value))
 	    if (!fs_test(cluster_start(fs, i), fs->cluster_size)) {
-		printf("Cluster %lu is unreadable.\n", i);
+		printf("Cluster %lu is unreadable.\n", (unsigned long)i);
 		set_fat(fs, i, -2);
 	    }
     }
@@ -319,7 +319,7 @@ void fix_bad(DOS_FS * fs)
 void reclaim_free(DOS_FS * fs)
 {
     int reclaimed;
-    unsigned long i;
+    uint32_t i;
 
     if (verbose)
 	printf("Checking for unused clusters.\n");
@@ -335,7 +335,7 @@ void reclaim_free(DOS_FS * fs)
 	}
     }
     if (reclaimed)
-	printf("Reclaimed %d unused cluster%s (%llu bytes).\n", reclaimed,
+	printf("Reclaimed %d unused cluster%s (%llu bytes).\n", (int)reclaimed,
 	       reclaimed == 1 ? "" : "s",
 	       (unsigned long long)reclaimed * fs->cluster_size);
 }
@@ -350,11 +350,11 @@ void reclaim_free(DOS_FS * fs)
  *				   clusters link to it.
  * @param[in]	    start_cluster  Where to start scanning for orphans
  */
-static void tag_free(DOS_FS * fs, DOS_FILE * owner, unsigned long *num_refs,
-		     unsigned long start_cluster)
+static void tag_free(DOS_FS * fs, DOS_FILE * owner, uint32_t *num_refs,
+		     uint32_t start_cluster)
 {
     int prev;
-    unsigned long i, walk;
+    uint32_t i, walk;
 
     if (start_cluster == 0)
 	start_cluster = 2;
@@ -403,16 +403,16 @@ void reclaim_file(DOS_FS * fs)
     DOS_FILE orphan;
     int reclaimed, files;
     int changed = 0;
-    unsigned long i, next, walk;
-    unsigned long *num_refs = NULL;	/* Only for orphaned clusters */
-    unsigned long total_num_clusters;
+    uint32_t i, next, walk;
+    uint32_t *num_refs = NULL;	/* Only for orphaned clusters */
+    uint32_t total_num_clusters;
 
     if (verbose)
 	printf("Reclaiming unconnected clusters.\n");
 
     total_num_clusters = fs->clusters + 2UL;
-    num_refs = alloc(total_num_clusters * sizeof(unsigned long));
-    memset(num_refs, 0, (total_num_clusters * sizeof(unsigned long)));
+    num_refs = alloc(total_num_clusters * sizeof(uint32_t));
+    memset(num_refs, 0, (total_num_clusters * sizeof(uint32_t)));
 
     /* Guarantee that all orphan chains (except cycles) end cleanly
      * with an end-of-chain mark.
@@ -457,7 +457,7 @@ void reclaim_file(DOS_FS * fs)
 		    die("Internal error: num_refs going below zero");
 		set_fat(fs, i, -1);
 		changed = curEntry.value;
-		printf("Broke cycle at cluster %lu in free chain.\n", i);
+		printf("Broke cycle at cluster %lu in free chain.\n", (unsigned long)i);
 
 		/* If we've created a new chain head,
 		 * tag_free() can claim it
@@ -497,10 +497,10 @@ void reclaim_file(DOS_FS * fs)
     free(num_refs);
 }
 
-unsigned long update_free(DOS_FS * fs)
+uint32_t update_free(DOS_FS * fs)
 {
-    unsigned long i;
-    unsigned long free = 0;
+    uint32_t i;
+    uint32_t free = 0;
     int do_set = 0;
 
     for (i = 2; i < fs->clusters + 2; i++) {
@@ -519,7 +519,7 @@ unsigned long update_free(DOS_FS * fs)
     if (fs->free_clusters != 0xFFFFFFFF) {
 	if (free != fs->free_clusters) {
 	    printf("Free cluster summary wrong (%ld vs. really %ld)\n",
-		   fs->free_clusters, free);
+		   (long)fs->free_clusters, (long)free);
 	    if (interactive)
 		printf("1) Correct\n2) Don't correct\n");
 	    else
@@ -528,7 +528,7 @@ unsigned long update_free(DOS_FS * fs)
 		do_set = 1;
 	}
     } else {
-	printf("Free cluster summary uninitialized (should be %ld)\n", free);
+	printf("Free cluster summary uninitialized (should be %ld)\n", (long)free);
 	if (rw) {
 	    if (interactive)
 		printf("1) Set it\n2) Leave it uninitialized\n");
@@ -540,7 +540,7 @@ unsigned long update_free(DOS_FS * fs)
     }
 
     if (do_set) {
-	unsigned long le_free = htole32(free);
+	uint32_t le_free = htole32(free);
 	fs->free_clusters = free;
 	fs_write(fs->fsinfo_start + offsetof(struct info_sector, free_clusters),
 		 sizeof(le_free), &le_free);

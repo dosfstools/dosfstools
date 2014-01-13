@@ -105,8 +105,7 @@ int main(int argc, char **argv)
 {
     DOS_FS fs;
     int salvage_files, verify, c;
-    unsigned n_files_check = 0, n_files_verify = 0;
-    unsigned long free_clusters = 0;
+    uint32_t free_clusters = 0;
 
     memset(&fs, 0, sizeof(fs));
     rw = salvage_files = verify = 0;
@@ -197,7 +196,6 @@ int main(int argc, char **argv)
     free_clusters = update_free(&fs);
     file_unused();
     qfree(&mem_queue);
-    n_files_check = n_files;
     if (verify) {
 	n_files = 0;
 	printf("Starting verification pass.\n");
@@ -205,7 +203,6 @@ int main(int argc, char **argv)
 	scan_root(&fs);
 	reclaim_free(&fs);
 	qfree(&mem_queue);
-	n_files_verify = n_files;
     }
 
 exit:
@@ -221,7 +218,7 @@ exit:
 
     if (!boot_only)
 	printf("%s: %u files, %lu/%lu clusters\n", argv[optind],
-	       n_files, fs.clusters - free_clusters, fs.clusters);
+	       n_files, (unsigned long)fs.clusters - free_clusters, (unsigned long)fs.clusters);
 
     return fs_close(rw) ? 1 : 0;
 }

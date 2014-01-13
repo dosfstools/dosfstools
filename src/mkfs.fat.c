@@ -64,6 +64,7 @@
 #include <time.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdint.h>
 #include <endian.h>
 
 #include <asm/types.h>
@@ -257,7 +258,7 @@ static long volume_id;		/* Volume ID number */
 static time_t create_time;	/* Creation time */
 static struct timeval create_timeval;	/* Creation time */
 static char volume_name[] = NO_NAME;	/* Volume name */
-static unsigned long long blocks;	/* Number of blocks in filesystem */
+static uint64_t blocks;	/* Number of blocks in filesystem */
 static int sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
 static int backup_boot = 0;	/* Sector# of backup boot sector */
@@ -299,7 +300,7 @@ static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
 static int valid_offset(int fd, loff_t offset);
-static unsigned long long count_blocks(char *filename, int *remainder);
+static uint64_t count_blocks(char *filename, int *remainder);
 static void check_mount(char *device_name);
 static void establish_params(int device_num, int size);
 static void setup_tables(void);
@@ -454,7 +455,7 @@ static void get_list_blocks(char *filename)
 {
     int i;
     FILE *listfile;
-    unsigned long blockno;
+    long blockno;
 
     listfile = fopen(filename, "r");
     if (listfile == (FILE *) NULL)
@@ -488,7 +489,7 @@ static int valid_offset(int fd, loff_t offset)
 
 /* Given a filename, look to see how many blocks of BLOCK_SIZE are present, returning the answer */
 
-static unsigned long long count_blocks(char *filename, int *remainder)
+static uint64_t count_blocks(char *filename, int *remainder)
 {
     loff_t high, low;
     int fd;
@@ -704,7 +705,7 @@ def_hd_params:
 	     * fs size <  32G: 16k clusters
 	     * fs size >= 32G: 32k clusters
 	     */
-	    unsigned long sz_mb =
+	    uint32_t sz_mb =
 		(blocks + (1 << (20 - BLOCK_SIZE_BITS)) - 1) >> (20 -
 								 BLOCK_SIZE_BITS);
 	    bs.cluster_size =
@@ -1408,7 +1409,7 @@ int main(int argc, char **argv)
     struct stat statbuf;
     int i = 0, pos, ch;
     int create = 0;
-    unsigned long long cblocks = 0;
+    uint64_t cblocks = 0;
     int min_sector_size;
 
     if (argc && *argv) {	/* What's the program name? */
@@ -1649,7 +1650,7 @@ int main(int argc, char **argv)
 	blocks = strtoull(argv[optind + 1], &tmp, 0);
 	if (!create && blocks != cblocks) {
 	    fprintf(stderr, "Warning: block count mismatch: ");
-	    fprintf(stderr, "found %llu but assuming %llu.\n", cblocks, blocks);
+	    fprintf(stderr, "found %llu but assuming %llu.\n", (unsigned long long)cblocks, (unsigned long long)blocks);
 	}
     } else if (optind == argc - 1) {	/*  Or use value found */
 	if (create)
