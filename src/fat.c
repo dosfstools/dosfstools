@@ -219,7 +219,7 @@ void set_fat(DOS_FS * fs, unsigned long cluster, unsigned long new)
 	    offs = fs->fat_start + cluster * 4;
 	    /* According to M$, the high 4 bits of a FAT32 entry are reserved and
 	     * are not part of the cluster number. So we never touch them. */
-	    *(unsigned long *)data = htole32((new & 0xfffffff) |
+	    *(uint32_t *)data = htole32((new & 0xfffffff) |
 					     (curEntry.reserved << 28));
 	    size = 4;
 	}
