@@ -5,7 +5,7 @@
    Copyright (C) 1993-1994 David Hudson <dave@humbug.demon.co.uk>
    Copyright (C) 1998 H. Peter Anvin <hpa@zytor.com>
    Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
-   Copyright (C) 2008-2013 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

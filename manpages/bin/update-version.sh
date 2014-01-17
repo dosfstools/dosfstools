@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ## dosfstools(7)
-## Copyright (C) 2006-2013 Daniel Baumann <mail@daniel-baumann.ch>
+## Copyright (C) 2006-2014 Daniel Baumann <mail@daniel-baumann.ch>
 ##
 ## This program comes with ABSOLUTELY NO WARRANTY; for details see COPYING.
 ## This is free software, and you are welcome to redistribute it
@@ -36,8 +36,8 @@ do
 	then
 		for _FILE in po/${_LANGUAGE}/*.po
 		do
-			sed -i  -e "s|^msgstr .*.2013-.*$|msgstr \"${DAY}.${MONTH}.${YEAR}\"|g" \
-				-e "s|^msgstr .*.2013\"$|msgstr \"${DAY}.${MONTH}.${YEAR}\"|g" \
+			sed -i  -e "s|^msgstr .*.2014-.*$|msgstr \"${DAY}.${MONTH}.${YEAR}\"|g" \
+				-e "s|^msgstr .*.2014\"$|msgstr \"${DAY}.${MONTH}.${YEAR}\"|g" \
 			"${_FILE}"
 		done
 	fi
@@ -48,8 +48,8 @@ if ls po/pt_BR/*.po > /dev/null 2>&1
 then
 	for _FILE in po/pt_BR/*.po
 	do
-		sed -i  -e "s|^msgstr .*.2013-.*$|msgstr \"${DAY}-${MONTH}-${YEAR}\"|g" \
-			-e "s|^msgstr .*-2013\"$|msgstr \"${DAY}-${MONTH}-${YEAR}\"|g" \
+		sed -i  -e "s|^msgstr .*.2014-.*$|msgstr \"${DAY}-${MONTH}-${YEAR}\"|g" \
+			-e "s|^msgstr .*-2014\"$|msgstr \"${DAY}-${MONTH}-${YEAR}\"|g" \
 		"${_FILE}"
 	done
 fi

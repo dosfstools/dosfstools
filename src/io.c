@@ -2,7 +2,7 @@
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
-   Copyright (C) 2008-2013 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
