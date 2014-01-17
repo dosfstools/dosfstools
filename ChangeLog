@@ -1,4 +1,42 @@
-commit 55bd7b7 (HEAD, master)
+commit acf64ae (HEAD, origin/master, origin/HEAD, master)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jan 17 07:09:54 2014 +0100
+
+    Updating copyright headers for 2014.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 21fe921
+Author: Andrew Tridgell <tridge@samba.org>
+Date:   Tue Jan 14 09:37:51 2014 +1100
+
+    Fixed remaining 64 bit build warnings.
+    
+    Some of these may be real bugs.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 9e3a2b1
+Author: Andrew Tridgell <tridge@samba.org>
+Date:   Tue Jan 14 09:25:28 2014 +1100
+
+    Prevent corruption of FAT during fsck on 64 bit platforms.
+    
+    unsigned long is 64 bit on x86-64, which means set_fat was writing two
+    entries, which corrupts the next entry. This can cause loss of data in
+    another file.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 0d2c9bc (tag: v3.0.24)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Sat Nov 23 10:36:55 2013 +0100
+
+    Releasing version 3.0.24.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 55bd7b7
 Author: Jaroslav Skarvada <jskarvad@redhat.com>
 Date:   Sat Nov 23 10:34:48 2013 +0100
 
@@ -11,7 +49,7 @@ Date:   Sat Nov 23 10:34:48 2013 +0100
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
-commit 6debb4a (tag: v3.0.23, origin/master, origin/HEAD)
+commit 6debb4a (tag: v3.0.23)
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Oct 15 08:05:46 2013 +0200
 
