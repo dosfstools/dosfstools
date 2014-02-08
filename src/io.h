@@ -27,7 +27,7 @@
 #ifndef _IO_H
 #define _IO_H
 
-#include <sys/types.h>		/* for loff_t */
+#include <fcntl.h>		/* for loff_t */
 
 loff_t llseek(int fd, loff_t offset, int whence);
 

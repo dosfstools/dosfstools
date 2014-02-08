@@ -27,6 +27,7 @@
 #ifndef _DOSFSCK_H
 #define _DOSFSCK_H
 
+#include <fcntl.h>
 #include <sys/types.h>
 #define _LINUX_STAT_H		/* hack to avoid inclusion of <linux/stat.h> */
 #define _LINUX_STRING_H_	/* hack to avoid inclusion of <linux/string.h> */
