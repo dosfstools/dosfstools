@@ -1,4 +1,55 @@
-commit acf64ae (HEAD, origin/master, origin/HEAD, master)
+commit 6893c45 (HEAD, origin/master, origin/HEAD, master)
+Author: Dir Lotter <dirk.lotter@siemens.com>
+Date:   Fri Mar 7 18:25:39 2014 +0100
+
+    Fix "odd" files created by frequent power-loss.
+    
+    After running many power losses the filesystem can degrate, containing "odd"
+    files making the filesystem corrupt that could not be solved by fsck:
+    
+      * file was not visible in a ls -l
+      * ls -i reported a "invalid file name" on the console
+      * a test program with diropen/dirread showed the file, a stat on this file
+        failed
+      * file was not accessible and could not be deleted
+    
+    After digging into the code we found why fsck didn't repair the file system:
+    One thing was we don't have short filenames. Another issue was that the LFN
+    pointer was set to NULL and so it looked like we didn't have short and long
+    filenames.
+    
+    Our patch of check.c includes:
+    
+      * returns 1 from function bad_name() in case no short and no long filename
+        exist
+      * auto_rename() and rename_file() got a special handling for the case no short
+        file name exist:
+        - it enables the short file name (we think here was a weakness of the old
+          code: it changed the short filename but didn't enabled it in the
+          file->dir_ent.lcase entry)
+        - it reset all attributes except ATTR_DIR and ATTR_VOLUME
+    
+    This solved our problem pretty well.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 621e11f
+Author: Natanael Copa <ncopa@alpinelinux.org>
+Date:   Sat Feb 8 18:53:30 2014 +0100
+
+    Build fixes for musl libc.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 52588b7 (tag: v3.0.25)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Jan 17 07:11:11 2014 +0100
+
+    Releasing version 3.0.25.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit acf64ae
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Fri Jan 17 07:09:54 2014 +0100
 
