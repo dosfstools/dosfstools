@@ -273,6 +273,12 @@ static int bad_name(DOS_FILE * file)
 	strncmp((const char *)name, "WP ROOT  SF", 11) == 0)
 	return 0;
 
+	/* PATCH ED+DL */
+	/* check if we have neither a long filename nor a short name */
+	if ((file->lfn == NULL) && (file->dir_ent.lcase & FAT_NO_83NAME)) {
+		return 1;
+	}
+
     /* don't complain about the dummy 11 bytes used by patched Linux
        kernels */
     if (file->dir_ent.lcase & FAT_NO_83NAME)
@@ -395,7 +401,20 @@ static void auto_rename(DOS_FILE * file)
 			    (const char *)file->dir_ent.name, MSDOS_NAME))
 		break;
 	if (!walk) {
-	    fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
+		/* PATCH ED+DL */
+		if(file->dir_ent.lcase & FAT_NO_83NAME)
+		{
+			/* as we only assign a new 8.3 filename, reset flag that 8.3 name is not
+			   present */
+			file->dir_ent.lcase &= ~FAT_NO_83NAME;
+			/* reset the attributes */
+			file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME); /* only keep the DIR and VOLUME attributes */
+			fs_write(file->offset, MSDOS_NAME+2, file->dir_ent.name);
+		}
+		else
+		{
+			fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
+		}
 	    if (file->lfn)
 		lfn_fix_checksum(file->lfn_offset, file->offset,
 				 (const char *)file->dir_ent.name);
@@ -429,7 +448,20 @@ static void rename_file(DOS_FILE * file)
 	    walk[1] = 0;
 	    for (walk = name; *walk == ' ' || *walk == '\t'; walk++) ;
 	    if (file_cvt(walk, file->dir_ent.name)) {
-		fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
+			/* PATCH ED+DL */
+			if(file->dir_ent.lcase & FAT_NO_83NAME)
+			{
+				/* as we only assign a new 8.3 filename, reset flag that 8.3 name is not
+				   present */
+				file->dir_ent.lcase &= ~FAT_NO_83NAME;
+				/* reset the attributes */
+				file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME); /* only keep the DIR and VOLUME attributes */
+				fs_write(file->offset, MSDOS_NAME+2, file->dir_ent.name);
+			}
+			else
+			{
+				fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
+			}
 		if (file->lfn)
 		    lfn_fix_checksum(file->lfn_offset, file->offset,
 				     (const char *)file->dir_ent.name);
