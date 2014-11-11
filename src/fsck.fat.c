@@ -157,7 +157,6 @@ int main(int argc, char **argv)
 	    break;
 	case 'v':
 	    verbose = 1;
-	    printf("fsck.fat " VERSION " (" VERSION_DATE ")\n");
 	    break;
 	case 'V':
 	    verify = 1;
