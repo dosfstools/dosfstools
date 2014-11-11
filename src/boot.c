@@ -504,7 +504,7 @@ loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 	    offset = cluster_start(fs, cluster);
 	    for (i = 0; i * sizeof(DIR_ENT) < fs->cluster_size; i++) {
 		fs_read(offset, sizeof(DIR_ENT), de);
-		if (de->attr & ATTR_VOLUME)
+		if (de->attr != VFAT_LN_ATTR && de->attr & ATTR_VOLUME)
 		    return offset;
 		offset += sizeof(DIR_ENT);
 	    }
@@ -513,7 +513,7 @@ loff_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 	for (i = 0; i < fs->root_entries; i++) {
 	    offset = fs->root_start + i * sizeof(DIR_ENT);
 	    fs_read(offset, sizeof(DIR_ENT), de);
-	    if (de->attr & ATTR_VOLUME)
+	    if (de->attr != VFAT_LN_ATTR && de->attr & ATTR_VOLUME)
 		return offset;
 	}
     }
