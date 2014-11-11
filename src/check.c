@@ -959,9 +959,9 @@ static void add_file(DOS_FS * fs, DOS_FILE *** chain, DOS_FILE * parent,
 	fs_read(offset, sizeof(DIR_ENT), &de);
     else {
 	/* Construct a DIR_ENT for the root directory */
+	memset(&de, 0, sizeof de);
 	memcpy(de.name, "           ", MSDOS_NAME);
 	de.attr = ATTR_DIR;
-	de.size = de.time = de.date = 0;
 	de.start = htole16(fs->root_cluster & 0xffff);
 	de.starthi = htole16((fs->root_cluster >> 16) & 0xffff);
     }
