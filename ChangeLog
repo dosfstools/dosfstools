@@ -1,4 +1,77 @@
-commit 6893c45 (HEAD, origin/master, origin/HEAD, master)
+commit e2c8f06 (HEAD, origin/master, master)
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Nov 12 00:22:17 2014 +0100
+
+    fsck.fat: Don't print version string every time -v is encountered
+    
+    Remove the printing of the version string every time -v is seen during
+    command line parsing in fsck.fat. The version string is printed anyway
+    before opening the filesystem device/image.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 82076b6
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue Nov 11 23:25:30 2014 +0100
+
+    Fix attempt to rename root dir in fsck due to uninitialized fields
+    
+    When add_file() is called with offset 0, it will construct a DIR_ENT for
+    the root directory instead of reading the contents from the filesystem.
+    It did not initialize the whole DIR_ENT on the stack, just select
+    values.
+    
+    In particular, the lcase field was left with an undefined value. If
+    that value happened to include the FAT_NO_83NAME bit, the "neither long
+    nor short file name" check in bad_name() added in 3.0.26 would trigger
+    and cause an attempt to rename the entry (which is not possible).
+    Example run:
+    
+        $ /sbin/fsck.fat -y bad.img
+        fsck.fat 3.0.26 (2014-03-07)
+        /
+          Bad short file name ().
+          Auto-renaming it.
+          Renamed to
+        bad.img: 14 files, 19388/403266 clusters
+    
+    This commit changes the initialization zeroize the whole struct before
+    setting individual fields. Thanks to AlexisM, who found the cause and
+    posted a patch on the Debian bug http://bugs.debian.org/764992 .
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit c24ecb6
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue Nov 11 22:49:50 2014 +0100
+
+    Support long file names in volume labeling code
+    
+    The code to find the volume label directory entry in find_volume_de()
+    did not consider long file names so far. Directory entries that make up
+    long file names have four attribute bits set, including the "volume"
+    bit.
+    
+    This caused the code to mistake a directory entry that is part of a
+    long file name as the volume name entry. If such an entry is found
+    first, fatlabel would print garbage when asked to display the label and
+    mangle the long file name when asked to set it. The latter would lead
+    to the loss of the long file name and require a fsck to clean up.
+    
+    Change so that the set of attributes equal that of LFN entries will no
+    langer match as a volume label.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 1646f6e (tag: v3.0.26)
+Author: Daniel Baumann <mail@daniel-baumann.ch>
+Date:   Fri Mar 7 18:40:13 2014 +0100
+
+    Releasing version 3.0.26.
+    
+    Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
+
+commit 6893c45
 Author: Dir Lotter <dirk.lotter@siemens.com>
 Date:   Fri Mar 7 18:25:39 2014 +0100
 
