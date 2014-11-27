@@ -38,6 +38,16 @@ void fs_open(char *path, int rw);
 /* Opens the filesystem PATH. If RW is zero, the filesystem is opened
    read-only, otherwise, it is opened read-write. */
 
+void *fs_mmap(loff_t pos, int size);
+
+/* maps SIZE bytes starting at POS into memory. Does not perform any
+   changes. */
+
+void fs_munmap(void *mapped, int size);
+
+/* unmaps SIZE bytes at mapped, which have been mapped before with fs_mmap
+ */
+
 void fs_read(loff_t pos, int size, void *data);
 
 /* Reads SIZE bytes starting at POS into DATA. Performs all applicable
