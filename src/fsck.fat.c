@@ -59,6 +59,7 @@ static void usage(char *name)
 	    DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -d path  drop that file\n");
     fprintf(stderr, "  -f       salvage unused chains to files\n");
+    fprintf(stderr, "  -F       do not salvage unused chains to files\n");
     fprintf(stderr, "  -l       list path names\n");
     fprintf(stderr,
 	    "  -m       use mmap to read FAT (requires -w and -r or -a)\n");
@@ -106,15 +107,15 @@ static void check_atari(void)
 int main(int argc, char **argv)
 {
     DOS_FS fs;
-    int salvage_files, verify, c;
+    int salvage_files, no_salvage_files, verify, c;
     uint32_t free_clusters = 0;
 
     memset(&fs, 0, sizeof(fs));
-    rw = salvage_files = verify = 0;
+    rw = salvage_files = no_salvage_files = verify = 0;
     interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc, argv, "Aac:d:bflmnprtu:vVwy")) != EOF)
+    while ((c = getopt(argc, argv, "Aac:d:bfFlmnprtu:vVwy")) != EOF)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
 	    atari_format = !atari_format;
@@ -139,6 +140,9 @@ int main(int argc, char **argv)
 	    break;
 	case 'f':
 	    salvage_files = 1;
+	    break;
+	case 'F':
+	    no_salvage_files = 1;
 	    break;
 	case 'l':
 	    list = 1;
@@ -181,6 +185,8 @@ int main(int argc, char **argv)
 	fprintf(stderr, "-m requires explicit -w and -a or -r\n");
 	exit(2);
     }
+    if (no_salvage_files)
+	salvage_files = 0;
     if (optind != argc - 1)
 	usage(argv[0]);
 
