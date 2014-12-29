@@ -219,9 +219,9 @@ struct msdos_dir_entry {
 /* The "boot code" we put into the filesystem... it writes a message and
    tells the user to try again */
 
-char dummy_boot_jump[3] = { 0xeb, 0x3c, 0x90 };
+unsigned char dummy_boot_jump[3] = { 0xeb, 0x3c, 0x90 };
 
-char dummy_boot_jump_m68k[2] = { 0x60, 0x1c };
+unsigned char dummy_boot_jump_m68k[2] = { 0x60, 0x1c };
 
 #define MSG_OFFSET_OFFSET 3
 char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
