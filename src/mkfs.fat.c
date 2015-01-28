@@ -250,7 +250,7 @@ char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
 
 /* Global variables - the root of all evil :-) - see these and weep! */
 
-static char *program_name = "mkfs.fat";	/* Name of the program */
+static const char *program_name = "mkfs.fat";	/* Name of the program */
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
 static int atari_format = 0;	/* Use Atari variation of MS-DOS FS format */
 static int check = FALSE;	/* Default to no readablity checking */
@@ -1412,6 +1412,7 @@ int main(int argc, char **argv)
     int create = 0;
     uint64_t cblocks = 0;
     int min_sector_size;
+    int bad_block_count = 0;
 
     if (argc && *argv) {	/* What's the program name? */
 	char *p;
@@ -1653,16 +1654,17 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Warning: block count mismatch: ");
 	    fprintf(stderr, "found %llu but assuming %llu.\n", (unsigned long long)cblocks, (unsigned long long)blocks);
 	}
+	if (*tmp)
+	    bad_block_count = 1;
     } else if (optind == argc - 1) {	/*  Or use value found */
 	if (create)
 	    die("Need intended size with -C.");
 	blocks = cblocks;
-	tmp = "";
     } else {
 	fprintf(stderr, "No device specified!\n");
 	usage();
     }
-    if (*tmp) {
+    if (bad_block_count) {
 	printf("Bad block count : %s\n", argv[optind + 1]);
 	usage();
     }

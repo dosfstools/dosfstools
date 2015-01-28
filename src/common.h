@@ -25,11 +25,11 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-void die(char *msg, ...) __attribute((noreturn));
+void die(const char *msg, ...) __attribute((noreturn));
 
 /* Displays a prinf-style message and terminates the program. */
 
-void pdie(char *msg, ...) __attribute((noreturn));
+void pdie(const char *msg, ...) __attribute((noreturn));
 
 /* Like die, but appends an error message according to the state of errno. */
 
@@ -50,7 +50,7 @@ int min(int a, int b);
 
 /* Returns the smaller integer value of a and b. */
 
-char get_key(char *valid, char *prompt);
+char get_key(const char *valid, const char *prompt);
 
 /* Displays PROMPT and waits for user input. Only characters in VALID are
    accepted. Terminates the program on EOF. Returns the character. */

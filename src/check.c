@@ -464,7 +464,7 @@ static void rename_file(DOS_FILE * file)
 
 static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dots)
 {
-    char *name;
+    const char *name;
 
     name =
 	strncmp((const char *)file->dir_ent.name, MSDOS_DOT,

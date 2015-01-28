@@ -37,7 +37,7 @@ typedef struct _link {
     struct _link *next;
 } LINK;
 
-void die(char *msg, ...)
+void die(const char *msg, ...)
 {
     va_list args;
 
@@ -48,7 +48,7 @@ void die(char *msg, ...)
     exit(1);
 }
 
-void pdie(char *msg, ...)
+void pdie(const char *msg, ...)
 {
     va_list args;
 
@@ -96,7 +96,7 @@ int min(int a, int b)
     return a < b ? a : b;
 }
 
-char get_key(char *valid, char *prompt)
+char get_key(const char *valid, const char *prompt)
 {
     int ch, okay;
 

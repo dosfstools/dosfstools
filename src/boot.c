@@ -46,7 +46,7 @@
 
 static struct {
     __u8 media;
-    char *descr;
+    const char *descr;
 } mediabytes[] = {
     {
     0xf0, "5.25\" or 3.5\" HD floppy"}, {
@@ -64,7 +64,7 @@ static struct {
 #define GET_UNALIGNED_W(f)			\
     ( (__u16)f[0] | ((__u16)f[1]<<8) )
 
-static char *get_media_descr(unsigned char media)
+static const char *get_media_descr(unsigned char media)
 {
     int i;
 
