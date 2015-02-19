@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2014-11-12 00:52+0100\n"
+"POT-Creation-Date: 2015-02-20 20:47+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,30 +59,30 @@ msgid "OPTIONS"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:41 en/fsck.fat.8:128 en/mkfs.fat.8:78
+#: en/fatlabel.8:41 en/fsck.fat.8:125 en/mkfs.fat.8:78
 #, no-wrap
 msgid "SEE ALSO"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:45 en/fsck.fat.8:132
+#: en/fatlabel.8:45 en/fsck.fat.8:129
 msgid "B<mkfs.fat>(8)"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:46 en/fsck.fat.8:133 en/mkfs.fat.8:83
+#: en/fatlabel.8:46 en/fsck.fat.8:130 en/mkfs.fat.8:83
 #, no-wrap
 msgid "HOMEPAGE"
 msgstr ""
 
 #. type: SH
-#: en/fatlabel.8:49 en/fsck.fat.8:136 en/mkfs.fat.8:86
+#: en/fatlabel.8:49 en/fsck.fat.8:133 en/mkfs.fat.8:86
 #, no-wrap
 msgid "AUTHORS"
 msgstr ""
 
 #. type: Plain text
-#: en/fatlabel.8:50 en/fsck.fat.8:137 en/mkfs.fat.8:87
+#: en/fatlabel.8:50 en/fsck.fat.8:134 en/mkfs.fat.8:87
 msgid ""
 "B<dosfstools> were written by Werner Almesberger E<lt>I<werner."
 "almesberger@lrc.di.epfl.ch>E<gt>, Roman Hodek E<lt>I<Roman.Hodek@informatik."
@@ -368,31 +368,32 @@ msgid "B<-r>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:98
+#: en/fsck.fat.8:97
 msgid ""
 "Interactively repair the filesystem. The user is asked for advice whenever "
-"there is more than one approach to fix an inconsistency."
+"there is more than one approach to fix an inconsistency. This is the default "
+"mode and the option is only retained for backwards compatibility."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:98
+#: en/fsck.fat.8:97
 #, no-wrap
 msgid "B<-t>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:100
+#: en/fsck.fat.8:99
 msgid "Mark unreadable clusters as bad."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:100
+#: en/fsck.fat.8:99
 #, no-wrap
 msgid "B<-u>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:102
+#: en/fsck.fat.8:101
 msgid ""
 "Try to undelete the specified file. B<fsck.fat> tries to allocate a chain of "
 "contiguous unallocated clusters beginning with the start cluster of the "
@@ -400,24 +401,24 @@ msgid ""
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:102 en/mkfs.fat.8:72
+#: en/fsck.fat.8:101 en/mkfs.fat.8:72
 #, no-wrap
 msgid "B<-v>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:104
+#: en/fsck.fat.8:103
 msgid "Verbose mode. Generates slightly more output."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:104
+#: en/fsck.fat.8:103
 #, no-wrap
 msgid "B<-V>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:106
+#: en/fsck.fat.8:105
 msgid ""
 "Perform a verification pass. The filesystem check is repeated after the "
 "first run. The second pass should never report any fixable errors. It may "
@@ -427,91 +428,84 @@ msgid ""
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:106
+#: en/fsck.fat.8:105
 #, no-wrap
 msgid "B<-w>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:108
+#: en/fsck.fat.8:107
 msgid "Write changes to disk immediately."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:108
+#: en/fsck.fat.8:107
 #, no-wrap
 msgid "B<-y>"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:110
+#: en/fsck.fat.8:109
 msgid ""
 "Same as B<-a> (automatically repair filesystem) for compatibility with other "
 "fsck tools."
 msgstr ""
 
-#. type: Plain text
-#: en/fsck.fat.8:112
-msgid ""
-"B<Note:> If B<-a> and B<-r> are absent, the filesystem is only checked, but "
-"not repaired."
-msgstr ""
-
 #. type: SH
-#: en/fsck.fat.8:113
+#: en/fsck.fat.8:110
 #, no-wrap
 msgid "EXIT STATUS"
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:114
+#: en/fsck.fat.8:111
 #, no-wrap
 msgid "0"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:116
+#: en/fsck.fat.8:113
 msgid "No recoverable errors have been detected."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:116
+#: en/fsck.fat.8:113
 #, no-wrap
 msgid "1"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:118
+#: en/fsck.fat.8:115
 msgid ""
 "Recoverable errors have been detected or B<fsck.fat> has discovered an "
 "internal inconsistency."
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:118
+#: en/fsck.fat.8:115
 #, no-wrap
 msgid "2"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:120
+#: en/fsck.fat.8:117
 msgid "Usage error. B<fsck.fat> did not access the filesystem."
 msgstr ""
 
 #. type: SH
-#: en/fsck.fat.8:121
+#: en/fsck.fat.8:118
 #, no-wrap
 msgid "FILES"
 msgstr ""
 
 #. type: IP
-#: en/fsck.fat.8:122
+#: en/fsck.fat.8:119
 #, no-wrap
 msgid "fsck0000.rec, fsck0001.rec, ..."
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:124
+#: en/fsck.fat.8:121
 msgid ""
 "When recovering from a corrupted filesystem, B<fsck.fat> dumps recovered "
 "data into files named 'fsckNNNN.rec' in the top level directory of the "
@@ -519,13 +513,13 @@ msgid ""
 msgstr ""
 
 #. type: SH
-#: en/fsck.fat.8:125 en/mkfs.fat.8:75
+#: en/fsck.fat.8:122 en/mkfs.fat.8:75
 #, no-wrap
 msgid "BUGS"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:127
+#: en/fsck.fat.8:124
 msgid ""
 "Does not create . and .. files where necessary. Does not remove entirely "
 "empty directories. Should give more diagnostic messages. Undeleting files "
@@ -533,12 +527,12 @@ msgid ""
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:130 en/mkfs.fat.8:80
+#: en/fsck.fat.8:127 en/mkfs.fat.8:80
 msgid "B<fatlabel>(8)"
 msgstr ""
 
 #. type: Plain text
-#: en/fsck.fat.8:135 en/mkfs.fat.8:85
+#: en/fsck.fat.8:132 en/mkfs.fat.8:85
 msgid ""
 "More information about B<fsck.fat> and B<dosfstools> can be found at "
 "E<lt>I<http://daniel-baumann.ch/software/dosfstools/>E<gt>."

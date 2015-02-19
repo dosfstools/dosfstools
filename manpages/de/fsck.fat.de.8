@@ -123,7 +123,8 @@ anything to the filesystem.
 Same as (\fB\-a\fP), for compatibility with other *fsck.
 .IP \fB\-r\fP 4
 Interactively repair the filesystem. The user is asked for advice whenever
-there is more than one approach to fix an inconsistency.
+there is more than one approach to fix an inconsistency. This is the default
+mode and the option is only retained for backwards compatibility.
 .IP \fB\-t\fP 4
 Mark unreadable clusters as bad.
 .IP \fB\-u\fP 4
@@ -143,9 +144,6 @@ Write changes to disk immediately.
 .IP \fB\-y\fP 4
 Same as \fB\-a\fP (automatically repair filesystem) for compatibility with other
 fsck tools.
-.PP
-\fBNote:\fP If \fB\-a\fP and \fB\-r\fP are absent, the filesystem is only checked, but
-not repaired.
 
 .SH "EXIT STATUS"
 .IP 0 4

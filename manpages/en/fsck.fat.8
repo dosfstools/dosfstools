@@ -93,8 +93,7 @@ anything to the filesystem.
 .IP "\fB\-p\fR" 4
 Same as (\fB\-a\fR), for compatibility with other *fsck.
 .IP "\fB\-r\fR" 4
-Interactively repair the filesystem. The user is asked for advice whenever
-there is more than one approach to fix an inconsistency.
+Interactively repair the filesystem. The user is asked for advice whenever there is more than one approach to fix an inconsistency. This is the default mode and the option is only retained for backwards compatibility.
 .IP "\fB\-t\fR" 4
 Mark unreadable clusters as bad.
 .IP "\fB\-u\fR" 4
@@ -107,8 +106,6 @@ Perform a verification pass. The filesystem check is repeated after the first ru
 Write changes to disk immediately.
 .IP "\fB\-y\fR" 4
 Same as \fB\-a\fR (automatically repair filesystem) for compatibility with other fsck tools.
-.PP
-\fBNote:\fR If \fB\-a\fR and \fB\-r\fR are absent, the filesystem is only checked, but not repaired.
 
 .SH "EXIT STATUS"
 .IP "0" 4

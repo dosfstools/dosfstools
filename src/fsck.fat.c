@@ -108,8 +108,8 @@ int main(int argc, char **argv)
     uint32_t free_clusters = 0;
 
     memset(&fs, 0, sizeof(fs));
-    rw = salvage_files = verify = 0;
-    interactive = 1;
+    salvage_files = verify = 0;
+    rw = interactive = 1;
     check_atari();
 
     while ((c = getopt(argc, argv, "Aac:d:bflnprtu:vVwy")) != EOF)
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 	}
     set_dos_codepage(-1);	/* set default codepage if none was given in command line */
     if ((test || write_immed) && !rw) {
-	fprintf(stderr, "-t and -w require -a or -r\n");
+	fprintf(stderr, "-t and -w can not be used in read only mode\n");
 	exit(2);
     }
     if (optind != argc - 1)
