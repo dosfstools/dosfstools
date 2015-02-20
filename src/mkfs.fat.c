@@ -1569,10 +1569,14 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'M':		/* M : FAT Media byte */
-	    fat_media_byte = (int) strtol (optarg, &tmp, 0);
-	    if (*tmp || fat_media_byte < 248 || fat_media_byte > 255) {
-		printf ("FAT Media byte must be between 0xF8 and 0xFF : %s\n", optarg);
-		usage ();
+	    fat_media_byte = (int)strtol(optarg, &tmp, 0);
+	    if (*tmp) {
+		printf("Bad number for media descriptor : %s\n", optarg);
+		usage();
+	    }
+	    if (fat_media_byte != 0xf0 && (fat_media_byte < 0xf8 || fat_media_byte > 0xff)) {
+		printf("FAT Media byte must either be between 0xF8 and 0xFF or be 0xF0 : %s\n", optarg);
+		usage();
 	    }
 	    break;
 

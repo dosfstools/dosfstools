@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: dosfstools VERSION\n"
-"POT-Creation-Date: 2014-11-12 00:52+0100\n"
+"POT-Creation-Date: 2015-02-20 03:31+0100\n"
 "PO-Revision-Date: 2013-06-06 09:34+0300\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -354,8 +354,8 @@ msgstr ""
 #: en/mkfs.fat.8:62
 msgid ""
 "Specify the media type to be stored in the FAT boot sector. This value is "
-"usually 0xF8 for hard disks and has a value from 0xF9 to 0xFF for floppies "
-"or partitions to be used for floppy emulation."
+"usually 0xF8 for hard disks and is 0xF0 or a value from 0xF9 to 0xFF for "
+"floppies or partitions to be used for floppy emulation."
 msgstr ""
 
 #. type: IP

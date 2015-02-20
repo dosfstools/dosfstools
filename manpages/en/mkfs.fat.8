@@ -58,7 +58,7 @@ Read the bad blocks list from \fIfilename\fR.
 .IP "\fB\-m\fR \fImessage-file\fR" 4
 Sets the message the user receives on attempts to boot this filesystem without having properly installed an operating system. The message file must not exceed 418 bytes once line feeds have been converted to carriage return-line feed combinations, and tabs have been expanded. If the filename is a hyphen (-), the text is taken from standard input.
 .IP "\fB\-M\fR \fIFAT-media-type\fR" 4
-Specify the media type to be stored in the FAT boot sector. This value is usually 0xF8 for hard disks and has a value from 0xF9 to 0xFF for floppies or partitions to be used for floppy emulation.
+Specify the media type to be stored in the FAT boot sector. This value is usually 0xF8 for hard disks and is 0xF0 or a value from 0xF9 to 0xFF for floppies or partitions to be used for floppy emulation.
 .IP "\fB\-n\fR \fIvolume-name\fR" 4
 Sets the volume name (label) of the filesystem. The volume name can be up to 11 characters long. The default is no label.
 .IP "\fB\-r\fR \fIroot-dir-entries\fR" 4
