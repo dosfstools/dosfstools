@@ -40,10 +40,10 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/fd.h>
 
-#include "fsck.fat.h"
+#include "linux/fd.h"
 #include "common.h"
+#include "fsck.fat.h"
 #include "io.h"
 
 typedef struct _change {

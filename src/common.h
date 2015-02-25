@@ -20,10 +20,60 @@
    can be found in /usr/share/common-licenses/GPL-3 file.
 */
 
-#include <asm/types.h>
-
 #ifndef _COMMON_H
 #define _COMMON_H
+
+/* from linux/types.h */
+#if defined(__linux__)
+    #include <linux/types.h>
+#elif defined(__osx__)
+    #include <stdint.h>
+
+    typedef uint8_t __u8;
+    typedef uint16_t __u16;
+    typedef uint32_t __u32;
+    typedef uint64_t __u64;
+
+    typedef int16_t __le16;
+    typedef int32_t __le32;
+
+    /* from linux stdio.h */
+    #ifndef loff_t
+        typedef long long loff_t;
+    #endif /* loff_t */
+
+    #ifndef off64_t
+        #ifdef _LP64
+            typedef off_t off64_t;
+        #else
+            typedef __longlong_t off64_t;
+        #endif /* _LP64 */
+    #endif /* off64_t */
+
+    /* from endian.h */
+    #if defined(__APPLE__) && defined(__MACH__)
+        #include <libkern/OSByteOrder.h>
+
+        #define htobe16(x) OSSwapHostToBigInt16(x)
+        #define htole16(x) OSSwapHostToLittleInt16(x)
+        #define be16toh(x) OSSwapBigToHostInt16(x)
+        #define le16toh(x) OSSwapLittleToHostInt16(x)
+
+        #define htobe32(x) OSSwapHostToBigInt32(x)
+        #define htole32(x) OSSwapHostToLittleInt32(x)
+        #define be32toh(x) OSSwapBigToHostInt32(x)
+        #define le32toh(x) OSSwapLittleToHostInt32(x)
+
+        #define htobe64(x) OSSwapHostToBigInt64(x)
+        #define htole64(x) OSSwapHostToLittleInt64(x)
+        #define be64toh(x) OSSwapBigToHostInt64(x)
+        #define le64toh(x) OSSwapLittleToHostInt64(x)
+
+        #ifndef lseek64
+            #define lseek64 lseek
+        #endif /* lseek64 */
+    #endif /* __APPLE__ && __MACH__ */
+#endif
 
 void die(const char *msg, ...) __attribute((noreturn));
 

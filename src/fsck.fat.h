@@ -28,19 +28,8 @@
 #define _DOSFSCK_H
 
 #include <fcntl.h>
-#include <sys/types.h>
-#define _LINUX_STAT_H		/* hack to avoid inclusion of <linux/stat.h> */
-#define _LINUX_STRING_H_	/* hack to avoid inclusion of <linux/string.h> */
-#define _LINUX_FS_H		/* hack to avoid inclusion of <linux/fs.h> */
-
-#include <asm/types.h>
-#include <asm/byteorder.h>
-
-#include <linux/msdos_fs.h>
-
 #include <stddef.h>
 #include <stdint.h>
-#include <endian.h>
 
 #define VFAT_LN_ATTR (ATTR_RO | ATTR_HIDDEN | ATTR_SYS | ATTR_VOLUME)
 
