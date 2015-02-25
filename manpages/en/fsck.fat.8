@@ -25,7 +25,7 @@
 \fBfsck.fat\fR \- check and repair MS\-DOS filesystems
 
 .SH SYNOPSIS
-\fBfsck.fat\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflnprtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
+\fBfsck.fat\fR|\fBfsck.msdos\fR|\fBfsck.vfat\fR [\-aAflmnprtvVwy] [\-d \fIPATH\fR \-d\ \fI...\fR] [\-u\ \fIPATH\fR \-u \fI...\fR] \fIDEVICE\fR
 
 .SH DESCRIPTION
 \fBfsck.fat\fR verifies the consistency of MS\-DOS filesystems and optionally tries to repair them.
@@ -85,8 +85,12 @@ Make read-only boot sector check.
 Delete the specified file. If more that one file with that name exists, the first one is deleted.
 .IP "\fB\-f\fR" 4
 Salvage unused cluster chains to files. By default, unused clusters are added to the free disk space except in auto mode (\fB\-a\fR).
+.IP "\fB\-F\fR" 4
+Do not salvage unused cluster chains to files. This overrides a previous \fB\-f\fR or \fB\-a\fR option.
 .IP "\fB\-l\fR" 4
 List path names of files being processed.
+.IP "\fB\-m\fR" 4
+Use mmap() to read the FAT. This reduces memory consumption because the FAT will only be read into memory when it is actually accessed. This is only possible when changes are written to disk immediately (\fB\-w\fR), which requires the \fB\-a\fR or \fB\-r\fR option as well.
 .IP "\fB\-n\fR" 4
 No\-operation mode: non\-interactively check for errors, but don't write
 anything to the filesystem.

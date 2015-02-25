@@ -30,7 +30,7 @@
 \fBfsck.fat\fP \- check and repair MS\-DOS filesystems
 
 .SH SYNOPSIS
-\fBfsck.fat\fP|\fBfsck.msdos\fP|\fBfsck.vfat\fP [\-aAflnprtvVwy] [\-d \fIPATH\fP \-d\ \&\fI...\fP] [\-u\ \fIPATH\fP \-u \fI...\fP] \fIDEVICE\fP
+\fBfsck.fat\fP|\fBfsck.msdos\fP|\fBfsck.vfat\fP [\-aAflmnprtvVwy] [\-d \fIPATH\fP \-d\ \&\fI...\fP] [\-u\ \fIPATH\fP \-u \fI...\fP] \fIDEVICE\fP
 
 .SH DESCRIPTION
 \fBfsck.fat\fP verifies the consistency of MS\-DOS filesystems and optionally
@@ -114,8 +114,16 @@ first one is deleted.
 .IP \fB\-f\fP 4
 Salvage unused cluster chains to files. By default, unused clusters are
 added to the free disk space except in auto mode (\fB\-a\fP).
+.IP \fB\-F\fP 4
+Do not salvage unused cluster chains to files. This overrides a previous
+\fB\-f\fP or \fB\-a\fP option.
 .IP \fB\-l\fP 4
 List path names of files being processed.
+.IP \fB\-m\fP 4
+Use mmap() to read the FAT. This reduces memory consumption because the FAT
+will only be read into memory when it is actually accessed. This is only
+possible when changes are written to disk immediately (\fB\-w\fP), which
+requires the \fB\-a\fP or \fB\-r\fP option as well.
 .IP \fB\-n\fP 4
 No\-operation mode: non\-interactively check for errors, but don't write
 anything to the filesystem.

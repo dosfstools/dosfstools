@@ -43,7 +43,7 @@
 #include "charconv.h"
 
 int interactive = 0, rw = 0, list = 0, test = 0, verbose = 0, write_immed = 0;
-int atari_format = 0, boot_only = 0;
+int atari_format = 0, boot_only = 0, use_mmap = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
@@ -59,7 +59,10 @@ static void usage(char *name)
 	    DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -d path  drop that file\n");
     fprintf(stderr, "  -f       salvage unused chains to files\n");
+    fprintf(stderr, "  -F       do not salvage unused chains to files\n");
     fprintf(stderr, "  -l       list path names\n");
+    fprintf(stderr,
+	    "  -m       use mmap to read FAT (requires -w and -r or -a)\n");
     fprintf(stderr,
 	    "  -n       no-op, check non-interactively without changing\n");
     fprintf(stderr, "  -p       same as -a, for compat with other *fsck\n");
@@ -104,15 +107,15 @@ static void check_atari(void)
 int main(int argc, char **argv)
 {
     DOS_FS fs;
-    int salvage_files, verify, c;
+    int salvage_files, no_salvage_files, verify, c;
     uint32_t free_clusters = 0;
 
     memset(&fs, 0, sizeof(fs));
-    rw = salvage_files = verify = 0;
+    rw = salvage_files = no_salvage_files = verify = 0;
     interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc, argv, "Aac:d:bflnprtu:vVwy")) != EOF)
+    while ((c = getopt(argc, argv, "Aac:d:bfFlmnprtu:vVwy")) != EOF)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
 	    atari_format = !atari_format;
@@ -138,8 +141,14 @@ int main(int argc, char **argv)
 	case 'f':
 	    salvage_files = 1;
 	    break;
+	case 'F':
+	    no_salvage_files = 1;
+	    break;
 	case 'l':
 	    list = 1;
+	    break;
+	case 'm':
+	    use_mmap = 1;
 	    break;
 	case 'n':
 	    rw = 0;
@@ -172,6 +181,12 @@ int main(int argc, char **argv)
 	fprintf(stderr, "-t and -w require -a or -r\n");
 	exit(2);
     }
+    if (use_mmap && !write_immed) {
+	fprintf(stderr, "-m requires explicit -w and -a or -r\n");
+	exit(2);
+    }
+    if (no_salvage_files)
+	salvage_files = 0;
     if (optind != argc - 1)
 	usage(argv[0]);
 
