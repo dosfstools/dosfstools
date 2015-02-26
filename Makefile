@@ -62,7 +62,8 @@ install-man:
 	for MANPAGE in manpages/en/*; \
 	do \
 		SECTION="8"; \
-		install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/man$${SECTION}/$$(basename $${MANPAGE}); \
+		mkdir -p $(DESTDIR)/$(MANDIR)/man$${SECTION}/; \
+		install -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/man$${SECTION}/$$(basename $${MANPAGE}); \
 	done
 
 	for LANGUAGE in $(LANGUAGES); \
@@ -70,7 +71,8 @@ install-man:
 		for MANPAGE in manpages/$${LANGUAGE}/*; \
 		do \
 			SECTION="8"; \
-			install -D -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
+			mkdir -p $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/; \
+			install -m 0644 $${MANPAGE} $(DESTDIR)/$(MANDIR)/$${LANGUAGE}/man$${SECTION}/$$(basename $${MANPAGE} .$${LANGUAGE}.$${SECTION}).$${SECTION}; \
 		done; \
 	done
 install-symlinks: install-bin install-man
