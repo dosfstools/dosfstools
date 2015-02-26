@@ -50,7 +50,6 @@
 #include <linux/hdreg.h>
 #include <sys/mount.h>
 #include <linux/fs.h>
-#include <linux/fd.h>
 #include <endian.h>
 #include <mntent.h>
 #include <signal.h>
@@ -67,6 +66,7 @@
 #include <stdint.h>
 #include <endian.h>
 
+#include "fd.h"
 #include "msdos_fs.h"
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
