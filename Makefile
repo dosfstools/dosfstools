@@ -127,7 +127,7 @@ uninstall-man:
 	for MANPAGE in manpages/en/*; \
 	do \
 		SECTION="8"; \
-		rm -f $(DESTDIR)/$(MANDIR}/man$${SECTION}/$$(basename $${MANPAGE} .en.$${SECTION}).$${SECTION}; \
+		rm -f $(DESTDIR)/$(MANDIR)/man$${SECTION}/$$(basename $${MANPAGE} .en.$${SECTION}).$${SECTION}; \
 	done
 
 	for LANGUAGE in $(LANGUAGES); \
