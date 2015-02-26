@@ -47,12 +47,6 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <linux/hdreg.h>
-#include <sys/mount.h>
-#include <linux/fs.h>
-#include <linux/fd.h>
-#include <endian.h>
-#include <mntent.h>
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
@@ -60,15 +54,23 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
 #include <ctype.h>
 #include <stdint.h>
-#include <endian.h>
 
-#include <asm/types.h>
+#if defined(__linux__)
+    #include <mntent.h>
+#elif defined(__osx__)
+    #include <fstab.h>
+    #include <sys/mount.h>
+#endif
+
+#include "common.h"
+#include "linux/fs.h"
+#include "linux/fd.h"
+#include "linux/hdreg.h"
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
@@ -524,6 +526,7 @@ static uint64_t count_blocks(char *filename, int *remainder)
 
 static void check_mount(char *device_name)
 {
+#if defined(__linux__)
     FILE *f;
     struct mntent *mnt;
 
@@ -533,6 +536,17 @@ static void check_mount(char *device_name)
 	if (strcmp(device_name, mnt->mnt_fsname) == 0)
 	    die("%s contains a mounted filesystem.");
     endmntent(f);
+#elif defined(__osx__)
+    struct statfs* mounts;
+    int num_mounts = getmntinfo(&mounts, MNT_WAIT);
+    if (num_mounts < 0) 
+        return;
+    for ( int i = 0; i < num_mounts; i++ )
+    {
+        if (strcmp(device_name, mounts[i].f_mntfromname) == 0)
+            die("%s contains a mounted filesystem.");
+    }
+#endif
 }
 
 /* Establish the geometry and media parameters for the device */
