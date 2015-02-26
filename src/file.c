@@ -34,8 +34,6 @@
 #define _LINUX_STRING_H_	/* hack to avoid inclusion of <linux/string.h> */
 #define _LINUX_FS_H		/* hack to avoid inclusion of <linux/fs.h> */
 
-#include <asm/types.h>
-
 #include <linux/msdos_fs.h>
 
 #include "common.h"

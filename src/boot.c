@@ -25,8 +25,8 @@
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
-#include <sys/types.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -45,7 +45,7 @@
 #define FAT16_THRESHOLD 65525
 
 static struct {
-    __u8 media;
+    uint8_t media;
     const char *descr;
 } mediabytes[] = {
     {
@@ -62,7 +62,7 @@ static struct {
 
 /* Unaligned fields must first be accessed byte-wise */
 #define GET_UNALIGNED_W(f)			\
-    ( (__u16)f[0] | ((__u16)f[1]<<8) )
+    ( (uint16_t)f[0] | ((uint16_t)f[1]<<8) )
 
 static const char *get_media_descr(unsigned char media)
 {
@@ -166,18 +166,18 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, int lss)
     fs_read(fs->backupboot_start, sizeof(b2), &b2);
     if (memcmp(b, &b2, sizeof(b2)) != 0) {
 	/* there are any differences */
-	__u8 *p, *q;
+	uint8_t *p, *q;
 	int i, pos, first = 1;
 	char buf[20];
 
 	printf("There are differences between boot sector and its backup.\n");
 	printf("This is mostly harmless. Differences: (offset:original/backup)\n  ");
 	pos = 2;
-	for (p = (__u8 *) b, q = (__u8 *) & b2, i = 0; i < sizeof(b2);
+	for (p = (uint8_t *) b, q = (uint8_t *) & b2, i = 0; i < sizeof(b2);
 	     ++p, ++q, ++i) {
 	    if (*p != *q) {
 		sprintf(buf, "%s%u:%02x/%02x", first ? "" : ", ",
-			(unsigned)(p - (__u8 *) b), *p, *q);
+			(unsigned)(p - (uint8_t *) b), *p, *q);
 		if (pos + strlen(buf) > 78)
 		    printf("\n  "), pos = 2;
 		printf("%s", buf);
@@ -227,7 +227,7 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, int lss)
 	if (interactive && get_key("12", "?") == '1') {
 	    /* search for a free reserved sector (not boot sector and not
 	     * backup boot sector) */
-	    __u32 s;
+	    uint32_t s;
 	    for (s = 1; s < le16toh(b->reserved); ++s)
 		if (s != le16toh(b->backup_boot))
 		    break;
@@ -425,7 +425,7 @@ void read_boot(DOS_FS * fs)
     fs->eff_fat_bits = (fs->fat_bits == 32) ? 28 : fs->fat_bits;
     fs->fat_size = fat_length * logical_sector_size;
 
-    fs->label = calloc(12, sizeof(__u8));
+    fs->label = calloc(12, sizeof(uint8_t));
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
 	struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
 	if (b16->extended_sig == 0x29)
