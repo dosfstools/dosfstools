@@ -31,7 +31,6 @@
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
 #define _LARGEFILE64_SOURCE
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

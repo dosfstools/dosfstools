@@ -20,8 +20,6 @@
    can be found in /usr/share/common-licenses/GPL-3 file.
 */
 
-#include <asm/types.h>
-
 #ifndef _COMMON_H
 #define _COMMON_H
 
