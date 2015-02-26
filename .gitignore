@@ -6,3 +6,6 @@
 tags
 *~
 .*.sw[a-p]
+*.orig
+*.rej
+*.DS_Store
