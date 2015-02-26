@@ -47,8 +47,6 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <sys/mount.h>
-#include <linux/fs.h>
 #include <endian.h>
 #include <mntent.h>
 #include <signal.h>
@@ -66,6 +64,7 @@
 #include <endian.h>
 
 #include "fd.h"
+#include "fs.h"
 #include "hdreg.h"
 #include "msdos_fs.h"
 
