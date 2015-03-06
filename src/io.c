@@ -31,7 +31,6 @@
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
 #define _LARGEFILE64_SOURCE
-#include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,7 +39,6 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/fd.h>
 
 #include "fsck.fat.h"
 #include "common.h"

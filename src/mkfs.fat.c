@@ -47,10 +47,6 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <linux/hdreg.h>
-#include <sys/mount.h>
-#include <linux/fs.h>
-#include <linux/fd.h>
 #include <endian.h>
 #include <mntent.h>
 #include <signal.h>
@@ -60,7 +56,6 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
 #include <errno.h>
@@ -68,7 +63,10 @@
 #include <stdint.h>
 #include <endian.h>
 
-#include <asm/types.h>
+#include "fd.h"
+#include "fs.h"
+#include "hdreg.h"
+#include "msdos_fs.h"
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
@@ -102,21 +100,6 @@ static inline int cdiv(int a, int b)
     return (a + b - 1) / b;
 }
 
-/* MS-DOS filesystem structures -- I included them here instead of
-   including linux/msdos_fs.h since that doesn't include some fields we
-   need */
-
-#define ATTR_RO      1		/* read-only */
-#define ATTR_HIDDEN  2		/* hidden */
-#define ATTR_SYS     4		/* system */
-#define ATTR_VOLUME  8		/* volume label */
-#define ATTR_DIR     16		/* directory */
-#define ATTR_ARCH    32		/* archived */
-
-#define ATTR_NONE    0		/* no attribute bits */
-#define ATTR_UNUSED  (ATTR_VOLUME | ATTR_ARCH | ATTR_SYS | ATTR_HIDDEN)
-	/* attribute bits that are copied "as is" */
-
 /* FAT values */
 #define FAT_EOF      (atari_format ? 0x0fffffff : 0x0ffffff8)
 #define FAT_BAD      0x0ffffff7
@@ -148,73 +131,60 @@ static inline int cdiv(int a, int b)
  * alignments */
 
 struct msdos_volume_info {
-    __u8 drive_number;		/* BIOS drive number */
-    __u8 RESERVED;		/* Unused */
-    __u8 ext_boot_sign;		/* 0x29 if fields below exist (DOS 3.3+) */
-    __u8 volume_id[4];		/* Volume ID number */
-    __u8 volume_label[11];	/* Volume label */
-    __u8 fs_type[8];		/* Typically FAT12 or FAT16 */
+    uint8_t drive_number;		/* BIOS drive number */
+    uint8_t RESERVED;		/* Unused */
+    uint8_t ext_boot_sign;		/* 0x29 if fields below exist (DOS 3.3+) */
+    uint8_t volume_id[4];		/* Volume ID number */
+    uint8_t volume_label[11];	/* Volume label */
+    uint8_t fs_type[8];		/* Typically FAT12 or FAT16 */
 } __attribute__ ((packed));
 
 struct msdos_boot_sector {
-    __u8 boot_jump[3];		/* Boot strap short or near jump */
-    __u8 system_id[8];		/* Name - can be used to special case
+    uint8_t boot_jump[3];		/* Boot strap short or near jump */
+    uint8_t system_id[8];		/* Name - can be used to special case
 				   partition manager volumes */
-    __u8 sector_size[2];	/* bytes per logical sector */
-    __u8 cluster_size;		/* sectors/cluster */
-    __u16 reserved;		/* reserved sectors */
-    __u8 fats;			/* number of FATs */
-    __u8 dir_entries[2];	/* root directory entries */
-    __u8 sectors[2];		/* number of sectors */
-    __u8 media;			/* media code (unused) */
-    __u16 fat_length;		/* sectors/FAT */
-    __u16 secs_track;		/* sectors per track */
-    __u16 heads;		/* number of heads */
-    __u32 hidden;		/* hidden sectors (unused) */
-    __u32 total_sect;		/* number of sectors (if sectors == 0) */
+    uint8_t sector_size[2];	/* bytes per logical sector */
+    uint8_t cluster_size;		/* sectors/cluster */
+    uint16_t reserved;		/* reserved sectors */
+    uint8_t fats;			/* number of FATs */
+    uint8_t dir_entries[2];	/* root directory entries */
+    uint8_t sectors[2];		/* number of sectors */
+    uint8_t media;			/* media code (unused) */
+    uint16_t fat_length;		/* sectors/FAT */
+    uint16_t secs_track;		/* sectors per track */
+    uint16_t heads;		/* number of heads */
+    uint32_t hidden;		/* hidden sectors (unused) */
+    uint32_t total_sect;		/* number of sectors (if sectors == 0) */
     union {
 	struct {
 	    struct msdos_volume_info vi;
-	    __u8 boot_code[BOOTCODE_SIZE];
+	    uint8_t boot_code[BOOTCODE_SIZE];
 	} __attribute__ ((packed)) _oldfat;
 	struct {
-	    __u32 fat32_length;	/* sectors/FAT */
-	    __u16 flags;	/* bit 8: fat mirroring, low 4: active fat */
-	    __u8 version[2];	/* major, minor filesystem version */
-	    __u32 root_cluster;	/* first cluster in root directory */
-	    __u16 info_sector;	/* filesystem info sector */
-	    __u16 backup_boot;	/* backup boot sector */
-	    __u16 reserved2[6];	/* Unused */
+	    uint32_t fat32_length;	/* sectors/FAT */
+	    uint16_t flags;	/* bit 8: fat mirroring, low 4: active fat */
+	    uint8_t version[2];	/* major, minor filesystem version */
+	    uint32_t root_cluster;	/* first cluster in root directory */
+	    uint16_t info_sector;	/* filesystem info sector */
+	    uint16_t backup_boot;	/* backup boot sector */
+	    uint16_t reserved2[6];	/* Unused */
 	    struct msdos_volume_info vi;
-	    __u8 boot_code[BOOTCODE_FAT32_SIZE];
+	    uint8_t boot_code[BOOTCODE_FAT32_SIZE];
 	} __attribute__ ((packed)) _fat32;
     } __attribute__ ((packed)) fstype;
-    __u16 boot_sign;
+    uint16_t boot_sign;
 } __attribute__ ((packed));
 #define fat32	fstype._fat32
 #define oldfat	fstype._oldfat
 
 struct fat32_fsinfo {
-    __u32 reserved1;		/* Nothing as far as I can tell */
-    __u32 signature;		/* 0x61417272L */
-    __u32 free_clusters;	/* Free cluster count.  -1 if unknown */
-    __u32 next_cluster;		/* Most recently allocated cluster.
+    uint32_t reserved1;		/* Nothing as far as I can tell */
+    uint32_t signature;		/* 0x61417272L */
+    uint32_t free_clusters;	/* Free cluster count.  -1 if unknown */
+    uint32_t next_cluster;		/* Most recently allocated cluster.
 				 * Unused under Linux. */
-    __u32 reserved2[4];
+    uint32_t reserved2[4];
 };
-
-struct msdos_dir_entry {
-    char name[8], ext[3];	/* name and extension */
-    __u8 attr;			/* attribute bits */
-    __u8 lcase;			/* Case for base and extension */
-    __u8 ctime_ms;		/* Creation time, milliseconds */
-    __u16 ctime;		/* Creation time */
-    __u16 cdate;		/* Creation date */
-    __u16 adate;		/* Last access date */
-    __u16 starthi;		/* high 16 bits of first cl. (FAT32) */
-    __u16 time, date, start;	/* time, date and first cluster */
-    __u32 size;			/* file size (in bytes) */
-} __attribute__ ((packed));
 
 /* The "boot code" we put into the filesystem... it writes a message and
    tells the user to try again */
@@ -826,7 +796,7 @@ static void setup_tables(void)
 	bs.hidden = htole32(hidden_sectors);
     else {
 	/* In Atari format, hidden is a 16 bit field */
-	__u16 hidden = htole16(hidden_sectors);
+	uint16_t hidden = htole16(hidden_sectors);
 	if (hidden_sectors & ~0xffff)
 	    die("#hidden doesn't fit in 16bit field of Atari format\n");
 	memcpy(&bs.hidden, &hidden, 2);
@@ -1236,8 +1206,7 @@ static void setup_tables(void)
     memset(root_dir, 0, size_root_dir);
     if (memcmp(volume_name, NO_NAME, 11)) {
 	struct msdos_dir_entry *de = &root_dir[0];
-	memcpy(de->name, volume_name, 8);
-	memcpy(de->ext, volume_name + 8, 3);
+	memcpy(de->name, volume_name, 11);
 	de->attr = ATTR_VOLUME;
 	ctime = localtime(&create_time);
 	de->time = htole16((unsigned short)((ctime->tm_sec >> 1) +
@@ -1247,7 +1216,7 @@ static void setup_tables(void)
 	    htole16((unsigned short)(ctime->tm_mday +
 				     ((ctime->tm_mon + 1) << 5) +
 				     ((ctime->tm_year - 80) << 9)));
-	de->ctime_ms = 0;
+	de->ctime_cs = 0;
 	de->ctime = de->time;
 	de->cdate = de->date;
 	de->adate = de->date;
@@ -1279,7 +1248,7 @@ static void setup_tables(void)
 	info->next_cluster = htole32(2);
 
 	/* Info sector also must have boot sign */
-	*(__u16 *) (info_sector + 0x1fe) = htole16(BOOT_SIGN);
+	*(uint16_t *) (info_sector + 0x1fe) = htole16(BOOT_SIGN);
     }
 
     if (!(blank_sector = malloc(sector_size)))
