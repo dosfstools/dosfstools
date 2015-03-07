@@ -47,17 +47,11 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <linux/hdreg.h>
 #include <sys/mount.h>
-#include <linux/fs.h>
-#include <linux/fd.h>
-#include <endian.h>
-#include <mntent.h>
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -65,7 +59,46 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdint.h>
-#include <endian.h>
+
+#if defined(__linux__)
+    #include <mntent.h>
+    #include <linux/hdreg.h>
+    #include <linux/fs.h>
+    #include <linux/fd.h>
+#elif defined(__FreeBSD__) || defined(__APPLE__)
+    #include <sys/mount.h>
+    #include <sys/disk.h>
+
+    #define BLOCK_SIZE_BITS 10
+    #define BLOCK_SIZE (1<<BLOCK_SIZE_BITS)
+
+    struct floppy_struct {
+        unsigned int size;	/* nr of sectors total */
+        unsigned int sect;	/* sectors per track */
+        unsigned int head;	/* nr of heads */
+        unsigned int track;	/* nr of tracks */
+        unsigned int stretch;	/* bit 0 !=0 means double track steps */
+					/* bit 1 != 0 means swap sides */
+					/* bits 2..9 give the first sector */
+					/*  number (the LSB is flipped) */
+        unsigned char gap;	/* gap1 size */
+        unsigned char rate;	/* data rate. |= 0x40 for perpendicular */
+        unsigned char spec1;	/* stepping rate, head unload time */
+        unsigned char fmt_gap;	/* gap2 size */
+        const char * name;	/* used only for predefined formats */
+    };
+
+    struct hd_geometry {
+        unsigned char heads;
+        unsigned char sectors;
+        unsigned short cylinders;
+        unsigned long start;
+    };
+#endif
+
+#include "endian.h"
+#include "msdos_fs.h"
+#include "types.h"
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
@@ -98,21 +131,6 @@ static inline int cdiv(int a, int b)
 {
     return (a + b - 1) / b;
 }
-
-/* MS-DOS filesystem structures -- I included them here instead of
-   including linux/msdos_fs.h since that doesn't include some fields we
-   need */
-
-#define ATTR_RO      1		/* read-only */
-#define ATTR_HIDDEN  2		/* hidden */
-#define ATTR_SYS     4		/* system */
-#define ATTR_VOLUME  8		/* volume label */
-#define ATTR_DIR     16		/* directory */
-#define ATTR_ARCH    32		/* archived */
-
-#define ATTR_NONE    0		/* no attribute bits */
-#define ATTR_UNUSED  (ATTR_VOLUME | ATTR_ARCH | ATTR_SYS | ATTR_HIDDEN)
-	/* attribute bits that are copied "as is" */
 
 /* FAT values */
 #define FAT_EOF      (atari_format ? 0x0fffffff : 0x0ffffff8)
@@ -199,19 +217,6 @@ struct fat32_fsinfo {
 				 * Unused under Linux. */
     uint32_t reserved2[4];
 };
-
-struct msdos_dir_entry {
-    char name[8], ext[3];	/* name and extension */
-    uint8_t attr;		/* attribute bits */
-    uint8_t lcase;		/* Case for base and extension */
-    uint8_t ctime_ms;		/* Creation time, milliseconds */
-    uint16_t ctime;		/* Creation time */
-    uint16_t cdate;		/* Creation date */
-    uint16_t adate;		/* Last access date */
-    uint16_t starthi;		/* high 16 bits of first cl. (FAT32) */
-    uint16_t time, date, start;	/* time, date and first cluster */
-    uint32_t size;		/* file size (in bytes) */
-} __attribute__ ((packed));
 
 /* The "boot code" we put into the filesystem... it writes a message and
    tells the user to try again */
@@ -521,6 +526,7 @@ static uint64_t count_blocks(char *filename, int *remainder)
 
 static void check_mount(char *device_name)
 {
+#if defined(__linux__)
     FILE *f;
     struct mntent *mnt;
 
@@ -530,6 +536,17 @@ static void check_mount(char *device_name)
 	if (strcmp(device_name, mnt->mnt_fsname) == 0)
 	    die("%s contains a mounted filesystem.");
     endmntent(f);
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+    struct statfs* mounts;
+    int num_mounts = getmntinfo(&mounts, MNT_WAIT);
+    if (num_mounts < 0)
+        return;
+    for ( int i = 0; i < num_mounts; i++ )
+    {
+        if (strcmp(device_name, mounts[i].f_mntfromname) == 0)
+        die("%s contains a mounted filesystem.");
+    }
+#endif
 }
 
 /* Establish the geometry and media parameters for the device */
@@ -537,7 +554,9 @@ static void check_mount(char *device_name)
 static void establish_params(int device_num, int size)
 {
     long loop_size;
+#if defined(__linux__) || defined(__FreeBSD__)
     struct hd_geometry geometry;
+#endif
     struct floppy_struct param;
     int def_root_dir_entries = 512;
 
@@ -575,9 +594,12 @@ static void establish_params(int device_num, int size)
 	    }
 
 	} else {		/* is a floppy diskette */
-
+#if defined(__linux__)
 	    if (ioctl(dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
 		die("unable to get diskette geometry for '%s'");
+#else
+		die("unable to get diskette geometry for '%s'");
+#endif
 	}
 	bs.secs_track = htole16(param.sect);	/*  Set up the geometry information */
 	bs.heads = htole16(param.head);
@@ -620,8 +642,18 @@ floppy_default:
 		goto floppy_default;
 	}
     } else if ((device_num & 0xff00) == 0x0700) {	/* This is a loop device */
+#if defined(__FreeBSD__)
+	if (ioctl(dev, DIOCGSECTORSIZE, &loop_size))
+	    die("unable to get loop device size");
+#elif defined(__linux__)
 	if (ioctl(dev, BLKGETSIZE, &loop_size))
 	    die("unable to get loop device size");
+#elif defined(__APPLE__)
+	if (ioctl(dev, DKIOCGETBLOCKSIZE, &loop_size))
+	    die("unable to get loop device size");
+#else
+	die("unable to get loop device size");
+#endif
 
 	switch (loop_size) {	/* Assuming the loop device -> floppy later */
 	case 720:		/* 5.25", 2, 9, 40 - 360K */
@@ -677,6 +709,17 @@ floppy_default:
     {
 	/* Can we get the drive geometry? (Note I'm not too sure about */
 	/* whether to use HDIO_GETGEO or HDIO_REQ) */
+#if defined(__FreeBSD__)
+	if (ioctl(dev, DIOCGFWSECTORS, &geometry.sectors) || ioctl(dev, DIOCGFWHEADS, &geometry.heads) || geometry.sectors == 0
+	    || geometry.heads == 0) {
+	    printf("unable to get drive geometry, using default 255/63\n");
+	    bs.secs_track = htole16(63);
+	    bs.heads = htole16(255);
+	} else {
+	    bs.secs_track = htole16(geometry.sectors);	/* Set up the geometry information */
+	    bs.heads = htole16(geometry.heads);
+	}
+#elif defined(__linux__)
 	if (ioctl(dev, HDIO_GETGEO, &geometry) || geometry.sectors == 0
 	    || geometry.heads == 0) {
 	    printf("unable to get drive geometry, using default 255/63\n");
@@ -688,6 +731,11 @@ floppy_default:
 	    if (!hidden_sectors_by_user)
 		hidden_sectors = htole32(geometry.start);
 	}
+#else
+	    printf("unable to get drive geometry, using default 255/63\n");
+	    bs.secs_track = htole16(63);
+	    bs.heads = htole16(255);
+#endif
 def_hd_params:
 	bs.media = (char)0xf8;	/* Set up the media descriptor for a hard drive */
 	if (!size_fat && blocks * SECTORS_PER_BLOCK > 1064960) {
@@ -1244,7 +1292,7 @@ static void setup_tables(void)
 	    htole16((unsigned short)(ctime->tm_mday +
 				     ((ctime->tm_mon + 1) << 5) +
 				     ((ctime->tm_year - 80) << 9)));
-	de->ctime_ms = 0;
+	de->ctime_cs = 0;
 	de->ctime = de->time;
 	de->cdate = de->date;
 	de->adate = de->date;
@@ -1719,6 +1767,15 @@ int main(int argc, char **argv)
 	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)");
 
     if (sector_size_set) {
+#if defined(__FreeBSD__)
+	if (ioctl(dev, DIOCGSECTORSIZE, &min_sector_size) >= 0)
+	    if (sector_size < min_sector_size) {
+		sector_size = min_sector_size;
+		fprintf(stderr,
+			"Warning: sector size was set to %d (minimal for this device)\n",
+			sector_size);
+	    }
+#elif defined(__linux__)
 	if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0)
 	    if (sector_size < min_sector_size) {
 		sector_size = min_sector_size;
@@ -1726,11 +1783,32 @@ int main(int argc, char **argv)
 			"Warning: sector size was set to %d (minimal for this device)\n",
 			sector_size);
 	    }
+#elif defined(__APPLE__)
+	if (ioctl(dev, DKIOCGETPHYSICALBLOCKSIZE, &min_sector_size) >= 0)
+	    if (sector_size < min_sector_size) {
+		sector_size = min_sector_size;
+		fprintf(stderr,
+			"Warning: sector size was set to %d (minimal for this device)\n",
+			sector_size);
+	    }
+#endif
     } else {
+#if defined(__FreeBSD__)
+	if (ioctl(dev, DIOCGSECTORSIZE, &min_sector_size) >= 0) {
+	    sector_size = min_sector_size;
+	    sector_size_set = 1;
+	}
+#elif defined(__linux__)
 	if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0) {
 	    sector_size = min_sector_size;
 	    sector_size_set = 1;
 	}
+#elif defined(__APPLE__)
+	if (ioctl(dev, DKIOCGETPHYSICALBLOCKSIZE, &min_sector_size) >= 0) {
+	    sector_size = min_sector_size;
+	    sector_size_set = 1;
+	}
+#endif
     }
 
     if (sector_size > 4096)

@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "endian.h"
 #include "fsck.fat.h"
 #include "io.h"
 #include "check.h"

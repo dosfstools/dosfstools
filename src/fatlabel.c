@@ -33,6 +33,7 @@
 #include <ctype.h>
 
 #include "common.h"
+#include "types.h"
 #include "fsck.fat.h"
 #include "io.h"
 #include "boot.h"

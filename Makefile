@@ -28,11 +28,18 @@ DOCDIR = $(PREFIX)/share/doc
 MANDIR = $(PREFIX)/share/man
 
 #OPTFLAGS = -O2 -fomit-frame-pointer -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
-OPTFLAGS = -O2 -fomit-frame-pointer -D_GNU_SOURCE $(shell getconf LFS_CFLAGS)
+OPTFLAGS = -O2 -fomit-frame-pointer -D_GNU_SOURCE
 #WARNFLAGS = -Wall -pedantic -std=c99
 WARNFLAGS = -Wall -Wextra -Wno-sign-compare -Wno-missing-field-initializers -Wmissing-prototypes -Wstrict-prototypes -Wwrite-strings
 DEBUGFLAGS = -g
 CFLAGS += $(OPTFLAGS) $(WARNFLAGS) $(DEBUGFLAGS)
+
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+  LDLIBS += -liconv
+else
+  OPTFLAGS += $(shell getconf LFS_CFLAGS)
+endif
 
 VPATH = src
 
