@@ -23,6 +23,8 @@
 #ifndef _FILE_H
 #define _FILE_H
 
+#include "msdos_fs.h"
+
 typedef enum { fdt_none, fdt_drop, fdt_undelete } FD_TYPE;
 
 typedef struct _fptr {

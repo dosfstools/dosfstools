@@ -67,6 +67,8 @@
 #include <stdint.h>
 #include <endian.h>
 
+#include "msdos_fs.h"
+
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
 #define llseek lseek
@@ -98,21 +100,6 @@ static inline int cdiv(int a, int b)
 {
     return (a + b - 1) / b;
 }
-
-/* MS-DOS filesystem structures -- I included them here instead of
-   including linux/msdos_fs.h since that doesn't include some fields we
-   need */
-
-#define ATTR_RO      1		/* read-only */
-#define ATTR_HIDDEN  2		/* hidden */
-#define ATTR_SYS     4		/* system */
-#define ATTR_VOLUME  8		/* volume label */
-#define ATTR_DIR     16		/* directory */
-#define ATTR_ARCH    32		/* archived */
-
-#define ATTR_NONE    0		/* no attribute bits */
-#define ATTR_UNUSED  (ATTR_VOLUME | ATTR_ARCH | ATTR_SYS | ATTR_HIDDEN)
-	/* attribute bits that are copied "as is" */
 
 /* FAT values */
 #define FAT_EOF      (atari_format ? 0x0fffffff : 0x0ffffff8)
@@ -199,19 +186,6 @@ struct fat32_fsinfo {
 				 * Unused under Linux. */
     uint32_t reserved2[4];
 };
-
-struct msdos_dir_entry {
-    char name[8], ext[3];	/* name and extension */
-    uint8_t attr;		/* attribute bits */
-    uint8_t lcase;		/* Case for base and extension */
-    uint8_t ctime_ms;		/* Creation time, milliseconds */
-    uint16_t ctime;		/* Creation time */
-    uint16_t cdate;		/* Creation date */
-    uint16_t adate;		/* Last access date */
-    uint16_t starthi;		/* high 16 bits of first cl. (FAT32) */
-    uint16_t time, date, start;	/* time, date and first cluster */
-    uint32_t size;		/* file size (in bytes) */
-} __attribute__ ((packed));
 
 /* The "boot code" we put into the filesystem... it writes a message and
    tells the user to try again */
@@ -1244,7 +1218,7 @@ static void setup_tables(void)
 	    htole16((unsigned short)(ctime->tm_mday +
 				     ((ctime->tm_mon + 1) << 5) +
 				     ((ctime->tm_year - 80) << 9)));
-	de->ctime_ms = 0;
+	de->ctime_cs = 0;
 	de->ctime = de->time;
 	de->cdate = de->date;
 	de->adate = de->date;
