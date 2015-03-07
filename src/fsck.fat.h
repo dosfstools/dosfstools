@@ -27,11 +27,10 @@
 #ifndef _DOSFSCK_H
 #define _DOSFSCK_H
 
-#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <endian.h>
 
+#include "types.h"
 #include "msdos_fs.h"
 
 #define VFAT_LN_ATTR (ATTR_RO | ATTR_HIDDEN | ATTR_SYS | ATTR_VOLUME)

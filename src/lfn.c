@@ -28,6 +28,7 @@
 #include <time.h>
 
 #include "common.h"
+#include "endian.h"
 #include "io.h"
 #include "fsck.fat.h"
 #include "lfn.h"

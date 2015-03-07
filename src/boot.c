@@ -31,6 +31,7 @@
 #include <time.h>
 
 #include "common.h"
+#include "endian.h"
 #include "fsck.fat.h"
 #include "fat.h"
 #include "io.h"
