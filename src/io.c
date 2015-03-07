@@ -36,10 +36,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/ioctl.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/fd.h>
 
 #include "fsck.fat.h"
 #include "common.h"
