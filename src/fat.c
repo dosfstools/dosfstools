@@ -80,7 +80,7 @@ void get_fat(FAT_ENTRY * entry, void *fat, uint32_t cluster, DOS_FS * fs)
  */
 void read_fat(DOS_FS * fs)
 {
-    int eff_size;
+    int eff_size, alloc_size;
     uint32_t i;
     void *first, *second = NULL;
     int first_ok, second_ok;
@@ -96,10 +96,18 @@ void read_fat(DOS_FS * fs)
 
     total_num_clusters = fs->clusters + 2UL;
     eff_size = (total_num_clusters * fs->fat_bits + 7) / 8ULL;
-    first = alloc(eff_size);
+
+    if (fs->fat_bits != 12)
+	    alloc_size = eff_size;
+    else
+	    /* round up to an even number of FAT entries to avoid special
+	     * casing the last entry in get_fat() */
+	    alloc_size = (total_num_clusters * 12 + 23) / 24 * 3;
+
+    first = alloc(alloc_size);
     fs_read(fs->fat_start, eff_size, first);
     if (fs->nfats > 1) {
-	second = alloc(eff_size);
+	second = alloc(alloc_size);
 	fs_read(fs->fat_start + fs->fat_size, eff_size, second);
     }
     if (second && memcmp(first, second, eff_size) != 0) {
