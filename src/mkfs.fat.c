@@ -1399,7 +1399,7 @@ int main(int argc, char **argv)
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
-    while ((c = getopt(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v")) != EOF)
+    while ((c = getopt(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v")) != -1)
 	/* Scan the command line for options */
 	switch (c) {
 	case 'A':		/* toggle Atari format */
