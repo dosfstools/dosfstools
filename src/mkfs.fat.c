@@ -66,6 +66,7 @@
 #include <ctype.h>
 #include <stdint.h>
 #include <endian.h>
+#include <getopt.h>
 
 #include "msdos_fs.h"
 
@@ -1328,17 +1329,19 @@ static void write_tables(void)
     free(fat);			/* Free up the fat table space reserved during setup_tables */
 }
 
-/* Report the command usage and return a failure error code */
+/* Report the command usage and exit with the given error code */
 
-static void usage(void)
+static void usage(int exitval)
 {
-    fatal_error("\
+    fprintf(stderr, "\
 Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-sector]\n\
        [-m boot-msg-file][-n volume-name][-i volume-id]\n\
        [-s sectors-per-cluster][-S logical-sector-size][-f number-of-FATs]\n\
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\
        [-M FAT-media-byte][-D drive_number]\n\
+       [--help]\n\
        /dev/name [blocks]\n");
+    exit(exitval);
 }
 
 /*
@@ -1385,6 +1388,12 @@ int main(int argc, char **argv)
     int min_sector_size;
     int bad_block_count = 0;
 
+    enum {OPT_HELP=1000,};
+    const struct option long_options[] = {
+	    {"help", no_argument, NULL, OPT_HELP},
+	    {0,}
+    };
+
     if (argc && *argv) {	/* What's the program name? */
 	char *p;
 	program_name = *argv;
@@ -1399,7 +1408,8 @@ int main(int argc, char **argv)
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
-    while ((c = getopt(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v")) != -1)
+    while ((c = getopt_long(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v",
+				    long_options, NULL)) != -1)
 	/* Scan the command line for options */
 	switch (c) {
 	case 'A':		/* toggle Atari format */
@@ -1414,7 +1424,7 @@ int main(int argc, char **argv)
 	    backup_boot = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || backup_boot < 2 || backup_boot > 0xffff) {
 		printf("Bad location for backup boot sector : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1431,7 +1441,7 @@ int main(int argc, char **argv)
 	    drive_number_option = (int) strtol (optarg, &tmp, 0);
 	    if (*tmp || (drive_number_option != 0 && drive_number_option != 0x80)) {
 		printf ("Drive number must be 0 or 0x80: %s\n", optarg);
-		usage ();
+		usage(1);
 	    }
 	    drive_number_by_user=1;
 	    break;
@@ -1440,7 +1450,7 @@ int main(int argc, char **argv)
 	    nr_fats = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || nr_fats < 1 || nr_fats > 4) {
 		printf("Bad number of FATs : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1448,7 +1458,7 @@ int main(int argc, char **argv)
 	    size_fat = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || (size_fat != 12 && size_fat != 16 && size_fat != 32)) {
 		printf("Bad FAT type : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    size_fat_by_user = 1;
 	    break;
@@ -1457,7 +1467,7 @@ int main(int argc, char **argv)
 	    hidden_sectors = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || hidden_sectors < 0) {
 		printf("Bad number of hidden sectors : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    hidden_sectors_by_user = 1;
 	    break;
@@ -1470,7 +1480,7 @@ int main(int argc, char **argv)
 	    volume_id = strtoul(optarg, &tmp, 16);
 	    if (*tmp) {
 		printf("Volume ID must be a hexadecimal number\n");
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1543,11 +1553,11 @@ int main(int argc, char **argv)
 	    fat_media_byte = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp) {
 		printf("Bad number for media descriptor : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    if (fat_media_byte != 0xf0 && (fat_media_byte < 0xf8 || fat_media_byte > 0xff)) {
 		printf("FAT Media byte must either be between 0xF8 and 0xFF or be 0xF0 : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1567,7 +1577,7 @@ int main(int argc, char **argv)
 	    root_dir_entries = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || root_dir_entries < 16 || root_dir_entries > 32768) {
 		printf("Bad number of root directory entries : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1575,7 +1585,7 @@ int main(int argc, char **argv)
 	    reserved_sectors = (int)strtol(optarg, &tmp, 0);
 	    if (*tmp || reserved_sectors < 1 || reserved_sectors > 0xffff) {
 		printf("Bad number of reserved sectors : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1588,7 +1598,7 @@ int main(int argc, char **argv)
 			 && sectors_per_cluster != 64
 			 && sectors_per_cluster != 128)) {
 		printf("Bad number of sectors per cluster : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    break;
 
@@ -1599,7 +1609,7 @@ int main(int argc, char **argv)
 			 sector_size != 8192 && sector_size != 16384 &&
 			 sector_size != 32768)) {
 		printf("Bad logical sector size : %s\n", optarg);
-		usage();
+		usage(1);
 	    }
 	    sector_size_set = 1;
 	    break;
@@ -1608,16 +1618,20 @@ int main(int argc, char **argv)
 	    ++verbose;
 	    break;
 
+	case OPT_HELP:
+	    usage(0);
+	    break;
+
 	default:
 	    printf("Unknown option: %c\n", c);
-	    usage();
+	    usage(1);
 	}
     if (optind < argc) {
 	device_name = argv[optind];	/* Determine the number of blocks in the FS */
 
 	if (!device_name) {
 	    printf("No device specified.\n");
-	    usage();
+	    usage(1);
 	}
 
 	if (!create)
@@ -1637,11 +1651,11 @@ int main(int argc, char **argv)
 	blocks = cblocks;
     } else {
 	fprintf(stderr, "No device specified!\n");
-	usage();
+	usage(1);
     }
     if (bad_block_count) {
 	printf("Bad block count : %s\n", argv[optind + 1]);
-	usage();
+	usage(1);
     }
 
     if (check && listfile)	/* Auto and specified bad block handling are mutually */

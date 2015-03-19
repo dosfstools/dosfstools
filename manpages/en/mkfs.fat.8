@@ -26,6 +26,8 @@
 
 .SH SYNOPSIS
 \fBmkfs.fat\fR [\fB\-a\fR] [\fB\-A\fR] [\fB\-b\fR \fIsector-of-backup\fR] [\fB\-c\fR] [\fB\-l\fR \fIfilename\fR] [\fB\-C\fR] [\fB\-f\fR \fInumber-of-FATs\fR] [\fB\-F\fR \fIFAT-size] [\fB\-h\fR \fInumber-of-hidden-sectors\fR] [\fB\-i\fR \fIvolume-id\fR] [\fB\-I\fR] [\fB\-m\fR \fImessage-file\fR] [\fB\-n\fR \fIvolume-name\fR] [\fB\-r\fR \fIroot-dir-entries\fR] [\fB\-R\fR \fInumber-of-reserved-sectors\fR] [\fB\-s\fR \fIsectors-per-cluster\fR] [\fB\-S \fIlogical-sector-size\fR] [\fB\-D\fR \fIdrive-number\fR] [\fB\-M \fIFAT-media-type\fR] [\fB\-v\fR] \fIdevice\fR [\fIblock-count\fR]
+.br
+\fBmkfs.fat\fR \fB\-\-help\fR
 
 .SH DESCRIPTION
 \fBmkfs.fat\fR is used to create an MS-DOS filesystem under Linux on a device (usually a disk partition). \fIdevice\fR is the special file corresponding to the device (e.g /dev/sdXX). \fIblock-count\fR is the number of blocks on the device. If omitted, \fBmkfs.fat\fR automatically determines the filesystem size.
@@ -71,6 +73,8 @@ Specify the number of disk sectors per cluster. Must be a power of 2, i.e. 1, 2,
 Specify the number of bytes per logical sector. Must be a power of 2 and greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192, 16384, or 32768.
 .IP "\fB\-v\fR" 4
 Verbose execution.
+.IP "\fB\-\-help\fR" 4
+Display option summary and exit.
 
 .SH BUGS
 \fBmkfs.fat\fR can not create boot-able filesystems. This isn't as easy as you might think at first glance for various reasons and has been discussed a lot already. \fBmkfs.fat\fR simply will not support it ;)
