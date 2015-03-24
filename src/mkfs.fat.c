@@ -229,7 +229,6 @@ static int check = FALSE;	/* Default to no readablity checking */
 static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
 static time_t create_time;	/* Creation time */
-static struct timeval create_timeval;	/* Creation time */
 static char volume_name[] = NO_NAME;	/* Volume name */
 static uint64_t blocks;	/* Number of blocks in filesystem */
 static int sector_size = 512;	/* Size of a logical sector */
@@ -262,6 +261,9 @@ static int fat_media_byte = 0;	/* media byte in header and starting FAT */
 static int malloc_entire_fat = FALSE;	/* Whether we should malloc() the entire FAT or not */
 static int align_structures = TRUE;	/* Whether to enforce alignment */
 static int orphaned_sectors = 0;	/* Sectors that exist in the last block of filesystem */
+static int invariant = 0;		/* Whether to set normally randomized or
+					   current time based values to
+					   constants */
 
 /* Function prototype definitions */
 
@@ -1211,7 +1213,10 @@ static void setup_tables(void)
 	memcpy(de->name, volume_name, 8);
 	memcpy(de->ext, volume_name + 8, 3);
 	de->attr = ATTR_VOLUME;
-	ctime = localtime(&create_time);
+	if (!invariant)
+		ctime = localtime(&create_time);
+	else
+		ctime = gmtime(&create_time);
 	de->time = htole16((unsigned short)((ctime->tm_sec >> 1) +
 					    (ctime->tm_min << 5) +
 					    (ctime->tm_hour << 11)));
@@ -1339,6 +1344,7 @@ Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-secto
        [-s sectors-per-cluster][-S logical-sector-size][-f number-of-FATs]\n\
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\
        [-M FAT-media-byte][-D drive_number]\n\
+       [--invariant]\n\
        [--help]\n\
        /dev/name [blocks]\n");
     exit(exitval);
@@ -1387,10 +1393,12 @@ int main(int argc, char **argv)
     uint64_t cblocks = 0;
     int min_sector_size;
     int bad_block_count = 0;
+    struct timeval create_timeval;
 
-    enum {OPT_HELP=1000,};
+    enum {OPT_HELP=1000, OPT_INVARIANT,};
     const struct option long_options[] = {
 	    {"help", no_argument, NULL, OPT_HELP},
+	    {"invariant", no_argument, NULL, OPT_INVARIANT},
 	    {0,}
     };
 
@@ -1620,6 +1628,12 @@ int main(int argc, char **argv)
 
 	case OPT_HELP:
 	    usage(0);
+	    break;
+
+	case OPT_INVARIANT:
+	    invariant = 1;
+	    volume_id = 0x1234abcd;
+	    create_time = 1426325213;
 	    break;
 
 	default:

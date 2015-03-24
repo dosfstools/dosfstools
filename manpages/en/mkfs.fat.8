@@ -25,7 +25,7 @@
 \fBmkfs.fat\fR \- create an MS-DOS filesystem under Linux
 
 .SH SYNOPSIS
-\fBmkfs.fat\fR [\fB\-a\fR] [\fB\-A\fR] [\fB\-b\fR \fIsector-of-backup\fR] [\fB\-c\fR] [\fB\-l\fR \fIfilename\fR] [\fB\-C\fR] [\fB\-f\fR \fInumber-of-FATs\fR] [\fB\-F\fR \fIFAT-size] [\fB\-h\fR \fInumber-of-hidden-sectors\fR] [\fB\-i\fR \fIvolume-id\fR] [\fB\-I\fR] [\fB\-m\fR \fImessage-file\fR] [\fB\-n\fR \fIvolume-name\fR] [\fB\-r\fR \fIroot-dir-entries\fR] [\fB\-R\fR \fInumber-of-reserved-sectors\fR] [\fB\-s\fR \fIsectors-per-cluster\fR] [\fB\-S \fIlogical-sector-size\fR] [\fB\-D\fR \fIdrive-number\fR] [\fB\-M \fIFAT-media-type\fR] [\fB\-v\fR] \fIdevice\fR [\fIblock-count\fR]
+\fBmkfs.fat\fR [\fB\-a\fR] [\fB\-A\fR] [\fB\-b\fR \fIsector-of-backup\fR] [\fB\-c\fR] [\fB\-l\fR \fIfilename\fR] [\fB\-C\fR] [\fB\-f\fR \fInumber-of-FATs\fR] [\fB\-F\fR \fIFAT-size] [\fB\-h\fR \fInumber-of-hidden-sectors\fR] [\fB\-i\fR \fIvolume-id\fR] [\fB\-I\fR] [\fB\-m\fR \fImessage-file\fR] [\fB\-n\fR \fIvolume-name\fR] [\fB\-r\fR \fIroot-dir-entries\fR] [\fB\-R\fR \fInumber-of-reserved-sectors\fR] [\fB\-s\fR \fIsectors-per-cluster\fR] [\fB\-S \fIlogical-sector-size\fR] [\fB\-D\fR \fIdrive-number\fR] [\fB\-M \fIFAT-media-type\fR] [\fB\-v\fR] [\fB\-\-invariant\fR] \fIdevice\fR [\fIblock-count\fR]
 .br
 \fBmkfs.fat\fR \fB\-\-help\fR
 
@@ -73,6 +73,11 @@ Specify the number of disk sectors per cluster. Must be a power of 2, i.e. 1, 2,
 Specify the number of bytes per logical sector. Must be a power of 2 and greater than or equal to 512, i.e. 512, 1024, 2048, 4096, 8192, 16384, or 32768.
 .IP "\fB\-v\fR" 4
 Verbose execution.
+.IP "\fB\-\-invariant\fR" 4
+Use constants for normally randomly generated or time based data such as
+volume ID and creation time. Multiple runs of \fBmkfs.fat\fR on the same device
+create identical results with this option. Its main purpose is testing
+\fBmkfs.fat\fR.
 .IP "\fB\-\-help\fR" 4
 Display option summary and exit.
 
