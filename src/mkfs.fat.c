@@ -1685,7 +1685,7 @@ int main(int argc, char **argv)
 	}
     } else {
 	/* create the file */
-	dev = open(device_name, O_EXCL | O_RDWR | O_CREAT | O_TRUNC, 0666);
+	dev = open(device_name, O_EXCL | O_RDWR | O_CREAT, 0666);
 	if (dev < 0)
 	    die("unable to create %s");
 	/* expand to desired size */
