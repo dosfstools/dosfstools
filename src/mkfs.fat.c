@@ -1684,20 +1684,13 @@ int main(int argc, char **argv)
 	    exit(1);		/* The error exit code is 1! */
 	}
     } else {
-	loff_t offset = blocks * BLOCK_SIZE - 1;
-	char null = 0;
 	/* create the file */
 	dev = open(device_name, O_EXCL | O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (dev < 0)
 	    die("unable to create %s");
-	/* seek to the intended end-1, and write one byte. this creates a
-	 * sparse-as-possible file of appropriate size. */
-	if (llseek(dev, offset, SEEK_SET) != offset)
-	    die("seek failed");
-	if (write(dev, &null, 1) < 0)
-	    die("write failed");
-	if (llseek(dev, 0, SEEK_SET) != 0)
-	    die("seek failed");
+	/* expand to desired size */
+	if (ftruncate(dev, blocks * BLOCK_SIZE))
+	    die("unable to resize %s");
     }
 
     if (fstat(dev, &statbuf) < 0)
