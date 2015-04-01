@@ -1686,8 +1686,12 @@ int main(int argc, char **argv)
     } else {
 	/* create the file */
 	dev = open(device_name, O_EXCL | O_RDWR | O_CREAT, 0666);
-	if (dev < 0)
-	    die("unable to create %s");
+	if (dev < 0) {
+	    if (errno == EEXIST)
+		die("file %s already exists");
+	    else
+		die("unable to create %s");
+	}
 	/* expand to desired size */
 	if (ftruncate(dev, blocks * BLOCK_SIZE))
 	    die("unable to resize %s");
