@@ -25,12 +25,10 @@
 \fBmkfs.fat\fR \- create an MS-DOS filesystem under Linux
 
 .SH SYNOPSIS
-\fBmkfs.fat\fR [\fB\-a\fR] [\fB\-A\fR] [\fB\-b\fR \fIsector-of-backup\fR] [\fB\-c\fR] [\fB\-l\fR \fIfilename\fR] [\fB\-C\fR] [\fB\-f\fR \fInumber-of-FATs\fR] [\fB\-F\fR \fIFAT-size] [\fB\-h\fR \fInumber-of-hidden-sectors\fR] [\fB\-i\fR \fIvolume-id\fR] [\fB\-I\fR] [\fB\-m\fR \fImessage-file\fR] [\fB\-n\fR \fIvolume-name\fR] [\fB\-r\fR \fIroot-dir-entries\fR] [\fB\-R\fR \fInumber-of-reserved-sectors\fR] [\fB\-s\fR \fIsectors-per-cluster\fR] [\fB\-S \fIlogical-sector-size\fR] [\fB\-D\fR \fIdrive-number\fR] [\fB\-M \fIFAT-media-type\fR] [\fB\-v\fR] [\fB\-\-invariant\fR] \fIdevice\fR [\fIblock-count\fR]
-.br
-\fBmkfs.fat\fR \fB\-\-help\fR
+\fBmkfs.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fIBLOCK-COUNT\fR]
 
 .SH DESCRIPTION
-\fBmkfs.fat\fR is used to create an MS-DOS filesystem under Linux on a device (usually a disk partition). \fIdevice\fR is the special file corresponding to the device (e.g /dev/sdXX). \fIblock-count\fR is the number of blocks on the device. If omitted, \fBmkfs.fat\fR automatically determines the filesystem size.
+\fBmkfs.fat\fR is used to create an MS-DOS filesystem under Linux on a device (usually a disk partition). \fIDEVICE\fR is the special file corresponding to the device (e.g /dev/sdXX). \fIBLOCK-COUNT\fR is the number of blocks on the device. If omitted, \fBmkfs.fat\fR automatically determines the filesystem size.
 
 .SH OPTIONS
 .IP "\fB\-a\fR" 4
@@ -42,7 +40,7 @@ Selects the location of the backup boot sector for FAT32. Default depends on num
 .IP "\fB\-c" 4
 Check the device for bad blocks before creating the filesystem.
 .IP "\fB\-C\fR" 4
-Create the file given as \fIdevice\fR on the command line, and write the to-be-created filesystem to it. This can be used to create the new filesystem in a file instead of on a real device, and to avoid using \fBdd\fR in advance to create a file of appropriate size. With this option, the \fIblock-count\fR must be given, because otherwise the intended size of the filesystem wouldn't be known. The file created is a sparse file, which actually only contains the meta-data areas (boot sector, FATs, and root directory). The data portions won't be stored on the disk, but the file nevertheless will have the correct size. The resulting file can be copied later to a floppy disk or other device, or mounted through a loop device.
+Create the file given as \fIDEVICE\fR on the command line, and write the to-be-created filesystem to it. This can be used to create the new filesystem in a file instead of on a real device, and to avoid using \fBdd\fR in advance to create a file of appropriate size. With this option, the \fIBLOCK-COUNT\fR must be given, because otherwise the intended size of the filesystem wouldn't be known. The file created is a sparse file, which actually only contains the meta-data areas (boot sector, FATs, and root directory). The data portions won't be stored on the disk, but the file nevertheless will have the correct size. The resulting file can be copied later to a floppy disk or other device, or mounted through a loop device.
 .IP "\fB\-D\fR \fIdrive-number\fR" 4
 Specify the BIOS drive number to be stored in the FAT boot sector. This value is usually 0x80 for hard disks and 0x00 for floppy devices or partitions to be used for floppy emulation.
 .IP "\fB\-f\fR \fInumber-of-FATs\fR" 4
