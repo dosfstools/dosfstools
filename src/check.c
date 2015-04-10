@@ -545,12 +545,20 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    return 0;
 	}
     }
+    if (FSTART(file, fs) == 1) {
+	printf("%s\n  Bad start cluster 1. Truncating file.\n",
+	       path_name(file));
+	if (!file->offset)
+	    die("Bad FAT32 root directory! (bad start cluster 1)\n");
+	MODIFY_START(file, 0, fs);
+    }
     if (FSTART(file, fs) >= fs->clusters + 2) {
 	printf
 	    ("%s\n  Start cluster beyond limit (%lu > %lu). Truncating file.\n",
 	     path_name(file), (unsigned long)FSTART(file, fs), (unsigned long)(fs->clusters + 1));
 	if (!file->offset)
-	    die("Bad FAT32 root directory! (bad start cluster)\n");
+	    die("Bad FAT32 root directory! (start cluster beyond limit: %lu > %lu)\n",
+		(unsigned long)FSTART(file, fs), (unsigned long)(fs->clusters + 1));
 	MODIFY_START(file, 0, fs);
     }
     clusters = prev = 0;
@@ -836,7 +844,7 @@ static void test_file(DOS_FS * fs, DOS_FILE * file, int read_test)
     uint32_t walk, prev, clusters, next_clu;
 
     prev = clusters = 0;
-    for (walk = FSTART(file, fs); walk > 0 && walk < fs->clusters + 2;
+    for (walk = FSTART(file, fs); walk > 1 && walk < fs->clusters + 2;
 	 walk = next_clu) {
 	next_clu = next_cluster(fs, walk);
 
@@ -877,7 +885,7 @@ static void test_file(DOS_FS * fs, DOS_FILE * file, int read_test)
 	set_owner(fs, walk, file);
     }
     /* Revert ownership (for now) */
-    for (walk = FSTART(file, fs); walk > 0 && walk < fs->clusters + 2;
+    for (walk = FSTART(file, fs); walk > 1 && walk < fs->clusters + 2;
 	 walk = next_cluster(fs, walk))
 	if (bad_cluster(fs, walk))
 	    break;
