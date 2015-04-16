@@ -20,35 +20,36 @@
 .\"
 .\"
 .TH FATLABEL 8 2014\-11\-12 3.0.27 "dosfstools"
-
 .SH NAME
 \fBfatlabel\fR \- set or get MS\-DOS filesystem label
-
+.\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfatlabel\fR \fIDEVICE\fR [\fILABEL\fR]
-
+.\" ----------------------------------------------------------------------------
 .SH DESCRIPTION
 \fBfatlabel\fR set or gets a MS\-DOS filesystem label from a given device.
 .PP
-If the label is omitted, then the label name of the specified device is written on the standard output. A label can't be longer than 11 bytes.
-
+If the label is omitted, then the label name of the specified device is written
+on the standard output.
+A label can't be longer than 11 bytes.
+.\" ----------------------------------------------------------------------------
 .SH OPTIONS
 .IP "\fB\-h\fR, \fB\-\-help\fR" 4
 Displays a help message.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4
 Shows version.
-
+.\" ----------------------------------------------------------------------------
 .SH SEE ALSO
 \fBfsck.fat\fR(8)
 .br
 \fBmkfs.fat\fR(8)
-
+.\" ----------------------------------------------------------------------------
 .SH HOMEPAGE
 The home for the \fBdosfstools\fR project is its
 .UR https://github.com/dosfstools/dosfstools
 GitHub project page
 .UE .
-
+.\" ----------------------------------------------------------------------------
 .SH AUTHORS
 \fBdosfstools\fR were written by
 .MT werner.almesberger@\:lrc.di.epfl.ch
