@@ -63,7 +63,7 @@ static void usage(char *name)
     fprintf(stderr,
 	    "  -n       no-op, check non-interactively without changing\n");
     fprintf(stderr, "  -p       same as -a, for compat with other *fsck\n");
-    fprintf(stderr, "  -r       interactively repair the filesystem\n");
+    fprintf(stderr, "  -r       interactively repair the filesystem (default)\n");
     fprintf(stderr, "  -t       test for bad clusters\n");
     fprintf(stderr, "  -u path  try to undelete that (non-directory) file\n");
     fprintf(stderr, "  -v       verbose mode\n");
