@@ -674,17 +674,18 @@ def_hd_params:
 	}
 	if (size_fat == 32) {
 	    /* For FAT32, try to do the same as M$'s format command
-	     * (http://technet.microsoft.com/en-us/library/cc938438.aspx):
-	     * fs size <   8G:  4k clusters
-	     * fs size <  16G:  8k clusters
-	     * fs size <  32G: 16k clusters
-	     * fs size >= 32G: 32k clusters
+	     * (see http://www.win.tue.nl/~aeb/linux/fs/fat/fatgen103.pdf p. 20):
+	     * fs size <= 260M: 0.5k clusters
+	     * fs size <=   8G:   4k clusters
+	     * fs size <=  16G:   8k clusters
+	     * fs size <=  32G:  16k clusters
+	     * fs size >   32G:  32k clusters
 	     */
 	    uint32_t sz_mb =
 		(blocks + (1 << (20 - BLOCK_SIZE_BITS)) - 1) >> (20 -
 								 BLOCK_SIZE_BITS);
 	    bs.cluster_size =
-		sz_mb >= 32 * 1024 ? 64 : sz_mb >= 16 * 1024 ? 32 : sz_mb >=
+		sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
 		8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
 	} else {
 	    /* FAT12 and FAT16: start at 4 sectors per cluster */
