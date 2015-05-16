@@ -1,4 +1,316 @@
-commit e2c8f06 (HEAD, origin/master, master)
+commit ad1342e
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sat May 16 02:10:18 2015 +0200
+
+    manpages: Mark MT and ME tags as untranslated for po4a
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 3ed9ec2
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sun May 10 19:59:02 2015 +0200
+
+    mkfs: Small changes to FAT32 cluster size selection
+    
+    Put the cluster size selection back in line with the table used in
+    Microsoft's fatgen103.pdf and fix the comment. This only involved
+    changing some comparison operators, all values stayed the same.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 9984552
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Apr 20 23:41:34 2015 +0200
+
+    fsck: Mention -r is default in usage message
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 3eaca68
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Apr 20 23:30:56 2015 +0200
+
+    manpages: Remove obsolete information about Linux FAT support
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit a5e34de
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Apr 16 23:16:08 2015 +0200
+
+    manpages: Convert the rest of argument placeholders to upper case
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 2303765
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Apr 16 22:51:20 2015 +0200
+
+    manpages: Fix formatting
+    
+    Make the manpages conform to the rules for groff sources. First,
+    eliminate empty lines because these create vertical spaces where it
+    isn't desired. Man page sources should not contain empty lines. Second,
+    put a line break between sentences in a paragraph. A period is
+    recognized and formatted as a full stop period only when a line break
+    comes right after it.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit d3969b8
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Apr 10 20:32:50 2015 +0200
+
+    fsck: Verify first cluster of a file is not 1
+    
+    Previously the FAT was checked for any out of bounds entries which were
+    cleared. However the first cluster of a file, as specified in its
+    directory entry, was not verified to not be 1.
+    
+    In addition to missing this filesystem error, code that correctly
+    assumes the FAT contained no bad entries anymore could still look up
+    invalid table indices depending on the value stored in entry 1. With
+    the right values and FAT size this can lead to a segfault by accessing
+    unallocated memory.
+    
+    Now test_file() will ignore files where the first cluster equals 1 and
+    an additional check in check_file() will truncate them.
+    
+    This bug was reported in http://bugs.debian.org/773885 by Jakub Wilk.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 2a56575
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Apr 2 23:35:00 2015 +0200
+
+    Simplify synopses of man pages
+    
+    Since there is only one mode of invocation for the tools, it is
+    somewhat pointless to list every possible option in the synopsis.
+    
+    Fix a few style inconsistencies in addition, specifically that
+    placeholders for option arguments are in capital letters and should be
+    shown where the option is described.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 40f1436
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Apr 1 20:55:58 2015 +0200
+
+    Update homepage and maintainer sections of man pages
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 0169db8
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Apr 1 20:05:01 2015 +0200
+
+    mkfs: Show a clearer message that file already exists with -C
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 2967e27
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Mar 30 21:12:51 2015 +0200
+
+    mkfs: Remove O_TRUNC from file creation call
+    
+    open() is called with O_EXCL | O_CREAT, so it will definitely create a
+    new, empty file or error out. O_TRUNC is superfluous and may be harmless
+    in practice but its effect under these circumstances is unspecified.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 90612df
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Mar 30 21:09:51 2015 +0200
+
+    mkfs: Use ftruncate() for expanding created file
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 58e8e09
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue Mar 24 21:32:40 2015 +0100
+
+    mkfs: Add --invariant option
+    
+    The --invariant option is designed to prevent random or time based
+    differences to end up in generated filesystems so that multiple runs
+    generate on the same file or device create completely identical results.
+    
+    This is intended for debugging or regression testing of mkfs.fat.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 354feaf
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Mar 19 21:35:21 2015 +0100
+
+    mkfs: Add long option parsing
+    
+    Add long option parsing with getopt_long() to mkfs and define --help as
+    the first long option. The usage() function now takes an exit code
+    parameter so that the --help option handling can exit the program with
+    a success exit code.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit b611549
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Mar 16 21:08:35 2015 +0100
+
+    Do not expect EOF as return value of getopt()
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit a41fc32
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Mar 11 21:45:04 2015 +0100
+
+    fsck.fat: Fix read beyond end of array on FAT12
+    
+    When a FAT12 filesystem contains an odd number of clusters, setting the
+    last cluster with set_fat() will trigger a read of the next entry,
+    which does not exist in the fat array allocated for this.
+    
+    Round up the allocation to an even number of FAT entries for FAT12 so
+    that this is fixed without introducing special casing in get_fat().
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit e18d72f
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Sat Mar 7 13:23:23 2015 +0100
+
+    Remove linux/msdos_fs.h includes
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 245d0cc
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Feb 26 19:22:54 2015 +0100
+
+    Remove non standard int types
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 628b3ec
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Feb 26 19:41:19 2015 +0100
+
+    Improve .gitignore
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 02b5a6d
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Feb 26 12:51:23 2015 +0100
+
+    Makefile: avoid using install -D
+    
+    OS X and FreeBSD are not compatible with this option
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit fb6aea6
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Feb 26 12:50:57 2015 +0100
+
+    Makefile: fix typo in uninstall-man
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 357ab07
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Feb 19 21:22:54 2015 +0100
+
+    fsck.fat: Make -r option default
+    
+    Default mode is now to interactively repair with the option to write
+    the changes back at the end (like the -r option) instead of the previous
+    default mode of interactively correcting but never writing back the
+    changes.
+    
+    The -r option continues to be recognized by fsck.fat.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 266a5fc
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Feb 20 03:19:28 2015 +0100
+
+    mkfs.fat: Allow 0xF0 to be specified as media byte
+    
+    Let the -M option accept 0xF0, which should be the proper descriptor
+    byte for 3.5" 1.44 MB and 2.88 MB floppies.
+    
+    Also split the error reporting for -M between badly formatted and
+    invalid numbers.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 16e97e9
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Jan 28 15:07:18 2015 +0100
+
+    Make all char* that may take literals const
+    
+    Every char* variable or function argument that may be given a literal
+    string is now made const. Additionally add -Wwrite-strings to CFLAGS to
+    enable a warning where const would be missing.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 8b8948c
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Dec 29 18:24:54 2014 +0100
+
+    mkfs.fat.c: Use unsigned char for binary data
+    
+    Simple char technically works for the dummy_boot_jump variables, but
+    some compiler warning settings would give a warning over a signed char
+    overflowing with the values given as initializers.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 45aeed0
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sun Nov 16 19:49:22 2014 +0100
+
+    Fix indentation of "fix power loss damage" commit
+    
+    I fixed the (sometimes misleading) indentation of the code introduced in
+    commit 6893c45 to be in line with the reset of the code and also removed
+    the /* PATCH ED+DL */ comments which are quite meaningless to the wider
+    world.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 75c5446
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sat Nov 15 16:48:48 2014 +0100
+
+    Add tags and editor backup files to .gitignore
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit cb98ae2 (tag: v3.0.27)
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Nov 12 01:10:23 2014 +0100
+
+    Releasing version 3.0.27.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit e2c8f06
 Author: Andreas Bombe <aeb@debian.org>
 Date:   Wed Nov 12 00:22:17 2014 +0100
 
