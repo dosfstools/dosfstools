@@ -1,7 +1,7 @@
 *.o
-/fatlabel
-/fsck.fat
-/mkfs.fat
+src/fatlabel
+src/fsck.fat
+src/mkfs.fat
 
 tags
 *~
@@ -9,3 +9,21 @@ tags
 *.orig
 *.rej
 *.DS_Store
+
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+compile
+depcomp
+install-sh
+missing
+.deps
+
+Makefile
+Makefile.in
+src/version.h
+manpages/fatlabel.8
+manpages/mkfs.fat.8
+manpages/fsck.fat.8
