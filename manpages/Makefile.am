@@ -16,6 +16,8 @@
 
 man_MANS = fsck.fat.8 mkfs.fat.8 fatlabel.8
 
+
+if COMPAT_SYMLINKS
 install-data-hook:
 	cd $(DESTDIR)$(mandir)/man8 && $(LN_S) -f fatlabel.8 dosfslabel.8
 	cd $(DESTDIR)$(mandir)/man8 && $(LN_S) -f fsck.fat.8 dosfsck.8
@@ -33,3 +35,4 @@ uninstall-hook:
 	$(RM) $(DESTDIR)$(mandir)/man8/mkdosfs.8
 	$(RM) $(DESTDIR)$(mandir)/man8/mkfs.msdos.8
 	$(RM) $(DESTDIR)$(mandir)/man8/mkfs.vfat.8
+endif

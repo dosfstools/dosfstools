@@ -25,6 +25,8 @@ mkfs_fat_SOURCES = mkfs.fat.c
 fatlabel_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
 		   fatlabel.c
 
+
+if COMPAT_SYMLINKS
 install-exec-hook:
 	cd $(DESTDIR)$(sbindir) && $(LN_S) -f fatlabel dosfslabel
 	cd $(DESTDIR)$(sbindir) && $(LN_S) -f fsck.fat dosfsck
@@ -42,3 +44,4 @@ uninstall-hook:
 	$(RM) $(DESTDIR)$(sbindir)/mkdosfs
 	$(RM) $(DESTDIR)$(sbindir)/mkfs.msdos
 	$(RM) $(DESTDIR)$(sbindir)/mkfs.vfat
+endif
