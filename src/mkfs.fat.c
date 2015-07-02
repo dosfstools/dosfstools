@@ -232,6 +232,7 @@ static int nr_fats = 2;		/* Default number of FATs to produce */
 static int size_fat = 0;	/* Size in bits of FAT entries */
 static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
 static int dev = -1;		/* FS block device file handle */
+static off_t part_sector = 0; /* partition offset in sector */
 static int ignore_full_disk = 0;	/* Ignore warning about 'full' disk devices */
 static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
@@ -337,7 +338,7 @@ static long do_check(char *buffer, int try, off_t current_block)
 {
     long got;
 
-    if (lseek(dev, current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
+    if (lseek(dev, part_sector * sector_size + current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
 	!=current_block * BLOCK_SIZE)
 	die("seek failed during testing for blocks");
 
@@ -593,7 +594,7 @@ static void establish_params(struct device_info *info)
     }
 
     if (!hidden_sectors_by_user && info->geom_start >= 0)
-	hidden_sectors = info->geom_start;
+        hidden_sectors = info->geom_start + part_sector;
 
     if (!root_dir_entries)
 	root_dir_entries = def_root_dir_entries;
@@ -1243,7 +1244,7 @@ static void setup_tables(void)
 #define seekto(pos,errstr)						\
   do {									\
     off_t __pos = (pos);						\
-    if (lseek (dev, __pos, SEEK_SET) != __pos)				\
+    if (lseek (dev, part_sector * sector_size + __pos, SEEK_SET) != part_sector * sector_size + __pos)				\
 	error ("seek to " errstr " failed whilst writing tables");	\
   } while(0)
 
@@ -1334,6 +1335,7 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  --variant=TYPE  Select variant TYPE of filesystem (standard or Atari)\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "  --invariant     Use constants for randomly generated or time based values\n");
+    fprintf(stderr, "  --offset=SECTOR Write the filesystem at a specific sector into the device file.\n");
     fprintf(stderr, "  --help          Show this help message and exit\n");
     exit(exitval);
 }
@@ -1355,11 +1357,12 @@ int main(int argc, char **argv)
     struct timeval create_timeval;
     long long conversion;
 
-    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE};
+    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET};
     const struct option long_options[] = {
 	    {"codepage",  required_argument, NULL, OPT_CODEPAGE},
 	    {"invariant", no_argument,       NULL, OPT_INVARIANT},
 	    {"variant",   required_argument, NULL, OPT_VARIANT},
+	    {"offset",    required_argument, NULL, OPT_OFFSET},
 	    {"help",      no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
@@ -1635,6 +1638,22 @@ int main(int argc, char **argv)
 	    }
 	    break;
 
+    case OPT_OFFSET:
+        errno = 0;
+        conversion = strtoll(optarg, &tmp, 0);
+        if (!*optarg || isspace(*optarg) || *tmp || errno) {
+            printf("Bad number for offset : %s\n", optarg);
+            usage(argv[0], 1);
+        }
+
+        if (conversion < 0 || conversion > OFF_MAX) {
+            printf("FAT offset must be between 0 and %lld: %s\n", (long long) OFF_MAX, optarg);
+            usage(argv[0], 1);
+        }
+
+        part_sector = (off_t) conversion;
+        break;
+
 	case '?':
 	    usage(argv[0], 1);
 	    exit(1);
@@ -1697,7 +1716,7 @@ int main(int argc, char **argv)
 		die("unable to create %s", device_name);
 	}
 	/* expand to desired size */
-	if (ftruncate(dev, blocks * BLOCK_SIZE))
+	if (ftruncate(dev, part_sector * sector_size + blocks * BLOCK_SIZE))
 	    die("unable to resize %s", device_name);
     }
 
@@ -1719,6 +1738,10 @@ int main(int argc, char **argv)
 	    sector_size = devinfo.sector_size;
 	    sector_size_set = 1;
 	}
+
+        if (devinfo.size <= part_sector * sector_size)
+          die("The device %s size %llu is less then the offset %llu",
+              device_name, devinfo.size, (unsigned long long) part_sector * sector_size);
     }
 
     if (sector_size > 4096)
@@ -1726,8 +1749,8 @@ int main(int argc, char **argv)
 		"Warning: sector size %d > 4096 is non-standard, filesystem may not be usable\n",
 		sector_size);
 
-    cblocks = devinfo.size / BLOCK_SIZE;
-    orphaned_sectors = (devinfo.size % BLOCK_SIZE) / sector_size;
+    cblocks = (devinfo.size - part_sector * sector_size) / BLOCK_SIZE;
+    orphaned_sectors = ((devinfo.size - part_sector * sector_size) % BLOCK_SIZE) / sector_size;
 
     if (blocks_specified) {
 	if (blocks != cblocks) {
