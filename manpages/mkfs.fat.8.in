@@ -154,6 +154,10 @@ Values larger than 4096 are not conforming to the FAT file system specification
 and may not work everywhere.
 .IP "\fB\-v\fR" 4
 Verbose execution.
+.IP "\fB\-\-offset\fR \fISECTOR\fR" 4
+Write the filesystem at a specific sector into the device file.
+This is useful for creating a filesystem in a partitioned disk image without
+having to set up a loop device.
 .IP "\fB\-\-variant\fR \fITYPE\fR" 4
 Create a filesystem of variant \fITYPE\fR.
 Acceptable values are 'standard' and 'atari' (in any combination of upper/lower
