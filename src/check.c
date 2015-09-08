@@ -224,9 +224,9 @@ static char *path_name(DOS_FILE * file)
     return path;
 }
 
-static int day_n[] =
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 0, 0, 0, 0 };
-		  /* JanFebMarApr May Jun Jul Aug Sep Oct Nov Dec */
+static const int day_n[] =
+    {   0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334, 0, 0, 0, 0 };
+/*    Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec              */
 
 /* Convert a MS-DOS time/date pair to a UNIX date (seconds since 1 1 70). */
 
@@ -236,6 +236,10 @@ static time_t date_dos2unix(unsigned short time, unsigned short date)
     time_t secs;
 
     month = ((date >> 5) & 15) - 1;
+    if (month < 0) {
+	/* make sure that nothing bad happens if the month bits were zero */
+	month = 0;
+    }
     year = date >> 9;
     secs =
 	(time & 31) * 2 + 60 * ((time >> 5) & 63) + (time >> 11) * 3600 +
