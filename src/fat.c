@@ -94,7 +94,7 @@ void read_fat(DOS_FS * fs)
     fs->fat = NULL;
     fs->cluster_owner = NULL;
 
-    total_num_clusters = fs->clusters + 2UL;
+    total_num_clusters = fs->data_clusters + 2;
     eff_size = (total_num_clusters * fs->fat_bits + 7) / 8ULL;
 
     if (fs->fat_bits != 12)
@@ -155,17 +155,19 @@ void read_fat(DOS_FS * fs)
     memset(fs->cluster_owner, 0, (total_num_clusters * sizeof(DOS_FILE *)));
 
     /* Truncate any cluster chains that link to something out of range */
-    for (i = 2; i < fs->clusters + 2; i++) {
+    for (i = 2; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 	if (curEntry.value == 1) {
-	    printf("Cluster %ld out of range (1). Setting to EOF.\n", (long)(i - 2));
+	    printf("Cluster %ld out of range (1). Setting to EOF.\n",
+		   (long)(i - 2));
 	    set_fat(fs, i, -1);
 	}
-	if (curEntry.value >= fs->clusters + 2 &&
+	if (curEntry.value >= fs->data_clusters + 2 &&
 	    (curEntry.value < FAT_MIN_BAD(fs))) {
 	    printf("Cluster %ld out of range (%ld > %ld). Setting to EOF.\n",
-		   (long)(i - 2), (long)curEntry.value, (long)(fs->clusters + 2 - 1));
+		   (long)(i - 2), (long)curEntry.value,
+		   (long)(fs->data_clusters + 2 - 1));
 	    set_fat(fs, i, -1);
 	}
     }
@@ -205,7 +207,7 @@ void set_fat(DOS_FS * fs, uint32_t cluster, int32_t new)
 	    data[1] = new >> 4;
 	} else {
 	    FAT_ENTRY subseqEntry;
-	    if (cluster != fs->clusters + 1)
+	    if (cluster != fs->data_clusters + 1)
 		get_fat(&subseqEntry, fs->fat, cluster + 1, fs);
 	    else
 		subseqEntry.value = 0;
@@ -314,7 +316,7 @@ void fix_bad(DOS_FS * fs)
 
     if (verbose)
 	printf("Checking for bad clusters.\n");
-    for (i = 2; i < fs->clusters + 2; i++) {
+    for (i = 2; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 
@@ -334,7 +336,7 @@ void reclaim_free(DOS_FS * fs)
     if (verbose)
 	printf("Checking for unused clusters.\n");
     reclaimed = 0;
-    for (i = 2; i < fs->clusters + 2; i++) {
+    for (i = 2; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 
@@ -369,7 +371,7 @@ static void tag_free(DOS_FS * fs, DOS_FILE * owner, uint32_t *num_refs,
     if (start_cluster == 0)
 	start_cluster = 2;
 
-    for (i = start_cluster; i < fs->clusters + 2; i++) {
+    for (i = start_cluster; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 
@@ -420,7 +422,7 @@ void reclaim_file(DOS_FS * fs)
     if (verbose)
 	printf("Reclaiming unconnected clusters.\n");
 
-    total_num_clusters = fs->clusters + 2UL;
+    total_num_clusters = fs->data_clusters + 2;
     num_refs = alloc(total_num_clusters * sizeof(uint32_t));
     memset(num_refs, 0, (total_num_clusters * sizeof(uint32_t)));
 
@@ -433,7 +435,7 @@ void reclaim_file(DOS_FS * fs)
 	get_fat(&curEntry, fs->fat, i, fs);
 
 	next = curEntry.value;
-	if (!get_owner(fs, i) && next && next < fs->clusters + 2) {
+	if (!get_owner(fs, i) && next && next < fs->data_clusters + 2) {
 	    /* Cluster is linked, but not owned (orphan) */
 	    FAT_ENTRY nextEntry;
 	    get_fat(&nextEntry, fs->fat, next, fs);
@@ -513,7 +515,7 @@ uint32_t update_free(DOS_FS * fs)
     uint32_t free = 0;
     int do_set = 0;
 
-    for (i = 2; i < fs->clusters + 2; i++) {
+    for (i = 2; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 

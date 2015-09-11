@@ -115,8 +115,9 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
     printf("Data area starts at byte %llu (sector %llu)\n",
 	   (unsigned long long)fs->data_start,
 	   (unsigned long long)fs->data_start / lss);
-    printf("%10lu data clusters (%llu bytes)\n", (unsigned long)fs->clusters,
-	   (unsigned long long)fs->clusters * fs->cluster_size);
+    printf("%10lu data clusters (%llu bytes)\n",
+	   (unsigned long)fs->data_clusters,
+	   (unsigned long long)fs->data_clusters * fs->cluster_size);
     printf("%u sectors/track, %u heads\n", le16toh(b->secs_track),
 	   le16toh(b->heads));
     printf("%10u hidden sectors\n", atari_format ?
@@ -364,7 +365,7 @@ void read_boot(DOS_FS * fs)
 							MSDOS_DIR_BITS,
 							logical_sector_size);
     data_size = (loff_t) total_sectors *logical_sector_size - fs->data_start;
-    fs->clusters = data_size / fs->cluster_size;
+    fs->data_clusters = data_size / fs->cluster_size;
     fs->root_cluster = 0;	/* indicates standard, pre-FAT32 root dir */
     fs->fsinfo_start = 0;	/* no FSINFO structure */
     fs->free_clusters = -1;	/* unknown */
@@ -385,13 +386,13 @@ void read_boot(DOS_FS * fs)
 	    printf("Warning: FAT32 root dir is in a cluster chain, but "
 		   "a separate root dir\n"
 		   "  area is defined. Cannot fix this easily.\n");
-	if (fs->clusters < FAT16_THRESHOLD)
+	if (fs->data_clusters < FAT16_THRESHOLD)
 	    printf("Warning: Filesystem is FAT32 according to fat_length "
 		   "and fat32_length fields,\n"
 		   "  but has only %lu clusters, less than the required "
 		   "minimum of %d.\n"
 		   "  This may lead to problems on some systems.\n",
-		   (unsigned long)fs->clusters, FAT16_THRESHOLD);
+		   (unsigned long)fs->data_clusters, FAT16_THRESHOLD);
 
 	check_fat_state_bit(fs, &b);
 	fs->backupboot_start = le16toh(b.backup_boot) * logical_sector_size;
@@ -401,9 +402,9 @@ void read_boot(DOS_FS * fs)
     } else if (!atari_format) {
 	/* On real MS-DOS, a 16 bit FAT is used whenever there would be too
 	 * much clusers otherwise. */
-	fs->fat_bits = (fs->clusters >= FAT12_THRESHOLD) ? 16 : 12;
-	if (fs->clusters >= FAT16_THRESHOLD)
-	    die("Too many clusters (%lu) for FAT16 filesystem.", fs->clusters);
+	fs->fat_bits = (fs->data_clusters >= FAT12_THRESHOLD) ? 16 : 12;
+	if (fs->data_clusters >= FAT16_THRESHOLD)
+	    die("Too many clusters (%lu) for FAT16 filesystem.", fs->data_clusters);
 	check_fat_state_bit(fs, &b);
     } else {
 	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
@@ -411,7 +412,7 @@ void read_boot(DOS_FS * fs)
 	fs->fat_bits = 16;	/* assume 16 bit FAT for now */
 	/* If more clusters than fat entries in 16-bit fat, we assume
 	 * it's a real MSDOS FS with 12-bit fat. */
-	if (fs->clusters + 2 > fat_length * logical_sector_size * 8 / 16 ||
+	if (fs->data_clusters + 2 > fat_length * logical_sector_size * 8 / 16 ||
 	    /* if it's a floppy disk --> 12bit fat */
 	    device_no == 2 ||
 	    /* if it's a ramdisk or loopback device and has one of the usual
@@ -439,10 +440,10 @@ void read_boot(DOS_FS * fs)
 	    fs->label = NULL;
     }
 
-    if (fs->clusters >
+    if (fs->data_clusters >
 	((uint64_t)fs->fat_size * 8 / fs->fat_bits) - 2)
 	die("Filesystem has %d clusters but only space for %d FAT entries.",
-	    fs->clusters,
+	    fs->data_clusters,
 	    ((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2);
     if (!fs->root_entries && !fs->root_cluster)
 	die("Root directory has zero size.");

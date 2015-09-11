@@ -111,7 +111,7 @@ loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	    for (clu_num = prev + 1; clu_num != prev; clu_num++) {
 		FAT_ENTRY entry;
 
-		if (clu_num >= fs->clusters + 2)
+		if (clu_num >= fs->data_clusters + 2)
 		    clu_num = 2;
 		get_fat(&entry, fs->fat, clu_num, fs);
 		if (!entry.value)
@@ -360,7 +360,7 @@ static void drop_file(DOS_FS * fs, DOS_FILE * file)
     if (file->lfn)
 	lfn_remove(file->lfn_offset, file->offset);
     for (cluster = FSTART(file, fs); cluster > 0 && cluster <
-	 fs->clusters + 2; cluster = next_cluster(fs, cluster))
+	 fs->data_clusters + 2; cluster = next_cluster(fs, cluster))
 	set_owner(fs, cluster, NULL);
     --n_files;
 }
@@ -556,13 +556,15 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    die("Bad FAT32 root directory! (bad start cluster 1)\n");
 	MODIFY_START(file, 0, fs);
     }
-    if (FSTART(file, fs) >= fs->clusters + 2) {
+    if (FSTART(file, fs) >= fs->data_clusters + 2) {
 	printf
 	    ("%s\n  Start cluster beyond limit (%lu > %lu). Truncating file.\n",
-	     path_name(file), (unsigned long)FSTART(file, fs), (unsigned long)(fs->clusters + 1));
+	     path_name(file), (unsigned long)FSTART(file, fs),
+	     (unsigned long)(fs->data_clusters + 1));
 	if (!file->offset)
 	    die("Bad FAT32 root directory! (start cluster beyond limit: %lu > %lu)\n",
-		(unsigned long)FSTART(file, fs), (unsigned long)(fs->clusters + 1));
+		(unsigned long)FSTART(file, fs),
+		(unsigned long)(fs->data_clusters + 1));
 	MODIFY_START(file, 0, fs);
     }
     clusters = prev = 0;
@@ -848,7 +850,7 @@ static void test_file(DOS_FS * fs, DOS_FILE * file, int read_test)
     uint32_t walk, prev, clusters, next_clu;
 
     prev = clusters = 0;
-    for (walk = FSTART(file, fs); walk > 1 && walk < fs->clusters + 2;
+    for (walk = FSTART(file, fs); walk > 1 && walk < fs->data_clusters + 2;
 	 walk = next_clu) {
 	next_clu = next_cluster(fs, walk);
 
@@ -889,7 +891,7 @@ static void test_file(DOS_FS * fs, DOS_FILE * file, int read_test)
 	set_owner(fs, walk, file);
     }
     /* Revert ownership (for now) */
-    for (walk = FSTART(file, fs); walk > 1 && walk < fs->clusters + 2;
+    for (walk = FSTART(file, fs); walk > 1 && walk < fs->data_clusters + 2;
 	 walk = next_cluster(fs, walk))
 	if (bad_cluster(fs, walk))
 	    break;
@@ -909,7 +911,7 @@ static void undelete(DOS_FS * fs, DOS_FILE * file)
 
     walk = FSTART(file, fs);
 
-    while (left && (walk >= 2) && (walk < fs->clusters + 2)) {
+    while (left && (walk >= 2) && (walk < fs->data_clusters + 2)) {
 
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, walk, fs);

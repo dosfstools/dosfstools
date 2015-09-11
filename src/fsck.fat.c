@@ -217,7 +217,8 @@ exit:
 
     if (!boot_only)
 	printf("%s: %u files, %lu/%lu clusters\n", argv[optind],
-	       n_files, (unsigned long)fs.clusters - free_clusters, (unsigned long)fs.clusters);
+	       n_files, (unsigned long)fs.data_clusters - free_clusters,
+	       (unsigned long)fs.data_clusters);
 
     return fs_close(rw) ? 1 : 0;
 }

@@ -158,7 +158,7 @@ typedef struct {
     unsigned int root_entries;
     loff_t data_start;
     unsigned int cluster_size;
-    uint32_t clusters;
+    uint32_t data_clusters;	/* not including two reserved cluster numbers */
     loff_t fsinfo_start;	/* 0 if not present */
     long free_clusters;
     loff_t backupboot_start;	/* 0 if not present */
