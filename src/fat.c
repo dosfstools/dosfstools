@@ -205,7 +205,7 @@ void set_fat(DOS_FS * fs, uint32_t cluster, int32_t new)
 	    data[1] = new >> 4;
 	} else {
 	    FAT_ENTRY subseqEntry;
-	    if (cluster != fs->clusters - 1)
+	    if (cluster != fs->clusters + 1)
 		get_fat(&subseqEntry, fs->fat, cluster + 1, fs);
 	    else
 		subseqEntry.value = 0;
