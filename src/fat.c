@@ -47,6 +47,11 @@ void get_fat(FAT_ENTRY * entry, void *fat, uint32_t cluster, DOS_FS * fs)
 {
     unsigned char *ptr;
 
+    if (cluster > fs->data_clusters + 1) {
+	die("Internal error: cluster out of range in get_fat() (%lu > %lu).",
+		(unsigned long)cluster, (unsigned long)(fs->data_clusters + 1));
+    }
+
     switch (fs->fat_bits) {
     case 12:
 	ptr = &((unsigned char *)fat)[cluster * 3 / 2];
@@ -192,10 +197,20 @@ void set_fat(DOS_FS * fs, uint32_t cluster, int32_t new)
     int size;
     loff_t offs;
 
+    if (cluster > fs->data_clusters + 1) {
+	die("Internal error: cluster out of range in set_fat() (%lu > %lu).",
+		(unsigned long)cluster, (unsigned long)(fs->data_clusters + 1));
+    }
+
     if (new == -1)
 	new = FAT_EOF(fs);
     else if ((long)new == -2)
 	new = FAT_BAD(fs);
+    else if (new > fs->data_clusters + 1) {
+	die("Internal error: new cluster out of range in set_fat() (%lu > %lu).",
+		(unsigned long)new, (unsigned long)(fs->data_clusters + 1));
+    }
+
     switch (fs->fat_bits) {
     case 12:
 	data = fs->fat + cluster * 3 / 2;
