@@ -4,6 +4,7 @@ src/fsck.fat
 src/mkfs.fat
 
 tags
+TAGS
 *~
 .*.sw[a-p]
 *.orig
