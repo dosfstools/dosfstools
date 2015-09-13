@@ -19,14 +19,14 @@ AC_SUBST([RELEASE_DATE], [2015-05-16])
 AM_INIT_AUTOMAKE([foreign])
 
 AC_ARG_ENABLE([compat-symlinks],
-	      [  --enable-compat-symlinks
-	                  install symlinks for legacy names of the tools],
-	      [case "${enableval}" in
-	       yes) symlinks=true ;;
-	       no)  symlinks=false ;;
-	       *)   AC_MSG_ERROR([bad value ${enableval} for --enable-compat-symlinks]) ;;
-	       esac],
-	      [symlinks=false])
+	[AS_HELP_STRING([--enable-compat-symlinks],
+		      [install symlinks for legacy names of the tools])],
+	[case "${enableval}" in
+	yes) symlinks=true ;;
+	no)  symlinks=false ;;
+	*)   AC_MSG_ERROR([bad value ${enableval} for --enable-compat-symlinks]) ;;
+	esac],
+	[symlinks=false])
 AM_CONDITIONAL([COMPAT_SYMLINKS], [test x$symlinks = xtrue])
 
 
