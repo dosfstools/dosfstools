@@ -1,4 +1,4 @@
-/* version.h
+/* @configure_input@
 
    Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
