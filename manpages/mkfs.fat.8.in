@@ -1,4 +1,4 @@
-.\" mkfs.fat.8 - manpage for fs.fatck
+g\" mkfs.fat.8 - manpage for fs.fatck
 .\"
 .\" Copyright (C) 2006-2014 Daniel Baumann <daniel@debian.org>
 .\"
@@ -121,6 +121,10 @@ This value is usually 0xF8 for hard disks and is 0xF0 or a value from 0xF9 to
 Sets the volume name (label) of the filesystem.
 The volume name can be up to 11 characters long.
 The default is no label.
+.IP "\fB\-o\fR \fIoffset\fR" 4
+Write the filesystem at a specific offset into the device file.
+This is useful for creating a filesystem in a partitioned disk image without
+having to set up a loop device.
 .IP "\fB\-r\fR \fIROOT-DIR-ENTRIES\fR" 4
 Select the number of entries available in the root directory.
 The default is 112 or 224 for floppies and 512 for hard disks.

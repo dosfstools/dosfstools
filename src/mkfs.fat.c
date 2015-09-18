@@ -240,6 +240,7 @@ static int nr_fats = 2;		/* Default number of FATs to produce */
 static int size_fat = 0;	/* Size in bits of FAT entries */
 static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
 static int dev = -1;		/* FS block device file handle */
+static off_t part_offset = 0;
 static int ignore_full_disk = 0;	/* Ignore warning about 'full' disk devices */
 static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
@@ -350,7 +351,7 @@ static long do_check(char *buffer, int try, off_t current_block)
 {
     long got;
 
-    if (llseek(dev, current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
+    if (llseek(dev, part_offset + current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
 	!=current_block * BLOCK_SIZE)
 	die("seek failed during testing for blocks");
 
@@ -490,6 +491,8 @@ static uint64_t count_blocks(char *filename, int *remainder)
     }
 
     close(fd);
+
+    low -= part_offset;
     *remainder = (low % BLOCK_SIZE) / sector_size;
     return (low / BLOCK_SIZE);
 }
@@ -1275,11 +1278,11 @@ static void setup_tables(void)
     die (str);					\
   } while(0)
 
-#define seekto(pos,errstr)						\
-  do {									\
-    loff_t __pos = (pos);						\
-    if (llseek (dev, __pos, SEEK_SET) != __pos)				\
-	error ("seek to " errstr " failed whilst writing tables");	\
+#define seekto(pos,errstr)							\
+  do {										\
+    loff_t __pos = (pos);							\
+    if (llseek (dev, part_offset + __pos, SEEK_SET) != part_offset +__pos)	\
+	error ("seek to " errstr " failed whilst writing tables");		\
   } while(0)
 
 #define writebuf(buf,size,errstr)			\
@@ -1344,7 +1347,7 @@ Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-secto
        [-m boot-msg-file][-n volume-name][-i volume-id]\n\
        [-s sectors-per-cluster][-S logical-sector-size][-f number-of-FATs]\n\
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\
-       [-M FAT-media-byte][-D drive_number]\n\
+       [-M FAT-media-byte][-D drive_number][-o offset-in-bytes]\n\
        [--invariant]\n\
        [--help]\n\
        /dev/name [blocks]\n");
@@ -1417,7 +1420,7 @@ int main(int argc, char **argv)
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
-    while ((c = getopt_long(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v",
+    while ((c = getopt_long(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:vo:",
 				    long_options, NULL)) != -1)
 	/* Scan the command line for options */
 	switch (c) {
@@ -1623,6 +1626,14 @@ int main(int argc, char **argv)
 	    sector_size_set = 1;
 	    break;
 
+	case 'o':		/* o : specify offset */
+	    part_offset = strtoul(optarg, &tmp, 0);
+	    if (*tmp) {
+		printf("Offset must be a number in bytes\n");
+		usage(1);
+	    }
+	    break;
+
 	case 'v':		/* v : Verbose execution */
 	    ++verbose;
 	    break;
@@ -1694,7 +1705,7 @@ int main(int argc, char **argv)
 		die("unable to create %s");
 	}
 	/* expand to desired size */
-	if (ftruncate(dev, blocks * BLOCK_SIZE))
+	if (ftruncate(dev, part_offset + blocks * BLOCK_SIZE))
 	    die("unable to resize %s");
     }
 
