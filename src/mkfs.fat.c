@@ -6,6 +6,7 @@
    Copyright (C) 1998 H. Peter Anvin <hpa@zytor.com>
    Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -69,6 +70,7 @@
 #include <getopt.h>
 
 #include "msdos_fs.h"
+#include "device_info.h"
 
 /* In earlier versions, an own llseek() was used, but glibc lseek() is
  * sufficient (or even better :) for 64 bit offsets in the meantime */
@@ -274,10 +276,8 @@ static long do_check(char *buffer, int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
-static int valid_offset(int fd, loff_t offset);
-static uint64_t count_blocks(char *filename, int *remainder);
 static void check_mount(char *device_name);
-static void establish_params(int device_num, int size);
+static void establish_params(struct device_info *info);
 static void setup_tables(void);
 static void write_tables(void);
 
@@ -448,52 +448,6 @@ static void get_list_blocks(char *filename)
 	printf("%d bad block%s\n", badblocks, (badblocks > 1) ? "s" : "");
 }
 
-/* Given a file descriptor and an offset, check whether the offset is a valid offset for the file - return FALSE if it
-   isn't valid or TRUE if it is */
-
-static int valid_offset(int fd, loff_t offset)
-{
-    char ch;
-
-    if (llseek(fd, offset, SEEK_SET) < 0)
-	return FALSE;
-    if (read(fd, &ch, 1) < 1)
-	return FALSE;
-    return TRUE;
-}
-
-/* Given a filename, look to see how many blocks of BLOCK_SIZE are present, returning the answer */
-
-static uint64_t count_blocks(char *filename, int *remainder)
-{
-    loff_t high, low;
-    int fd;
-
-    if ((fd = open(filename, O_RDONLY)) < 0) {
-	perror(filename);
-	exit(1);
-    }
-
-    /* first try SEEK_END, which should work on most devices nowadays */
-    if ((low = llseek(fd, 0, SEEK_END)) <= 0) {
-	low = 0;
-	for (high = 1; valid_offset(fd, high); high *= 2)
-	    low = high;
-	while (low < high - 1) {
-	    const loff_t mid = (low + high) / 2;
-	    if (valid_offset(fd, mid))
-		low = mid;
-	    else
-		high = mid;
-	}
-	++low;
-    }
-
-    close(fd);
-    *remainder = (low % BLOCK_SIZE) / sector_size;
-    return (low / BLOCK_SIZE);
-}
-
 /* Check to see if the specified device is currently mounted - abort if it is */
 
 static void check_mount(char *device_name)
@@ -511,190 +465,97 @@ static void check_mount(char *device_name)
 
 /* Establish the geometry and media parameters for the device */
 
-static void establish_params(int device_num, int size)
+static void establish_params(struct device_info *info)
 {
-    long loop_size;
-    struct hd_geometry geometry;
-    struct floppy_struct param;
+    unsigned int sec_per_track = 63;
+    unsigned int heads = 255;
+    unsigned int media = 0xf8;
+    unsigned int cluster_size = 4;  /* starting point for FAT12 and FAT16 */
     int def_root_dir_entries = 512;
 
-    if ((0 == device_num) || ((device_num & 0xff00) == 0x0200))
-	/* file image or floppy disk */
-    {
-	if (0 == device_num) {
-	    param.size = size / 512;
-	    switch (param.size) {
+    if (info->type != TYPE_FIXED) {
+	/* enter default parameters for floppy disks if the size matches */
+	switch (info->size / 1024) {
+	    case 360:
+		sec_per_track = 9;
+		heads = 2;
+		media = 0xfd;
+		cluster_size = 2;
+		def_root_dir_entries = 112;
+		break;
+
 	    case 720:
-		param.sect = 9;
-		param.head = 2;
+		sec_per_track = 9;
+		heads = 2;
+		media = 0xf9;
+		cluster_size = 2;
+		def_root_dir_entries = 112;
 		break;
+
+	    case 1200:
+		sec_per_track = 15;
+		heads = 2;
+		media = 0xf9;
+		cluster_size = (atari_format ? 2 : 1);
+		def_root_dir_entries = 224;
+		break;
+
 	    case 1440:
-		param.sect = 9;
-		param.head = 2;
+		sec_per_track = 18;
+		heads = 2;
+		media = 0xf0;
+		cluster_size = (atari_format ? 2 : 1);
+		def_root_dir_entries = 224;
 		break;
-	    case 2400:
-		param.sect = 15;
-		param.head = 2;
-		break;
+
 	    case 2880:
-		param.sect = 18;
-		param.head = 2;
+		sec_per_track = 36;
+		heads = 2;
+		media = 0xf0;
+		cluster_size = 2;
+		def_root_dir_entries = 224;
 		break;
-	    case 5760:
-		param.sect = 36;
-		param.head = 2;
-		break;
-	    default:
-		/* fake values */
-		param.sect = 32;
-		param.head = 64;
-		break;
-	    }
-
-	} else {		/* is a floppy diskette */
-
-	    if (ioctl(dev, FDGETPRM, &param))	/*  Can we get the diskette geometry? */
-		die("unable to get diskette geometry for '%s'");
-	}
-	bs.secs_track = htole16(param.sect);	/*  Set up the geometry information */
-	bs.heads = htole16(param.head);
-	switch (param.size) {	/*  Set up the media descriptor byte */
-	case 720:		/* 5.25", 2, 9, 40 - 360K */
-	    bs.media = (char)0xfd;
-	    bs.cluster_size = (char)2;
-	    def_root_dir_entries = 112;
-	    break;
-
-	case 1440:		/* 3.5", 2, 9, 80 - 720K */
-	    bs.media = (char)0xf9;
-	    bs.cluster_size = (char)2;
-	    def_root_dir_entries = 112;
-	    break;
-
-	case 2400:		/* 5.25", 2, 15, 80 - 1200K */
-	    bs.media = (char)0xf9;
-	    bs.cluster_size = (char)(atari_format ? 2 : 1);
-	    def_root_dir_entries = 224;
-	    break;
-
-	case 5760:		/* 3.5", 2, 36, 80 - 2880K */
-	    bs.media = (char)0xf0;
-	    bs.cluster_size = (char)2;
-	    def_root_dir_entries = 224;
-	    break;
-
-	case 2880:		/* 3.5", 2, 18, 80 - 1440K */
-floppy_default:
-	    bs.media = (char)0xf0;
-	    bs.cluster_size = (char)(atari_format ? 2 : 1);
-	    def_root_dir_entries = 224;
-	    break;
-
-	default:		/* Anything else */
-	    if (0 == device_num)
-		goto def_hd_params;
-	    else
-		goto floppy_default;
-	}
-    } else if ((device_num & 0xff00) == 0x0700) {	/* This is a loop device */
-	if (ioctl(dev, BLKGETSIZE, &loop_size))
-	    die("unable to get loop device size");
-
-	switch (loop_size) {	/* Assuming the loop device -> floppy later */
-	case 720:		/* 5.25", 2, 9, 40 - 360K */
-	    bs.secs_track = le16toh(9);
-	    bs.heads = le16toh(2);
-	    bs.media = (char)0xfd;
-	    bs.cluster_size = (char)2;
-	    def_root_dir_entries = 112;
-	    break;
-
-	case 1440:		/* 3.5", 2, 9, 80 - 720K */
-	    bs.secs_track = le16toh(9);
-	    bs.heads = le16toh(2);
-	    bs.media = (char)0xf9;
-	    bs.cluster_size = (char)2;
-	    def_root_dir_entries = 112;
-	    break;
-
-	case 2400:		/* 5.25", 2, 15, 80 - 1200K */
-	    bs.secs_track = le16toh(15);
-	    bs.heads = le16toh(2);
-	    bs.media = (char)0xf9;
-	    bs.cluster_size = (char)(atari_format ? 2 : 1);
-	    def_root_dir_entries = 224;
-	    break;
-
-	case 5760:		/* 3.5", 2, 36, 80 - 2880K */
-	    bs.secs_track = le16toh(36);
-	    bs.heads = le16toh(2);
-	    bs.media = (char)0xf0;
-	    bs.cluster_size = (char)2;
-	    bs.dir_entries[0] = (char)224;
-	    bs.dir_entries[1] = (char)0;
-	    break;
-
-	case 2880:		/* 3.5", 2, 18, 80 - 1440K */
-	    bs.secs_track = le16toh(18);
-	    bs.heads = le16toh(2);
-	    bs.media = (char)0xf0;
-	    bs.cluster_size = (char)(atari_format ? 2 : 1);
-	    def_root_dir_entries = 224;
-	    break;
-
-	default:		/* Anything else: default hd setup */
-	    printf("Loop device does not match a floppy size, using "
-		   "default hd params\n");
-	    bs.secs_track = htole16(32);	/* these are fake values... */
-	    bs.heads = htole16(64);
-	    goto def_hd_params;
-	}
-    } else
-	/* Must be a hard disk then! */
-    {
-	/* Can we get the drive geometry? (Note I'm not too sure about */
-	/* whether to use HDIO_GETGEO or HDIO_REQ) */
-	if (ioctl(dev, HDIO_GETGEO, &geometry) || geometry.sectors == 0
-	    || geometry.heads == 0) {
-	    printf("unable to get drive geometry, using default 255/63\n");
-	    bs.secs_track = htole16(63);
-	    bs.heads = htole16(255);
-	} else {
-	    bs.secs_track = htole16(geometry.sectors);	/* Set up the geometry information */
-	    bs.heads = htole16(geometry.heads);
-	    if (!hidden_sectors_by_user)
-		hidden_sectors = htole32(geometry.start);
-	}
-def_hd_params:
-	bs.media = (char)0xf8;	/* Set up the media descriptor for a hard drive */
-	if (!size_fat && blocks * SECTORS_PER_BLOCK > 1064960) {
-	    if (verbose)
-		printf("Auto-selecting FAT32 for large filesystem\n");
-	    size_fat = 32;
-	}
-	if (size_fat == 32) {
-	    /* For FAT32, try to do the same as M$'s format command
-	     * (see http://www.win.tue.nl/~aeb/linux/fs/fat/fatgen103.pdf p. 20):
-	     * fs size <= 260M: 0.5k clusters
-	     * fs size <=   8G:   4k clusters
-	     * fs size <=  16G:   8k clusters
-	     * fs size <=  32G:  16k clusters
-	     * fs size >   32G:  32k clusters
-	     */
-	    uint32_t sz_mb =
-		(blocks + (1 << (20 - BLOCK_SIZE_BITS)) - 1) >> (20 -
-								 BLOCK_SIZE_BITS);
-	    bs.cluster_size =
-		sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
-		8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
-	} else {
-	    /* FAT12 and FAT16: start at 4 sectors per cluster */
-	    bs.cluster_size = (char)4;
 	}
     }
 
+    if (!size_fat && info->size >= 512 * 1024 * 1024) {
+	if (verbose)
+	    printf("Auto-selecting FAT32 for large filesystem\n");
+	size_fat = 32;
+    }
+    if (size_fat == 32) {
+	/*
+	 * For FAT32, try to do the same as M$'s format command
+	 * (see http://www.win.tue.nl/~aeb/linux/fs/fat/fatgen103.pdf p. 20):
+	 * fs size <= 260M: 0.5k clusters
+	 * fs size <=   8G:   4k clusters
+	 * fs size <=  16G:   8k clusters
+	 * fs size <=  32G:  16k clusters
+	 * fs size >   32G:  32k clusters
+	 *
+	 * This only works correctly for 512 byte sectors!
+	 */
+	uint32_t sz_mb = info->size / (1024 * 1024);
+	cluster_size =
+	    sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
+	    8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
+    }
+
+    if (info->geom_heads > 0) {
+	heads = info->geom_heads;
+	sec_per_track = info->geom_sectors;
+    }
+
+    if (!hidden_sectors_by_user && info->geom_start >= 0)
+	hidden_sectors = htole32(info->geom_start);
+
     if (!root_dir_entries)
 	root_dir_entries = def_root_dir_entries;
+
+    bs.secs_track = htole16(sec_per_track);
+    bs.heads = htole16(heads);
+    bs.media = media;
+    bs.cluster_size = cluster_size;
 }
 
 /*
@@ -1388,12 +1249,11 @@ int main(int argc, char **argv)
     char *tmp;
     char *listfile = NULL;
     FILE *msgfile;
-    struct stat statbuf;
+    struct device_info devinfo;
     int i = 0, pos, ch;
     int create = 0;
     uint64_t cblocks = 0;
-    int min_sector_size;
-    int bad_block_count = 0;
+    int blocks_specified = 0;
     struct timeval create_timeval;
 
     enum {OPT_HELP=1000, OPT_INVARIANT,};
@@ -1641,37 +1501,33 @@ int main(int argc, char **argv)
 	    printf("Unknown option: %c\n", c);
 	    usage(1);
 	}
-    if (optind < argc) {
-	device_name = argv[optind];	/* Determine the number of blocks in the FS */
 
-	if (!device_name) {
-	    printf("No device specified.\n");
+    if (optind == argc || !argv[optind]) {
+	printf("No device specified.\n");
+	usage(1);
+    }
+
+    device_name = argv[optind++];
+
+    if (optind != argc) {
+	blocks_specified = 1;
+	blocks = strtoull(argv[optind], &tmp, 0);
+
+	if (*tmp) {
+	    printf("Bad block count : %s\n", argv[optind]);
 	    usage(1);
 	}
 
-	if (!create)
-	    cblocks = count_blocks(device_name, &orphaned_sectors);	/*  Have a look and see! */
+	optind++;
     }
-    if (optind == argc - 2) {	/*  Either check the user specified number */
-	blocks = strtoull(argv[optind + 1], &tmp, 0);
-	if (!create && blocks != cblocks) {
-	    fprintf(stderr, "Warning: block count mismatch: ");
-	    fprintf(stderr, "found %llu but assuming %llu.\n", (unsigned long long)cblocks, (unsigned long long)blocks);
-	}
-	if (*tmp)
-	    bad_block_count = 1;
-    } else if (optind == argc - 1) {	/*  Or use value found */
-	if (create)
-	    die("Need intended size with -C.");
-	blocks = cblocks;
-    } else {
-	fprintf(stderr, "No device specified!\n");
+
+    if (optind != argc) {
+	fprintf(stderr, "Excess arguments on command line\n");
 	usage(1);
     }
-    if (bad_block_count) {
-	printf("Bad block count : %s\n", argv[optind + 1]);
-	usage(1);
-    }
+
+    if (create && !blocks_specified)
+	die("Need intended size with -C.");
 
     if (check && listfile)	/* Auto and specified bad block handling are mutually */
 	die("-c and -l are incompatible");	/* exclusive of each other! */
@@ -1698,37 +1554,48 @@ int main(int argc, char **argv)
 	    die("unable to resize %s");
     }
 
-    if (fstat(dev, &statbuf) < 0)
-	die("unable to stat %s");
-    if (!S_ISBLK(statbuf.st_mode)) {
-	statbuf.st_rdev = 0;
-	check = 0;
-    } else
-	/*
-	 * Ignore any 'full' fixed disk devices, if -I is not given.
-	 * On a MO-disk one doesn't need partitions.  The filesytem can go
-	 * directly to the whole disk.  Under other OSes this is known as
-	 * the 'superfloppy' format.  As I don't know how to find out if
-	 * this is a MO disk I introduce a -I (ignore) switch.  -Joey
-	 */
-	if (!ignore_full_disk && ((statbuf.st_rdev & 0xffffff3f) == 0x0300 ||	/* hda, hdb */
-				  (statbuf.st_rdev & 0xffffff0f) == 0x0800 ||	/* sd */
-				  (statbuf.st_rdev & 0xffffff3f) == 0x0d00 ||	/* xd */
-				  (statbuf.st_rdev & 0xffffff3f) == 0x1600)	/* hdc, hdd */
-	)
+    if (get_device_info(dev, &devinfo) < 0)
+	die("error collecting information about %s");
+
+    if (devinfo.size <= 0)
+	die("unable to discover size of %s");
+
+    if (devinfo.sector_size > 0)
+	sector_size = devinfo.sector_size;
+
+    cblocks = devinfo.size / BLOCK_SIZE;
+    orphaned_sectors = (devinfo.size % BLOCK_SIZE) / sector_size;
+
+    if (blocks_specified) {
+	if (blocks != cblocks) {
+	    fprintf(stderr, "Warning: block count mismatch: ");
+	    fprintf(stderr, "found %llu but assuming %llu.\n",
+		    (unsigned long long)cblocks, (unsigned long long)blocks);
+	}
+    } else {
+	blocks = cblocks;
+    }
+
+    /*
+     * Ignore any 'full' fixed disk devices, if -I is not given.
+     */
+    if (!ignore_full_disk && devinfo.type == TYPE_FIXED &&
+	    devinfo.partition == 0)
 	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)");
 
-    if (sector_size_set) {
-	if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0)
-	    if (sector_size < min_sector_size) {
-		sector_size = min_sector_size;
+    if (!ignore_full_disk && devinfo.has_children > 0)
+	die("Partitions or virtual mappings on device '%s', not making filesystem (use -I to override)");
+
+    if (devinfo.sector_size > 0) {
+	if (sector_size_set) {
+	    if (sector_size < devinfo.sector_size) {
+		sector_size = devinfo.sector_size;
 		fprintf(stderr,
 			"Warning: sector size was set to %d (minimal for this device)\n",
 			sector_size);
 	    }
-    } else {
-	if (ioctl(dev, BLKSSZGET, &min_sector_size) >= 0) {
-	    sector_size = min_sector_size;
+	} else {
+	    sector_size = devinfo.sector_size;
 	    sector_size_set = 1;
 	}
     }
@@ -1738,7 +1605,7 @@ int main(int argc, char **argv)
 		"Warning: sector size is set to %d > 4096, such filesystem will not propably mount\n",
 		sector_size);
 
-    establish_params(statbuf.st_rdev, statbuf.st_size);
+    establish_params(&devinfo);
     /* Establish the media parameters */
 
     setup_tables();		/* Establish the filesystem tables */

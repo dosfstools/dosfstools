@@ -35,6 +35,10 @@ AC_PROG_LN_S
 
 AC_SYS_LARGEFILE
 
+PKG_CHECK_MODULES([UDEV], [libudev],
+		  [AC_DEFINE([HAVE_UDEV], [1])],
+		  [true])
+PKG_CHECK_MODULES([BLKID], [blkid])
 
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8

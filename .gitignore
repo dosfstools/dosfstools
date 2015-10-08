@@ -2,6 +2,7 @@
 src/fatlabel
 src/fsck.fat
 src/mkfs.fat
+src/testdevinfo
 
 tags
 TAGS

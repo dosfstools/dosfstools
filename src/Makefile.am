@@ -18,12 +18,20 @@ AM_CFLAGS = -Wall -Wextra -Wno-sign-compare -Wno-missing-field-initializers \
 	    -Wmissing-prototypes -Wstrict-prototypes -Wwrite-strings
 
 sbin_PROGRAMS = fsck.fat mkfs.fat fatlabel
+noinst_PROGRAMS = testdevinfo
 
 fsck_fat_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
 		   fsck.fat.c
-mkfs_fat_SOURCES = mkfs.fat.c
 fatlabel_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
 		   fatlabel.c
+
+mkfs_fat_SOURCES = mkfs.fat.c device_info.c
+mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) $(BLKID_CFLAGS)
+mkfs_fat_LDFLAGS = $(UDEV_LIBS) $(BLKID_LIBS)
+
+testdevinfo_SOURCES = testdevinfo.c device_info.c
+testdevinfo_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) $(BLKID_CFLAGS)
+testdevinfo_LDFLAGS = $(UDEV_LIBS) $(BLKID_LIBS)
 
 
 if COMPAT_SYMLINKS
