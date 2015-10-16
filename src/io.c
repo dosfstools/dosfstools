@@ -57,25 +57,10 @@ static int fd, did_change = 0;
 
 unsigned device_no;
 
-#ifdef __DJGPP__
-#include "volume.h"		/* DOS lowlevel disk access functions */
-loff_t llseek(int fd, loff_t offset, int whence)
-{
-    if ((whence != SEEK_SET) || (fd == 4711))
-	return -1;		/* only those supported */
-    return VolumeSeek(offset);
-}
-
-#define open OpenVolume
-#define close CloseVolume
-#define read(a,b,c) ReadVolume(b,c)
-#define write(a,b,c) WriteVolume(b,c)
-#else
 loff_t llseek(int fd, loff_t offset, int whence)
 {
     return (loff_t) lseek64(fd, (off64_t) offset, whence);
 }
-#endif
 
 void fs_open(char *path, int rw)
 {
@@ -88,24 +73,9 @@ void fs_open(char *path, int rw)
     changes = last = NULL;
     did_change = 0;
 
-#ifndef _DJGPP_
     if (fstat(fd, &stbuf) < 0)
 	pdie("fstat %s", path);
     device_no = S_ISBLK(stbuf.st_mode) ? (stbuf.st_rdev >> 8) & 0xff : 0;
-#else
-    if (IsWorkingOnImageFile()) {
-	if (fstat(GetVolumeHandle(), &stbuf) < 0)
-	    pdie("fstat image %s", path);
-	device_no = 0;
-    } else {
-	/* return 2 for floppy, 1 for ramdisk, 7 for loopback  */
-	/* used by boot.c in Atari mode: floppy always FAT12,  */
-	/* loopback / ramdisk only FAT12 if usual floppy size, */
-	/* harddisk always FAT16 on Atari... */
-	device_no = (GetVolumeHandle() < 2) ? 2 : 1;
-	/* telling "floppy" for A:/B:, "ramdisk" for the rest */
-    }
-#endif
 }
 
 /**
