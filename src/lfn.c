@@ -53,7 +53,7 @@ typedef struct {
 unsigned char *lfn_unicode = NULL;
 unsigned char lfn_checksum;
 int lfn_slot = -1;
-loff_t *lfn_offsets = NULL;
+off_t *lfn_offsets = NULL;
 int lfn_parts = 0;
 
 static unsigned char fat_uni2esc[64] = {
@@ -171,7 +171,7 @@ static void clear_lfn_slots(int start, int end)
     }
 }
 
-void lfn_fix_checksum(loff_t from, loff_t to, const char *short_name)
+void lfn_fix_checksum(off_t from, off_t to, const char *short_name)
 {
     int i;
     uint8_t sum;
@@ -196,7 +196,7 @@ void lfn_reset(void)
 
 /* This function is only called with de->attr == VFAT_LN_ATTR. It stores part
  * of the long name. */
-void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
+void lfn_add_slot(DIR_ENT * de, off_t dir_offset)
 {
     LFN_ENT *lfn = (LFN_ENT *) de;
     int slot = lfn->id & LFN_ID_SLOTMASK;
@@ -254,7 +254,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 	lfn_slot = slot;
 	lfn_checksum = lfn->alias_checksum;
 	lfn_unicode = alloc((lfn_slot * CHARS_PER_LFN + 1) * 2);
-	lfn_offsets = alloc(lfn_slot * sizeof(loff_t));
+	lfn_offsets = alloc(lfn_slot * sizeof(off_t));
 	lfn_parts = 0;
     } else if (lfn_slot == -1 && slot != 0) {
 	/* No LFN in progress, but slot found; start bit missing */
@@ -273,7 +273,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 	switch (interactive ? get_key("123", "?") : '2') {
 	case '1':
 	    if (!lfn_offsets)
-		lfn_offsets = alloc(sizeof(loff_t));
+		lfn_offsets = alloc(sizeof(off_t));
 	    lfn_offsets[0] = dir_offset;
 	    clear_lfn_slots(0, 0);
 	    lfn_reset();
@@ -288,7 +288,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 	    lfn_slot = slot;
 	    lfn_checksum = lfn->alias_checksum;
 	    lfn_unicode = alloc((lfn_slot * CHARS_PER_LFN + 1) * 2);
-	    lfn_offsets = alloc(lfn_slot * sizeof(loff_t));
+	    lfn_offsets = alloc(lfn_slot * sizeof(off_t));
 	    lfn_parts = 0;
 	    break;
 	}
@@ -320,7 +320,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 	switch (interactive ? get_key(can_fix ? "123" : "12", "?") : '2') {
 	case '1':
 	    if (!lfn_offsets) {
-		lfn_offsets = alloc(sizeof(loff_t));
+		lfn_offsets = alloc(sizeof(off_t));
 		lfn_parts = 0;
 	    }
 	    lfn_offsets[lfn_parts++] = dir_offset;
@@ -407,7 +407,7 @@ void lfn_add_slot(DIR_ENT * de, loff_t dir_offset)
 
 /* This function is always called when de->attr != VFAT_LN_ATTR is found, to
  * retrieve the previously constructed LFN. */
-char *lfn_get(DIR_ENT * de, loff_t * lfn_offset)
+char *lfn_get(DIR_ENT * de, off_t * lfn_offset)
 {
     char *lfn;
     uint8_t sum;

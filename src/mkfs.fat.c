@@ -72,9 +72,6 @@
 #include "msdos_fs.h"
 #include "device_info.h"
 
-/* In earlier versions, an own llseek() was used, but glibc lseek() is
- * sufficient (or even better :) for 64 bit offsets in the meantime */
-#define llseek lseek
 
 /* Constant definitions */
 
@@ -350,7 +347,7 @@ static long do_check(char *buffer, int try, off_t current_block)
 {
     long got;
 
-    if (llseek(dev, current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
+    if (lseek(dev, current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
 	!=current_block * BLOCK_SIZE)
 	die("seek failed during testing for blocks");
 
@@ -1138,8 +1135,8 @@ static void setup_tables(void)
 
 #define seekto(pos,errstr)						\
   do {									\
-    loff_t __pos = (pos);						\
-    if (llseek (dev, __pos, SEEK_SET) != __pos)				\
+    off_t __pos = (pos);						\
+    if (lseek (dev, __pos, SEEK_SET) != __pos)				\
 	error ("seek to " errstr " failed whilst writing tables");	\
   } while(0)
 

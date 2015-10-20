@@ -3,6 +3,7 @@
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -47,7 +48,7 @@
 
 typedef struct _change {
     void *data;
-    loff_t pos;
+    off_t pos;
     int size;
     struct _change *next;
 } CHANGE;
@@ -57,10 +58,6 @@ static int fd, did_change = 0;
 
 unsigned device_no;
 
-loff_t llseek(int fd, loff_t offset, int whence)
-{
-    return (loff_t) lseek64(fd, (off64_t) offset, whence);
-}
 
 void fs_open(char *path, int rw)
 {
@@ -87,12 +84,12 @@ void fs_open(char *path, int rw)
  * @param[in]   size    Number of bytes to read
  * @param[out]  data    Where to put the data read
  */
-void fs_read(loff_t pos, int size, void *data)
+void fs_read(off_t pos, int size, void *data)
 {
     CHANGE *walk;
     int got;
 
-    if (llseek(fd, pos, 0) != pos)
+    if (lseek(fd, pos, 0) != pos)
 	pdie("Seek to %lld", pos);
     if ((got = read(fd, data, size)) < 0)
 	pdie("Read %d bytes at %lld", size, pos);
@@ -114,12 +111,12 @@ void fs_read(loff_t pos, int size, void *data)
     }
 }
 
-int fs_test(loff_t pos, int size)
+int fs_test(off_t pos, int size)
 {
     void *scratch;
     int okay;
 
-    if (llseek(fd, pos, 0) != pos)
+    if (lseek(fd, pos, 0) != pos)
 	pdie("Seek to %lld", pos);
     scratch = alloc(size);
     okay = read(fd, scratch, size) == size;
@@ -127,14 +124,14 @@ int fs_test(loff_t pos, int size)
     return okay;
 }
 
-void fs_write(loff_t pos, int size, void *data)
+void fs_write(off_t pos, int size, void *data)
 {
     CHANGE *new;
     int did;
 
     if (write_immed) {
 	did_change = 1;
-	if (llseek(fd, pos, 0) != pos)
+	if (lseek(fd, pos, 0) != pos)
 	    pdie("Seek to %lld", pos);
 	if ((did = write(fd, data, size)) == size)
 	    return;
@@ -161,7 +158,7 @@ static void fs_flush(void)
     while (changes) {
 	this = changes;
 	changes = changes->next;
-	if (llseek(fd, this->pos, 0) != this->pos)
+	if (lseek(fd, this->pos, 0) != this->pos)
 	    fprintf(stderr,
 		    "Seek to %lld failed: %s\n  Did not write %d bytes.\n",
 		    (long long)this->pos, strerror(errno), this->size);

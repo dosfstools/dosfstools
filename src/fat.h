@@ -49,7 +49,7 @@ uint32_t next_cluster(DOS_FS * fs, uint32_t cluster);
    last cluster of the respective cluster chain. CLUSTER must not be a bad
    cluster. */
 
-loff_t cluster_start(DOS_FS * fs, uint32_t cluster);
+off_t cluster_start(DOS_FS * fs, uint32_t cluster);
 
 /* Returns the byte offset of CLUSTER, relative to the respective device. */
 

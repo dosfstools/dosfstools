@@ -56,7 +56,7 @@ static DOS_FILE *root;
 
 #define MODIFY_START(p,v,fs)						\
   do {									\
-    uint32_t __v = (v);						\
+    uint32_t __v = (v);							\
     if (!p->offset) {							\
 	/* writing to fake entry for FAT32 root dir */			\
 	if (!__v) die("Oops, deleting FAT32 root dir!");		\
@@ -64,7 +64,7 @@ static DOS_FILE *root;
 	p->dir_ent.start = htole16(__v&0xffff);				\
 	p->dir_ent.starthi = htole16(__v>>16);				\
 	__v = htole32(__v);						\
-	fs_write((loff_t)offsetof(struct boot_sector,root_cluster),	\
+	fs_write(offsetof(struct boot_sector,root_cluster),		\
 	         sizeof(((struct boot_sector *)0)->root_cluster),	\
 		 &__v);							\
     }									\
@@ -75,16 +75,16 @@ static DOS_FILE *root;
     }									\
   } while(0)
 
-loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
+off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 {
     static int curr_num = 0;
-    loff_t offset;
+    off_t offset;
 
     if (fs->root_cluster) {
 	DIR_ENT d2;
 	int i = 0, got = 0;
 	uint32_t clu_num, prev = 0;
-	loff_t offset2;
+	off_t offset2;
 
 	clu_num = fs->root_cluster;
 	offset = cluster_start(fs, clu_num);
@@ -336,7 +336,7 @@ static int bad_name(DOS_FILE * file)
     return 0;
 }
 
-static void lfn_remove(loff_t from, loff_t to)
+static void lfn_remove(off_t from, off_t to)
 {
     DIR_ENT empty;
 
@@ -954,7 +954,7 @@ static void new_dir(void)
  * @param           cp
  */
 static void add_file(DOS_FS * fs, DOS_FILE *** chain, DOS_FILE * parent,
-		     loff_t offset, FDSC ** cp)
+		     off_t offset, FDSC ** cp)
 {
     DOS_FILE *new;
     DIR_ENT de;

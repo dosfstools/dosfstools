@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
     char *device = NULL;
     char label[12] = { 0 };
 
-    loff_t offset;
+    off_t offset;
     DIR_ENT de;
 
     check_atari();

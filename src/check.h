@@ -23,7 +23,7 @@
 #ifndef _CHECK_H
 #define _CHECK_H
 
-loff_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern);
+off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern);
 
 /* Allocate a free slot in the root directory for a new file. The file name is
    constructed after 'pattern', which must include a %d type format for printf
