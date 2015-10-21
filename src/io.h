@@ -60,8 +60,4 @@ int fs_changed(void);
 
 /* Determines whether the filesystem has changed. See fs_close. */
 
-extern unsigned device_no;
-
-/* Major number of device (0 if file) and size (in 512 byte sectors) */
-
 #endif

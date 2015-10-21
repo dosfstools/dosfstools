@@ -56,23 +56,15 @@ typedef struct _change {
 static CHANGE *changes, *last;
 static int fd, did_change = 0;
 
-unsigned device_no;
-
 
 void fs_open(char *path, int rw)
 {
-    struct stat stbuf;
-
     if ((fd = open(path, rw ? O_RDWR : O_RDONLY)) < 0) {
 	perror("open");
 	exit(6);
     }
     changes = last = NULL;
     did_change = 0;
-
-    if (fstat(fd, &stbuf) < 0)
-	pdie("fstat %s", path);
-    device_no = S_ISBLK(stbuf.st_mode) ? (stbuf.st_rdev >> 8) & 0xff : 0;
 }
 
 /**
