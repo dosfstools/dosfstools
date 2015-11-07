@@ -195,7 +195,7 @@ void set_fat(DOS_FS * fs, uint32_t cluster, int32_t new)
 {
     unsigned char *data = NULL;
     int size;
-    loff_t offs;
+    off_t offs;
 
     if (cluster > fs->data_clusters + 1) {
 	die("Internal error: cluster out of range in set_fat() (%lu > %lu).",
@@ -291,9 +291,9 @@ uint32_t next_cluster(DOS_FS * fs, uint32_t cluster)
     return FAT_IS_EOF(fs, value) ? -1 : value;
 }
 
-loff_t cluster_start(DOS_FS * fs, uint32_t cluster)
+off_t cluster_start(DOS_FS * fs, uint32_t cluster)
 {
-    return fs->data_start + ((loff_t) cluster -
+    return fs->data_start + ((off_t) cluster -
 			     2) * (uint64_t)fs->cluster_size;
 }
 
@@ -502,7 +502,7 @@ void reclaim_file(DOS_FS * fs)
 	/* If this cluster is the head of an orphan chain... */
 	if (get_owner(fs, i) == &orphan && !num_refs[i]) {
 	    DIR_ENT de;
-	    loff_t offset;
+	    off_t offset;
 	    files++;
 	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04dREC");
 	    de.start = htole16(i & 0xffff);

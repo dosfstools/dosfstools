@@ -47,7 +47,7 @@
 
 typedef struct _change {
     void *data;
-    loff_t pos;
+    off_t pos;
     int size;
     struct _change *next;
 } CHANGE;
@@ -59,7 +59,7 @@ unsigned device_no;
 
 #ifdef __DJGPP__
 #include "volume.h"		/* DOS lowlevel disk access functions */
-loff_t llseek(int fd, loff_t offset, int whence)
+off_t llseek(int fd, off_t offset, int whence)
 {
     if ((whence != SEEK_SET) || (fd == 4711))
 	return -1;		/* only those supported */
@@ -71,9 +71,9 @@ loff_t llseek(int fd, loff_t offset, int whence)
 #define read(a,b,c) ReadVolume(b,c)
 #define write(a,b,c) WriteVolume(b,c)
 #else
-loff_t llseek(int fd, loff_t offset, int whence)
+off_t llseek(int fd, off_t offset, int whence)
 {
-    return (loff_t) lseek64(fd, (off64_t) offset, whence);
+    return (off_t) lseek64(fd, (off64_t) offset, whence);
 }
 #endif
 
@@ -117,7 +117,7 @@ void fs_open(char *path, int rw)
  * @param[in]   size    Number of bytes to read
  * @param[out]  data    Where to put the data read
  */
-void fs_read(loff_t pos, int size, void *data)
+void fs_read(off_t pos, int size, void *data)
 {
     CHANGE *walk;
     int got;
@@ -144,7 +144,7 @@ void fs_read(loff_t pos, int size, void *data)
     }
 }
 
-int fs_test(loff_t pos, int size)
+int fs_test(off_t pos, int size)
 {
     void *scratch;
     int okay;
@@ -157,7 +157,7 @@ int fs_test(loff_t pos, int size)
     return okay;
 }
 
-void fs_write(loff_t pos, int size, void *data)
+void fs_write(off_t pos, int size, void *data)
 {
     CHANGE *new;
     int did;

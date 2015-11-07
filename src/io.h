@@ -27,9 +27,7 @@
 #ifndef _IO_H
 #define _IO_H
 
-#include <fcntl.h>		/* for loff_t */
-
-loff_t llseek(int fd, loff_t offset, int whence);
+off_t llseek(int fd, off_t offset, int whence);
 
 /* lseek() analogue for large offsets. */
 
@@ -38,17 +36,17 @@ void fs_open(char *path, int rw);
 /* Opens the filesystem PATH. If RW is zero, the filesystem is opened
    read-only, otherwise, it is opened read-write. */
 
-void fs_read(loff_t pos, int size, void *data);
+void fs_read(off_t pos, int size, void *data);
 
 /* Reads SIZE bytes starting at POS into DATA. Performs all applicable
    changes. */
 
-int fs_test(loff_t pos, int size);
+int fs_test(off_t pos, int size);
 
 /* Returns a non-zero integer if SIZE bytes starting at POS can be read without
    errors. Otherwise, it returns zero. */
 
-void fs_write(loff_t pos, int size, void *data);
+void fs_write(off_t pos, int size, void *data);
 
 /* If write_immed is non-zero, SIZE bytes are written from DATA to the disk,
    starting at POS. If write_immed is zero, the change is added to a list in
