@@ -26,14 +26,14 @@
 void lfn_reset(void);
 /* Reset the state of the LFN parser. */
 
-void lfn_add_slot(DIR_ENT * de, loff_t dir_offset);
+void lfn_add_slot(DIR_ENT * de, off_t dir_offset);
 /* Process a dir slot that is a VFAT LFN entry. */
 
-char *lfn_get(DIR_ENT * de, loff_t * lfn_offset);
+char *lfn_get(DIR_ENT * de, off_t * lfn_offset);
 /* Retrieve the long name for the proper dir entry. */
 
 void lfn_check_orphaned(void);
 
-void lfn_fix_checksum(loff_t from, loff_t to, const char *short_name);
+void lfn_fix_checksum(off_t from, off_t to, const char *short_name);
 
 #endif

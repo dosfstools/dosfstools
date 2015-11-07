@@ -135,8 +135,8 @@ typedef struct {
 typedef struct _dos_file {
     DIR_ENT dir_ent;
     char *lfn;
-    loff_t offset;
-    loff_t lfn_offset;
+    off_t offset;
+    off_t lfn_offset;
     struct _dos_file *parent;	/* parent directory */
     struct _dos_file *next;	/* next entry */
     struct _dos_file *first;	/* first entry (directory only) */
@@ -149,19 +149,19 @@ typedef struct {
 
 typedef struct {
     int nfats;
-    loff_t fat_start;
+    off_t fat_start;
     unsigned int fat_size;	/* unit is bytes */
     unsigned int fat_bits;	/* size of a FAT entry */
     unsigned int eff_fat_bits;	/* # of used bits in a FAT entry */
     uint32_t root_cluster;	/* 0 for old-style root dir */
-    loff_t root_start;
+    off_t root_start;
     unsigned int root_entries;
-    loff_t data_start;
+    off_t data_start;
     unsigned int cluster_size;
     uint32_t data_clusters;	/* not including two reserved cluster numbers */
-    loff_t fsinfo_start;	/* 0 if not present */
+    off_t fsinfo_start;	/* 0 if not present */
     long free_clusters;
-    loff_t backupboot_start;	/* 0 if not present */
+    off_t backupboot_start;	/* 0 if not present */
     unsigned char *fat;
     DOS_FILE **cluster_owner;
     char *label;

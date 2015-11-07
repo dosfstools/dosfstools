@@ -274,7 +274,7 @@ static long do_check(char *buffer, int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
-static int valid_offset(int fd, loff_t offset);
+static int valid_offset(int fd, off_t offset);
 static uint64_t count_blocks(char *filename, int *remainder);
 static void check_mount(char *device_name);
 static void establish_params(int device_num, int size);
@@ -451,7 +451,7 @@ static void get_list_blocks(char *filename)
 /* Given a file descriptor and an offset, check whether the offset is a valid offset for the file - return FALSE if it
    isn't valid or TRUE if it is */
 
-static int valid_offset(int fd, loff_t offset)
+static int valid_offset(int fd, off_t offset)
 {
     char ch;
 
@@ -466,7 +466,7 @@ static int valid_offset(int fd, loff_t offset)
 
 static uint64_t count_blocks(char *filename, int *remainder)
 {
-    loff_t high, low;
+    off_t high, low;
     int fd;
 
     if ((fd = open(filename, O_RDONLY)) < 0) {
@@ -480,7 +480,7 @@ static uint64_t count_blocks(char *filename, int *remainder)
 	for (high = 1; valid_offset(fd, high); high *= 2)
 	    low = high;
 	while (low < high - 1) {
-	    const loff_t mid = (low + high) / 2;
+	    const off_t mid = (low + high) / 2;
 	    if (valid_offset(fd, mid))
 		low = mid;
 	    else
@@ -1277,7 +1277,7 @@ static void setup_tables(void)
 
 #define seekto(pos,errstr)						\
   do {									\
-    loff_t __pos = (pos);						\
+    off_t __pos = (pos);						\
     if (llseek (dev, __pos, SEEK_SET) != __pos)				\
 	error ("seek to " errstr " failed whilst writing tables");	\
   } while(0)
