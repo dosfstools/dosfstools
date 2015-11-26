@@ -23,16 +23,9 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 
-#ifdef __linux__
-#include <linux/hdreg.h> /* for HDIO_GETGEO */
-#include <linux/fd.h>    /* for FDGETPRM */
-#endif
-
 #ifdef HAVE_UDEV
 #include <libudev.h>
 #endif
-
-#include <blkid.h>
 
 #include <unistd.h>
 #include <dirent.h>
@@ -40,6 +33,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "blkdev.h"
 #include "device_info.h"
 
 
@@ -60,47 +54,32 @@ int device_info_verbose;
 
 static void get_block_device_size(struct device_info *info, int fd)
 {
-    blkid_loff_t blkid_size;
+    unsigned long long bytes;
 
-    blkid_size = blkid_get_dev_size(fd);
-    if (blkid_size)
-	info->size = blkid_size;
+    if (!blkdev_get_size(fd, &bytes) && bytes != 0)
+	info->size = bytes;
 }
 
 
-static void get_block_geometry(struct device_info *info, int fd);
-
-#ifdef __linux__
 static void get_block_geometry(struct device_info *info, int fd)
 {
-    struct floppy_struct fdparam;
-    struct hd_geometry geom;
+    unsigned int heads, sectors;
 
-    if (device_info_verbose >= 3)
-	printf("get_block_geometry(), Linux variant\n");
-
-    if (!ioctl(fd, HDIO_GETGEO, &geom) && geom.heads) {
-	if (device_info_verbose >= 3)
-	    printf("HDIO_GETGEO %dh/%ds\n", geom.heads, geom.sectors);
-	info->geom_heads = geom.heads;
-	info->geom_sectors = geom.sectors;
-	info->geom_start = geom.start;
-    } else if (!ioctl(fd, FDGETPRM, &fdparam)) {
-	if (device_info_verbose >= 3)
-	    printf("FDGETPRM %dh/%ds\n", fdparam.head, fdparam.sect);
-	info->geom_heads = fdparam.head;
-	info->geom_sectors = fdparam.sect;
-	info->geom_start = 0;
+    if (!blkdev_get_geometry(fd, &heads, &sectors)
+	    && heads && sectors) {
+	info->geom_heads = heads;
+	info->geom_sectors = sectors;
     }
 }
-#else  /* __linux__ */
-static void get_block_geometry(struct device_info *info, int fd)
+
+
+static void get_sector_size(struct device_info *info, int fd)
 {
-    /* prevent "unused parameter" warning */
-    (void)info;
-    (void)fd;
+    int size;
+
+    if (!blkdev_get_sector_size(fd, &size))
+	info->sector_size = size;
 }
-#endif
 
 
 static int udev_fill_info(struct device_info *info, struct stat *stat);
@@ -270,27 +249,8 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
 #endif
 
 
-static void blkid_fill_info(struct device_info *info, blkid_probe pr)
-{
-    blkid_partlist plist;
-
-    if (device_info_verbose >= 3)
-	printf("blkid_fill_info()\n");
-
-    if (blkid_probe_is_wholedisk(pr))
-	info->partition = 0;
-    else
-	info->partition = 1;
-
-    plist = blkid_probe_get_partitions(pr);
-    if (plist && blkid_partlist_numof_partitions(plist))
-	info->has_children = 1;
-}
-
-
 int get_device_info(int fd, struct device_info *info)
 {
-    blkid_probe probe;
     struct stat stat;
     int ret;
 
@@ -316,24 +276,12 @@ int get_device_info(int fd, struct device_info *info)
 	return 0;
     }
 
-    probe = blkid_new_probe();
-    if (!probe) {
-	return -1;
-    }
-
-    if (blkid_probe_set_device(probe, fd, 0, 0)) {
-	blkid_free_probe(probe);
-	return -1;
-    }
-
     get_block_device_size(info, fd);
     get_block_geometry(info, fd);
-    info->sector_size = blkid_probe_get_sectorsize(probe);
+    get_sector_size(info, fd);
 
-    /* use udev information if available, fall back to blkid probing */
-    if (udev_fill_info(info, &stat))
-	blkid_fill_info(info, probe);
+    /* use udev information if available */
+    udev_fill_info(info, &stat);
 
-    blkid_free_probe(probe);
     return 0;
 }

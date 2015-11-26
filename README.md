@@ -5,8 +5,9 @@ under the GNU GPL version 3 or later. See the file `COPYING` for details.
 
 ### Build Requirements
 
-dosfstools depends on libblkid and recommends libudev. Both are used in
-mkfs.fat to collect information about the device to format.
+dosfstools recommends libudev. It is used in mkfs.fat to collect additional
+information about the device to format in order to refuse potentially unsafe
+operations without additional confirmation.
 
 
 ### Installing

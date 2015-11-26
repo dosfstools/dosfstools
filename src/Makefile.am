@@ -25,13 +25,13 @@ fsck_fat_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
 fatlabel_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
 		   fatlabel.c
 
-mkfs_fat_SOURCES = mkfs.fat.c device_info.c
-mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) $(BLKID_CFLAGS)
-mkfs_fat_LDFLAGS = $(UDEV_LIBS) $(BLKID_LIBS)
+mkfs_fat_SOURCES = mkfs.fat.c device_info.c blkdev/blkdev.c blkdev/linux_version.c
+mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
+mkfs_fat_LDFLAGS = $(UDEV_LIBS)
 
-testdevinfo_SOURCES = testdevinfo.c device_info.c
-testdevinfo_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) $(BLKID_CFLAGS)
-testdevinfo_LDFLAGS = $(UDEV_LIBS) $(BLKID_LIBS)
+testdevinfo_SOURCES = testdevinfo.c device_info.c blkdev/blkdev.c blkdev/linux_version.c
+testdevinfo_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
+testdevinfo_LDFLAGS = $(UDEV_LIBS)
 
 
 if COMPAT_SYMLINKS

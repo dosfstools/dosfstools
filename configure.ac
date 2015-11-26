@@ -16,7 +16,7 @@
 
 AC_INIT([dosfstools], [3.99.0])
 AC_SUBST([RELEASE_DATE], [2015-05-16])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 AC_ARG_ENABLE([compat-symlinks],
 	[AS_HELP_STRING([--enable-compat-symlinks],
@@ -35,10 +35,20 @@ AC_PROG_LN_S
 
 AC_SYS_LARGEFILE
 
+AC_CHECK_HEADERS([\
+		  err.h \
+		  linux/fd.h \
+		  linux/version.h \
+		  sys/disk.h \
+		  sys/disklabel.h \
+		  sys/ioccom.h \
+		  sys/mkdev.h \
+		  sys/queue.h \
+		  ])
+
 PKG_CHECK_MODULES([UDEV], [libudev],
 		  [AC_DEFINE([HAVE_UDEV], [1])],
 		  [true])
-PKG_CHECK_MODULES([BLKID], [blkid])
 
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8
