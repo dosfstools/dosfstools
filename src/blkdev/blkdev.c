@@ -278,17 +278,31 @@ int blkdev_is_cdrom(int fd)
 int blkdev_get_geometry(int fd, unsigned int *h, unsigned int *s)
 {
 #ifdef HDIO_GETGEO
-	struct hd_geometry geometry;
+	{
+		struct hd_geometry geometry;
 
-	if (ioctl(fd, HDIO_GETGEO, &geometry) == 0) {
-		*h = geometry.heads;
-		*s = geometry.sectors;
-		return 0;
+		if (ioctl(fd, HDIO_GETGEO, &geometry) == 0) {
+			*h = geometry.heads;
+			*s = geometry.sectors;
+			return 0;
+		}
 	}
-#else
+#endif
+
+#ifdef FDGETPRM
+	{
+		struct floppy_struct fdparam;
+
+		if (ioctl(fd, FDGETPRM, &fdparam) == 0) {
+			*h = fdparam.head;
+			*s = fdparam.sect;
+			return 0;
+		}
+	}
+#endif
+
 	*h = 0;
 	*s = 0;
-#endif
 	return -1;
 }
 
