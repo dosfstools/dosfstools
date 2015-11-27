@@ -38,6 +38,7 @@ AC_SYS_LARGEFILE
 AC_CHECK_HEADERS([\
 		  err.h \
 		  linux/fd.h \
+		  linux/hdreg.h \
 		  linux/version.h \
 		  sys/disk.h \
 		  sys/disklabel.h \

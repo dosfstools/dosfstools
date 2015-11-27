@@ -10,6 +10,10 @@
 #include <unistd.h>
 #include <stdint.h>
 
+#ifdef HAVE_LINUX_HDREG_H
+#include <linux/hdreg.h>
+#endif
+
 #ifdef HAVE_LINUX_FD_H
 #include <linux/fd.h>
 #endif
