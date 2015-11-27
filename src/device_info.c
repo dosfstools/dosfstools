@@ -63,13 +63,16 @@ static void get_block_device_size(struct device_info *info, int fd)
 
 static void get_block_geometry(struct device_info *info, int fd)
 {
-    unsigned int heads, sectors;
+    unsigned int heads, sectors, start;
 
     if (!blkdev_get_geometry(fd, &heads, &sectors)
 	    && heads && sectors) {
 	info->geom_heads = heads;
 	info->geom_sectors = sectors;
     }
+
+    if (!blkdev_get_start(fd, &start))
+	info->geom_start = start;
 }
 
 

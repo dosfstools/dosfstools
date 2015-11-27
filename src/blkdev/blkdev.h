@@ -121,6 +121,9 @@ int blkdev_is_cdrom(int fd);
 /* get device's geometry - legacy */
 int blkdev_get_geometry(int fd, unsigned int *h, unsigned int *s);
 
+/* get partition devices start offset */
+int blkdev_get_start(int fd, unsigned int *s);
+
 /* SCSI device types.  Copied almost as-is from kernel header.
  * http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/include/scsi/scsi.h */
 #define SCSI_TYPE_DISK			0x00

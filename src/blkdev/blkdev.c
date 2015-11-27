@@ -293,6 +293,24 @@ int blkdev_get_geometry(int fd, unsigned int *h, unsigned int *s)
 }
 
 /*
+ * Get start offset of partition
+ */
+int blkdev_get_start(int fd, unsigned int *s)
+{
+#ifdef HDIO_GETGEO
+	struct hd_geometry geometry;
+
+	if (ioctl(fd, HDIO_GETGEO, &geometry) == 0) {
+		*s = geometry.start;
+		return 0;
+	}
+#endif
+
+	*s = 0;
+	return -1;
+}
+
+/*
  * Convert scsi type to human readable string.
  */
 const char *blkdev_scsi_type_to_name(int type)
