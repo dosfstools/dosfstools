@@ -265,6 +265,7 @@ void lfn_add_slot(DIR_ENT * de, off_t dir_offset)
 	printf("Long filename fragment \"%s\" found outside a LFN "
 	       "sequence.\n  (Maybe the start bit is missing on the "
 	       "last fragment)\n", part);
+	free(part);
 	if (interactive) {
 	    printf("1: Delete fragment\n2: Leave it as it is.\n"
 		   "3: Set start bit\n");
@@ -517,6 +518,7 @@ void lfn_check_orphaned(void)
 
     long_name = CNV_PARTS_SO_FAR();
     printf("Orphaned long file name part \"%s\"\n", long_name);
+    free(long_name);
     if (interactive)
 	printf("1: Delete.\n2: Leave it.\n");
     else
