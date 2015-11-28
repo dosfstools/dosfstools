@@ -2,6 +2,7 @@
 
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -465,10 +466,8 @@ char *lfn_get(DIR_ENT * de, off_t * lfn_offset)
 	}
     }
 
-    for (sum = 0, i = 0; i < 8; i++)
+    for (sum = 0, i = 0; i < MSDOS_NAME; i++)
 	sum = (((sum & 1) << 7) | ((sum & 0xfe) >> 1)) + de->name[i];
-    for (i = 0; i < 3; i++)
-	sum = (((sum & 1) << 7) | ((sum & 0xfe) >> 1)) + de->ext[i];
     if (sum != lfn_checksum) {
 	/* checksum doesn't match, long name doesn't apply to this alias */
 	/* Causes: 1) alias renamed */

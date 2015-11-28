@@ -4,6 +4,7 @@
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2007 Red Hat, Inc.
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
 	if (offset == 0)
 	    fprintf(stdout, "%s\n", fs.label);
 	else
-	    fprintf(stdout, "%.8s%.3s\n", de.name, de.ext);
+	    fprintf(stdout, "%.8s%.3s\n", de.name, de.name + 8);
 	exit(0);
     }
 

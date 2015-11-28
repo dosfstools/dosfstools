@@ -3,6 +3,7 @@
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -120,7 +121,7 @@ struct info_sector {
 };
 
 typedef struct {
-    uint8_t name[8], ext[3];	/* name and extension */
+    uint8_t name[MSDOS_NAME];	/* name including extension */
     uint8_t attr;		/* attribute bits */
     uint8_t lcase;		/* Case for base and extension */
     uint8_t ctime_ms;		/* Creation time, milliseconds */

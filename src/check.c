@@ -3,6 +3,7 @@
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -132,8 +133,7 @@ off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	while (1) {
 	    char expanded[12];
 	    sprintf(expanded, pattern, curr_num);
-	    memcpy(de->name, expanded, 8);
-	    memcpy(de->ext, expanded + 8, 3);
+	    memcpy(de->name, expanded, MSDOS_NAME);
 	    clu_num = fs->root_cluster;
 	    i = 0;
 	    offset2 = cluster_start(fs, clu_num);
@@ -177,8 +177,7 @@ off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	while (1) {
 	    char expanded[12];
 	    sprintf(expanded, pattern, curr_num);
-	    memcpy(de->name, expanded, 8);
-	    memcpy(de->ext, expanded + 8, 3);
+	    memcpy(de->name, expanded, MSDOS_NAME);
 	    for (scan = 0; scan < fs->root_entries; scan++)
 		if (scan != next_free &&
 		    !strncmp((const char *)root[scan].name,
@@ -269,7 +268,7 @@ static int bad_name(DOS_FILE * file)
     int i, spc, suspicious = 0;
     const char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
     const unsigned char *name = file->dir_ent.name;
-    const unsigned char *ext = file->dir_ent.ext;
+    const unsigned char *ext = name + 8;
 
     /* Do not complain about (and auto-correct) the extended attribute files
      * of OS/2. */
@@ -287,21 +286,12 @@ static int bad_name(DOS_FILE * file)
     if (file->dir_ent.lcase & FAT_NO_83NAME)
 	return 0;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < MSDOS_NAME; i++) {
 	if (name[i] < ' ' || name[i] == 0x7f)
 	    return 1;
 	if (name[i] > 0x7f)
 	    ++suspicious;
 	if (strchr(bad_chars, name[i]))
-	    return 1;
-    }
-
-    for (i = 0; i < 3; i++) {
-	if (ext[i] < ' ' || ext[i] == 0x7f)
-	    return 1;
-	if (ext[i] > 0x7f)
-	    ++suspicious;
-	if (strchr(bad_chars, ext[i]))
 	    return 1;
     }
 
@@ -396,8 +386,7 @@ static void auto_rename(DOS_FILE * file)
 	char num[8];
 	sprintf(num, "%07lu", (unsigned long)number);
 	memcpy(file->dir_ent.name, "FSCK", 4);
-	memcpy(file->dir_ent.name + 4, num, 4);
-	memcpy(file->dir_ent.ext, num + 4, 3);
+	memcpy(file->dir_ent.name + 4, num, 7);
 	for (walk = first; walk; walk = walk->next)
 	    if (walk != file
 		&& !strncmp((const char *)walk->dir_ent.name,

@@ -1067,10 +1067,9 @@ static void setup_tables(void)
     }
 
     memset(root_dir, 0, size_root_dir);
-    if (memcmp(volume_name, NO_NAME, 11)) {
+    if (memcmp(volume_name, NO_NAME, MSDOS_NAME)) {
 	struct msdos_dir_entry *de = &root_dir[0];
-	memcpy(de->name, volume_name, 8);
-	memcpy(de->ext, volume_name + 8, 3);
+	memcpy(de->name, volume_name, MSDOS_NAME);
 	de->attr = ATTR_VOLUME;
 	if (!invariant)
 		ctime = localtime(&create_time);
