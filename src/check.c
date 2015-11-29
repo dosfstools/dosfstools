@@ -399,7 +399,7 @@ static void auto_rename(DOS_FILE * file)
 		file->dir_ent.lcase &= ~FAT_NO_83NAME;
 		/* reset the attributes, only keep DIR and VOLUME */
 		file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME);
-		fs_write(file->offset, MSDOS_NAME + 2, file->dir_ent.name);
+		fs_write(file->offset, MSDOS_NAME + 2, &file->dir_ent);
 	    } else {
 		fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 	    }
@@ -442,7 +442,7 @@ static void rename_file(DOS_FILE * file)
 		    file->dir_ent.lcase &= ~FAT_NO_83NAME;
 		    /* reset the attributes, only keep DIR and VOLUME */
 		    file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME);
-		    fs_write(file->offset, MSDOS_NAME + 2, file->dir_ent.name);
+		    fs_write(file->offset, MSDOS_NAME + 2, &file->dir_ent);
 		} else {
 		    fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 		}
