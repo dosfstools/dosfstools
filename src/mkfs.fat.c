@@ -48,17 +48,12 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <linux/hdreg.h>
-#include <sys/mount.h>
-#include <linux/fs.h>
-#include <linux/fd.h>
 #include <endian.h>
 #include <mntent.h>
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ioctl.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
@@ -79,6 +74,7 @@
 #define FALSE 0
 
 #define TEST_BUFFER_BLOCKS 16
+#define BLOCK_SIZE         1024
 #define HARD_SECTOR_SIZE   512
 #define SECTORS_PER_BLOCK ( BLOCK_SIZE / HARD_SECTOR_SIZE )
 
