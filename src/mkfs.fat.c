@@ -1594,7 +1594,7 @@ int main(int argc, char **argv)
 
     if (sector_size > 4096)
 	fprintf(stderr,
-		"Warning: sector size is set to %d > 4096, such filesystem will not propably mount\n",
+		"Warning: sector size %d > 4096 is non-standard, filesystem may not be usable\n",
 		sector_size);
 
     establish_params(&devinfo);
