@@ -22,6 +22,7 @@ depcomp
 install-sh
 missing
 .deps
+.dirstamp
 
 Makefile
 Makefile.in
