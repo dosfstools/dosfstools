@@ -986,7 +986,8 @@ static void setup_tables(void)
     }
 
     /* The two following vars are in hard sectors, i.e. 512 byte sectors! */
-    start_data_sector = (reserved_sectors + nr_fats * fat_length) *
+    start_data_sector = (reserved_sectors + nr_fats * fat_length +
+	    cdiv(root_dir_entries * 32, sector_size)) *
 	(sector_size / HARD_SECTOR_SIZE);
     start_data_block = (start_data_sector + SECTORS_PER_BLOCK - 1) /
 	SECTORS_PER_BLOCK;
