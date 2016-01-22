@@ -242,9 +242,11 @@ static int start_data_sector;	/* Sector number for the start of the data area */
 static int start_data_block;	/* Block number for the start of the data area */
 static unsigned char *fat;	/* File allocation table */
 static unsigned alloced_fat_length;	/* # of FAT sectors we can keep in memory */
+static unsigned fat_entries;		/* total entries in FAT table (including reserved) */
 static unsigned char *info_sector;	/* FAT32 info sector */
 static struct msdos_dir_entry *root_dir;	/* Root directory */
 static int size_root_dir;	/* Size of the root directory in bytes */
+static unsigned num_sectors;		/* Total number of sectors in device */
 static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
 static char *blank_sector;	/* Blank sector - all zeros */
@@ -288,6 +290,10 @@ static void fatal_error(const char *fmt_string)
 
 static void mark_FAT_cluster(int cluster, unsigned int value)
 {
+
+    if (cluster < 0 || cluster >= fat_entries)
+	die("Internal error: out of range cluster number in mark_FAT_cluster");
+
     switch (size_fat) {
     case 12:
 	value &= 0x0fff;
@@ -327,12 +333,11 @@ static void mark_FAT_cluster(int cluster, unsigned int value)
 
 static void mark_FAT_sector(int sector, unsigned int value)
 {
-    int cluster;
-
-    cluster = (sector - start_data_sector) / (int)(bs.cluster_size) /
+    int cluster = (sector - start_data_sector) / (int)(bs.cluster_size) /
 	(sector_size / HARD_SECTOR_SIZE) + 2;
-    if (cluster < 2)
-	die("Invalid cluster number in mark_FAT_sector: probably bug!");
+
+    if (sector < start_data_sector || sector >= num_sectors)
+	die("Internal error: out of range sector number in mark_FAT_sector");
 
     mark_FAT_cluster(cluster, value);
 }
@@ -567,7 +572,6 @@ static unsigned int align_object(unsigned int sectors, unsigned int clustsize)
 
 static void setup_tables(void)
 {
-    unsigned num_sectors;
     unsigned cluster_count = 0, fat_length;
     struct tm *ctime;
     struct msdos_volume_info *vi =
@@ -984,6 +988,7 @@ static void setup_tables(void)
 	else
 	    die("Attempting to create a too large filesystem");
     }
+    fat_entries = cluster_count + 2;
 
     /* The two following vars are in hard sectors, i.e. 512 byte sectors! */
     start_data_sector = (reserved_sectors + nr_fats * fat_length +
