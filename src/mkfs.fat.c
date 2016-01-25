@@ -6,7 +6,7 @@
    Copyright (C) 1998 H. Peter Anvin <hpa@zytor.com>
    Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
-   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2015-2016 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -429,18 +429,74 @@ static void get_list_blocks(char *filename)
     int i;
     FILE *listfile;
     long blockno;
+    char *line = NULL;
+    size_t linesize = 0;
+    int lineno = 0;
+    char *end, *check;
 
     listfile = fopen(filename, "r");
     if (listfile == (FILE *) NULL)
 	die("Can't open file of bad blocks");
 
-    while (!feof(listfile)) {
-	fscanf(listfile, "%ld\n", &blockno);
-	for (i = 0; i < SECTORS_PER_BLOCK; i++)	/* Mark all of the sectors in the block as bad */
-	    mark_sector_bad(blockno * SECTORS_PER_BLOCK + i);
+    while (1) {
+	lineno++;
+	ssize_t length = getline(&line, &linesize, listfile);
+	if (length < 0) {
+	    if (errno == 0) /* end of file */
+		break;
+
+	    perror("getline");
+	    die("Error while reading bad blocks file");
+	}
+
+	errno = 0;
+	blockno = strtol(line, &end, 10);
+
+	if (errno) {
+	    fprintf(stderr,
+		    "While converting bad block number in line %d: %s\n",
+		    lineno, strerror(errno));
+	    die("Error in bad blocks file");
+	}
+
+	check = end;
+	while (*check) {
+	    if (!isspace(*check)) {
+		fprintf(stderr,
+			"Badly formed number in bad blocks file line %d\n",
+			lineno);
+		die("Error in bad blocks file");
+	    }
+
+	    check++;
+	}
+
+	/* ignore empty or white space only lines */
+	if (end == line)
+	    continue;
+
+	/* Mark all of the sectors in the block as bad */
+	for (i = 0; i < SECTORS_PER_BLOCK; i++) {
+	    unsigned long sector = blockno * SECTORS_PER_BLOCK + i;
+
+	    if (sector < start_data_sector) {
+		fprintf(stderr, "Block number %ld is before data area\n",
+			blockno);
+		die("Error in bad blocks file");
+	    }
+
+	    if (sector >= num_sectors) {
+		fprintf(stderr, "Block number %ld is behind end of filesystem\n",
+			blockno);
+		die("Error in bad blocks file");
+	    }
+
+	    mark_sector_bad(sector);
+	}
 	badblocks++;
     }
     fclose(listfile);
+    free(line);
 
     if (badblocks)
 	printf("%d bad block%s\n", badblocks, (badblocks > 1) ? "s" : "");
