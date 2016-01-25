@@ -246,7 +246,7 @@ static unsigned fat_entries;		/* total entries in FAT table (including reserved)
 static unsigned char *info_sector;	/* FAT32 info sector */
 static struct msdos_dir_entry *root_dir;	/* Root directory */
 static int size_root_dir;	/* Size of the root directory in bytes */
-static unsigned num_sectors;		/* Total number of sectors in device */
+static uint32_t num_sectors;		/* Total number of sectors in device */
 static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
 static char *blank_sector;	/* Blank sector - all zeros */
@@ -665,8 +665,15 @@ static void setup_tables(void)
 	memcpy(&bs.hidden, &hidden, 2);
     }
 
-    num_sectors =
-	(long long)(blocks * BLOCK_SIZE / sector_size) + orphaned_sectors;
+    if ((long long)(blocks * BLOCK_SIZE / sector_size) + orphaned_sectors >
+	    UINT32_MAX) {
+	printf("Warning: target too large, space at end will be left unused\n");
+	num_sectors = UINT32_MAX;
+	blocks = (uint64_t)UINT32_MAX * sector_size / BLOCK_SIZE;
+    } else {
+	num_sectors =
+	    (long long)(blocks * BLOCK_SIZE / sector_size) + orphaned_sectors;
+    }
 
     if (!atari_format) {
 	unsigned fatdata1216;	/* Sectors for FATs + data area (FAT12/16) */
