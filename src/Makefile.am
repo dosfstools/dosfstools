@@ -20,16 +20,20 @@ AM_CFLAGS = -Wall -Wextra -Wno-sign-compare -Wno-missing-field-initializers \
 sbin_PROGRAMS = fsck.fat mkfs.fat fatlabel
 noinst_PROGRAMS = testdevinfo
 
-fsck_fat_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
-		   fsck.fat.c
-fatlabel_SOURCES = boot.c check.c common.c fat.c file.c io.c lfn.c charconv.c \
-		   fatlabel.c
+fscklabel_common_sources = boot.c boot.h check.c check.h common.c common.h \
+			   fat.c fat.h file.c file.h io.c io.h lfn.c lfn.h \
+			   charconv.c charconv.h msdos_fs.h
+fsck_fat_SOURCES = fsck.fat.c fsck.fat.h $(fscklabel_common_sources)
+fatlabel_SOURCES = fatlabel.c $(fscklabel_common_sources)
 
-mkfs_fat_SOURCES = mkfs.fat.c device_info.c blkdev/blkdev.c blkdev/linux_version.c
+mkfs_common_sources = device_info.c device_info.h \
+		      blkdev/blkdev.c blkdev/blkdev.h \
+		      blkdev/linux_version.c blkdev/linux_version.h
+mkfs_fat_SOURCES = mkfs.fat.c $(mkfs_common_sources)
 mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
 mkfs_fat_LDFLAGS = $(UDEV_LIBS)
 
-testdevinfo_SOURCES = testdevinfo.c device_info.c blkdev/blkdev.c blkdev/linux_version.c
+testdevinfo_SOURCES = testdevinfo.c $(mkfs_common_sources)
 testdevinfo_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
 testdevinfo_LDFLAGS = $(UDEV_LIBS)
 
