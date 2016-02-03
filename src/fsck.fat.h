@@ -28,6 +28,7 @@
 #ifndef _DOSFSCK_H
 #define _DOSFSCK_H
 
+#include <sys/types.h>
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>

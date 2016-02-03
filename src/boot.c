@@ -29,6 +29,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/types.h>
 #include <time.h>
 
 #include "common.h"
