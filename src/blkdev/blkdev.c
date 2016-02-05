@@ -205,6 +205,7 @@ int blkdev_get_sector_size(int fd, int *sector_size)
 		return 0;
 	return -1;
 #else
+	(void)fd; /* prevent unused parameter warning */
 	*sector_size = DEFAULT_SECTOR_SIZE;
 	return 0;
 #endif
@@ -231,6 +232,7 @@ int blkdev_get_physector_size(int fd, int *sector_size)
 		return 0;
 	return -1;
 #else
+	(void)fd; /* prevent unused parameter warning */
 	*sector_size = DEFAULT_SECTOR_SIZE;
 	return 0;
 #endif
@@ -252,6 +254,7 @@ int blkdev_is_misaligned(int fd)
 	 */
 	return aligned != 0 ? 1 : 0;
 #else
+	(void)fd; /* prevent unused parameter warning */
 	return 0;
 #endif
 }
@@ -266,6 +269,7 @@ int blkdev_is_cdrom(int fd)
 	else
 		return ret;
 #else
+	(void)fd; /* prevent unused parameter warning */
 	return 0;
 #endif
 }
@@ -304,6 +308,7 @@ int blkdev_get_geometry(int fd, unsigned int *h, unsigned int *s)
 	}
 #endif
 
+	(void)fd; /* prevent unused parameter warning */
 	*h = 0;
 	*s = 0;
 	return -1;
@@ -323,6 +328,7 @@ int blkdev_get_start(int fd, unsigned int *s)
 	}
 #endif
 
+	(void)fd; /* prevent unused parameter warning */
 	*s = 0;
 	return -1;
 }
