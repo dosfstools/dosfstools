@@ -759,7 +759,8 @@ static void setup_tables(void)
 	    maxclustsize = 128;
 
 	do {
-	    fatdata32 = num_sectors - reserved_sectors;
+	    fatdata32 = num_sectors
+		- align_object(reserved_sectors, bs.cluster_size);
 	    fatdata1216 = fatdata32
 		- align_object(root_dir_sectors, bs.cluster_size);
 
@@ -821,6 +822,7 @@ static void setup_tables(void)
 	    clust32 = ((long long)fatdata32 * sector_size + nr_fats * 8) /
 		((int)bs.cluster_size * sector_size + nr_fats * 4);
 	    fatlength32 = cdiv((clust32 + 2) * 4, sector_size);
+	    fatlength32 = align_object(fatlength32, bs.cluster_size);
 	    /* Need to recalculate number of clusters, since the unused parts of the
 	     * FATS and data area together could make up space for an additional,
 	     * not really present cluster. */
@@ -906,6 +908,10 @@ static void setup_tables(void)
 	default:
 	    die("FAT not 12, 16 or 32 bits");
 	}
+
+	/* Adjust the reserved number of sectors for alignment */
+	reserved_sectors = align_object(reserved_sectors, bs.cluster_size);
+	bs.reserved = htole16(reserved_sectors);
 
 	/* Adjust the number of root directory entries to help enforce alignment */
 	if (align_structures) {
