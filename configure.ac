@@ -47,6 +47,8 @@ AC_CHECK_HEADERS([\
 		  sys/queue.h \
 		  ])
 
+AC_CHECK_HEADERS([endian.h sys/endian.h])
+
 PKG_CHECK_MODULES([UDEV], [libudev],
 		  [AC_DEFINE([HAVE_UDEV], [1])],
 		  [true])

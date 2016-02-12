@@ -48,7 +48,6 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <endian.h>
 #include <mntent.h>
 #include <signal.h>
 #include <string.h>
@@ -62,8 +61,8 @@
 #include <errno.h>
 #include <ctype.h>
 #include <stdint.h>
-#include <endian.h>
 #include <getopt.h>
+#include "endian_compat.h"
 
 #include "msdos_fs.h"
 #include "device_info.h"

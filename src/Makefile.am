@@ -22,12 +22,14 @@ noinst_PROGRAMS = testdevinfo
 
 fscklabel_common_sources = boot.c boot.h check.c check.h common.c common.h \
 			   fat.c fat.h file.c file.h io.c io.h lfn.c lfn.h \
-			   charconv.c charconv.h msdos_fs.h
-fsck_fat_SOURCES = fsck.fat.c fsck.fat.h $(fscklabel_common_sources)
+			   charconv.c charconv.h msdos_fs.h \
+			   fsck.fat.h endian_compat.h
+fsck_fat_SOURCES = fsck.fat.c $(fscklabel_common_sources)
 fatlabel_SOURCES = fatlabel.c $(fscklabel_common_sources)
 
 mkfs_common_sources = device_info.c device_info.h \
 		      blkdev/blkdev.c blkdev/blkdev.h \
+		      endian_compat.h \
 		      blkdev/linux_version.c blkdev/linux_version.h
 mkfs_fat_SOURCES = mkfs.fat.c msdos_fs.h $(mkfs_common_sources)
 mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev

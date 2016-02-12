@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <endian.h>
+#include "endian_compat.h"
 
 #include "msdos_fs.h"
 
