@@ -48,7 +48,6 @@
 #include "version.h"
 
 #include <fcntl.h>
-#include <mntent.h>
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
@@ -506,15 +505,8 @@ static void get_list_blocks(char *filename)
 
 static void check_mount(char *device_name)
 {
-    FILE *f;
-    struct mntent *mnt;
-
-    if ((f = setmntent(MOUNTED, "r")) == NULL)
-	return;
-    while ((mnt = getmntent(f)) != NULL)
-	if (strcmp(device_name, mnt->mnt_fsname) == 0)
-	    die("%s contains a mounted filesystem.");
-    endmntent(f);
+    if (is_device_mounted(device_name))
+	die("%s contains a mounted filesystem.");
 }
 
 /* Establish the geometry and media parameters for the device */

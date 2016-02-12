@@ -49,6 +49,9 @@ AC_CHECK_HEADERS([\
 
 AC_CHECK_HEADERS([endian.h sys/endian.h])
 
+AC_CHECK_DECLS([getmntent], [], [], [[#include <mntent.h>]])
+AC_CHECK_DECLS([getmntinfo], [], [], [[#include <sys/mount.h>]])
+
 PKG_CHECK_MODULES([UDEV], [libudev],
 		  [AC_DEFINE([HAVE_UDEV], [1])],
 		  [true])
