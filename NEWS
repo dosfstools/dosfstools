@@ -1,0 +1,49 @@
+dosfstools 3.0.28 - released 2015-05-16
+=======================================
+
+The major user visible change in this release is that fsck.fat now defaults to
+interactive repair mode which previously had to be selected with -r. The
+previous default of a read only check mode was confusing to users who had to
+repeat a potentially lengthy fsck.fat run with the right option in order to
+actually fix their file system. It was also pointless – the interactive repair
+mode already won't write anything without asking for confirmation.
+
+mkfs.fat now allows choosing 0xF0 as the media byte which was previously
+rejected.
+
+mkfs.fat now supports the --invariant option to facilitate testing mkfs.fat
+itself. It will reproducibly generate filesystems without random or time based
+differences between them when all else is identical.
+
+Bugs fixed in fsck.fat are a read one byte beyond the end of an allocated array
+when checking some FAT12 filesystems, and checking that the first cluster of a
+file as specified in the directory entry is not 1. Previously it could attempt
+to follow a block chain starting on cluster 1 and segfault when the conditions
+are right.
+
+
+dosfstools 3.0.27 - released 2014-11-12
+=======================================
+
+This is a pure bug fix release. The major bugs fixed:
+
+* fatlabel did not recognize long file names and mistook long file name
+  segments in the root directory for labels. This caused output of garbage when
+  asked to print the label and damage to the root directory (loss of long file
+  name after fsck) when used to set the label.
+
+* A fsck.fat check introduced in 3.0.26 triggered use of uninitialized fields
+  in the constructed root directory entry, which randomly caused the code
+  checking file names to consider the empty "file name" of the root directory
+  to be bad:
+
+    $ /sbin/fsck.fat -y bad.img
+    fsck.fat 3.0.26 (2014-03-07)
+    /
+    Bad short file name ().
+    Auto-renaming it.
+    Renamed to
+    bad.img: 14 files, 19388/403266 clusters
+
+* And finally fsck.fat will not print the version string anymore every time the
+  -v option is encountered.
