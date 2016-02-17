@@ -89,12 +89,8 @@ void fs_read(off_t pos, int size, void *data)
     for (walk = changes; walk; walk = walk->next) {
 	if (walk->pos < pos + size && walk->pos + walk->size > pos) {
 	    if (walk->pos < pos)
-		memcpy(data, (char *)walk->data + pos - walk->pos, min(size,
-								       walk->
-								       size -
-								       pos +
-								       walk->
-								       pos));
+		memcpy(data, (char *)walk->data + pos - walk->pos,
+		       min(size, walk->size - pos + walk->pos));
 	    else
 		memcpy((char *)data + walk->pos - pos, walk->data,
 		       min(walk->size, size + pos - walk->pos));
