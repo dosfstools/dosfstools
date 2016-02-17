@@ -28,6 +28,7 @@
 #endif
 
 #if HAVE_DECL_GETMNTENT
+#include <paths.h>
 #include <mntent.h>
 #endif
 
