@@ -24,6 +24,12 @@ make install
 You need to have superuser privileges in order to install into the standard
 system wide locations.
 
+The `./configure` script has an option `--enable-compat-symlinks` that will
+configure the build to symlink older names of the tools to the current ones on
+installation. These are `dosfsck`, `fsck.msdos` and `fsck.vfat` for `fsck.fat`,
+`mkdosfs`, `mkfs.msdos` and `mkfs.vfat` for `mkfs.fat` and `dosfslabel` for
+`fatlabel`.
+
 
 ### Building from the VCS repository
 
