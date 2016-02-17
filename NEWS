@@ -1,3 +1,29 @@
+dofstools 4.0 - released TBD
+====================================
+
+The programs are now portable to non-Linux operating systems. To that end, the
+build system has been converted to use autotools. There have been Linux
+specifics in a lot of places which have been either eliminated or should have
+equivalents so that it now should at least work on the BSDs in addition.
+
+As part of making it portable all the code that assumed 8 bit major/minor
+numbers - and in fact masked out all other bits - has been cleaned up. Now
+mkfs.vfat should not misidentify devices anymore and require the -I option to
+override. The new device probing uses libudev (if available) to collect more
+information.
+
+Fixed data corruption errors in fsck.fat: Writing to the third to last cluster
+on FAT12 with an odd number of clusters would corrupt the following cluster. In
+mkfs.fat, long existing bugs in bad cluster marking (from scanning or user
+supplied bad blocks list) were fixed so that it actually marks the correct
+clusters.
+
+The automatic alignment of data clusters that was added in 3.0.8 and broken for
+FAT32 starting with 3.0.20 has been reinstated. If you need to create file
+systems for finicky devices that have broken FAT implementations use the option
+-a to disable alignment.
+
+
 dosfstools 3.0.28 - released 2015-05-16
 =======================================
 
