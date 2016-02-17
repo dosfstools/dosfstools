@@ -115,6 +115,9 @@ MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7
 are for this purpose (but the standard value is still 0xfff7).
 .IP "\fB-b\fR" 4
 Make read-only boot sector check.
+.IP "\fB-c\fR \fIPAGE\fR" 4
+Use DOS codepage \fIPAGE\fR to decode short file names.
+By default codepage 437 is used.
 .IP "\fB\-d\fR \fIPATH\fR" 4
 Delete the specified file.
 If more than one file with that name exist, the first one is deleted.
