@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <limits.h>
 #include <time.h>
 
 #include "common.h"
@@ -38,6 +37,10 @@
 #include "file.h"
 #include "lfn.h"
 #include "check.h"
+
+
+/* the longest path on the filesystem that can be handled by path_name() */
+#define PATH_NAME_MAX 1023
 
 static DOS_FILE *root;
 
@@ -204,12 +207,12 @@ off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
  */
 static char *path_name(DOS_FILE * file)
 {
-    static char path[PATH_MAX * 2];
+    static char path[PATH_NAME_MAX * 2];
 
     if (!file)
 	*path = 0;		/* Reached the root directory */
     else {
-	if (strlen(path_name(file->parent)) > PATH_MAX)
+	if (strlen(path_name(file->parent)) > PATH_NAME_MAX)
 	    die("Path name too long.");
 	if (strcmp(path, "/") != 0)
 	    strcat(path, "/");
