@@ -52,9 +52,12 @@ AC_CHECK_HEADERS([endian.h sys/endian.h])
 AC_CHECK_DECLS([getmntent], [], [], [[#include <mntent.h>]])
 AC_CHECK_DECLS([getmntinfo], [], [], [[#include <sys/mount.h>]])
 
-PKG_CHECK_MODULES([UDEV], [libudev],
+AC_ARG_WITH([udev], AS_HELP_STRING([--without-udev], [build with udev support]))
+if test "x$with_udev" != "xno"; then
+  PKG_CHECK_MODULES([UDEV], [libudev],
 		  [AC_DEFINE([HAVE_UDEV], [1])],
 		  [true])
+fi
 
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8

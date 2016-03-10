@@ -44,7 +44,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "blkdev.h"
+#include "blkdev/blkdev.h"
 #include "device_info.h"
 
 
