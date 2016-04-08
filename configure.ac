@@ -59,6 +59,8 @@ if test "x$with_udev" != "xno"; then
 		  [true])
 fi
 
+AC_SEARCH_LIBS(iconv_open, iconv)
+
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8
 		 manpages/fsck.fat.8 manpages/fatlabel.8])
