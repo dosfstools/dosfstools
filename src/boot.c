@@ -103,8 +103,8 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
 	   (unsigned long long)fs->fat_start,
 	   (unsigned long long)fs->fat_start / lss);
     printf("%10d FATs, %d bit entries\n", b->fats, fs->fat_bits);
-    printf("%10d bytes per FAT (= %u sectors)\n", fs->fat_size,
-	   fs->fat_size / lss);
+    printf("%10lld bytes per FAT (= %llu sectors)\n", (long long)fs->fat_size,
+	   (long long)fs->fat_size / lss);
     if (!fs->root_cluster) {
 	printf("Root directory starts at byte %llu (sector %llu)\n",
 	       (unsigned long long)fs->root_start,
@@ -329,7 +329,7 @@ void read_boot(DOS_FS * fs)
     struct boot_sector b;
     unsigned total_sectors;
     unsigned short logical_sector_size, sectors;
-    unsigned fat_length;
+    off_t fat_length;
     unsigned total_fat_entries;
     off_t data_size;
 
@@ -358,8 +358,12 @@ void read_boot(DOS_FS * fs)
     /* Can't access last odd sector anyway, so round down */
     fs_test((off_t)((total_sectors & ~1) - 1) * logical_sector_size,
 	    logical_sector_size);
+
     fat_length = le16toh(b.fat_length) ?
 	le16toh(b.fat_length) : le32toh(b.fat32_length);
+    if (!fat_length)
+	die("FAT size is zero.");
+
     fs->fat_start = (off_t)le16toh(b.reserved) * logical_sector_size;
     fs->root_start = ((off_t)le16toh(b.reserved) + b.fats * fat_length) *
 	logical_sector_size;
@@ -367,7 +371,11 @@ void read_boot(DOS_FS * fs)
     fs->data_start = fs->root_start + ROUND_TO_MULTIPLE(fs->root_entries <<
 							MSDOS_DIR_BITS,
 							logical_sector_size);
+
     data_size = (off_t)total_sectors * logical_sector_size - fs->data_start;
+    if (data_size < fs->cluster_size)
+	die("Filesystem has no space for any data clusters");
+
     fs->data_clusters = data_size / fs->cluster_size;
     fs->root_cluster = 0;	/* indicates standard, pre-FAT32 root dir */
     fs->fsinfo_start = 0;	/* no FSINFO structure */
