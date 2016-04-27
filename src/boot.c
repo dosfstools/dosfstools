@@ -330,6 +330,7 @@ void read_boot(DOS_FS * fs)
     unsigned total_sectors;
     unsigned short logical_sector_size, sectors;
     unsigned fat_length;
+    unsigned total_fat_entries;
     off_t data_size;
 
     fs_read(0, sizeof(b), &b);
@@ -438,11 +439,10 @@ void read_boot(DOS_FS * fs)
 	    fs->label = NULL;
     }
 
-    if (fs->data_clusters >
-	((uint64_t)fs->fat_size * 8 / fs->fat_bits) - 2)
-	die("Filesystem has %d clusters but only space for %d FAT entries.",
-	    fs->data_clusters,
-	    ((unsigned long long)fs->fat_size * 8 / fs->fat_bits) - 2);
+    total_fat_entries = (uint64_t)fs->fat_size * 8 / fs->fat_bits;
+    if (fs->data_clusters > total_fat_entries - 2)
+	die("Filesystem has %u clusters but only space for %u FAT entries.",
+	    fs->data_clusters, total_fat_entries - 2);
     if (!fs->root_entries && !fs->root_cluster)
 	die("Root directory has zero size.");
     if (fs->root_entries & (MSDOS_DPS - 1))
