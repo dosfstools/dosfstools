@@ -31,13 +31,15 @@ mkfs_common_sources = device_info.c device_info.h \
 		      blkdev/blkdev.c blkdev/blkdev.h \
 		      endian_compat.h \
 		      blkdev/linux_version.c blkdev/linux_version.h
-mkfs_fat_SOURCES = mkfs.fat.c msdos_fs.h $(mkfs_common_sources)
-mkfs_fat_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
-mkfs_fat_LDFLAGS = $(UDEV_LIBS)
+mkfs_fat_SOURCES  = mkfs.fat.c msdos_fs.h $(mkfs_common_sources)
+mkfs_fat_CPPFLAGS = -I$(srcdir)/blkdev
+mkfs_fat_CFLAGS   = $(AM_CFLAGS) $(UDEV_CFLAGS)
+mkfs_fat_LDFLAGS  = $(UDEV_LIBS)
 
-testdevinfo_SOURCES = testdevinfo.c $(mkfs_common_sources)
-testdevinfo_CFLAGS  = $(AM_CFLAGS) $(UDEV_CFLAGS) -Iblkdev
-testdevinfo_LDFLAGS = $(UDEV_LIBS)
+testdevinfo_SOURCES  = testdevinfo.c $(mkfs_common_sources)
+testdevinfo_CPPFLAGS = -I$(srcdir)/blkdev
+testdevinfo_CFLAGS   = $(AM_CFLAGS) $(UDEV_CFLAGS)
+testdevinfo_LDFLAGS  = $(UDEV_LIBS)
 
 
 if COMPAT_SYMLINKS
