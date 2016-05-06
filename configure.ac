@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_INIT([dosfstools], [3.99.0])
-AC_SUBST([RELEASE_DATE], [2015-05-16])
+AC_INIT([dosfstools], [4.0])
+AC_SUBST([RELEASE_DATE], [2016-05-06])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 AC_ARG_ENABLE([compat-symlinks],

@@ -1,10 +1,11 @@
-dofstools 4.0 - released TBD
+dosfstools 4.0 - released 2016-05-06
 ====================================
 
 The programs are now portable to non-Linux operating systems. To that end, the
 build system has been converted to use autotools. There have been Linux
 specifics in a lot of places which have been either eliminated or should have
-equivalents so that it now should at least work on the BSDs in addition.
+equivalents so that it should now work in other Unix-like environments. It has
+been tested on FreeBSD and OS X.
 
 As part of making it portable all the code that assumed 8 bit major/minor
 numbers - and in fact masked out all other bits - has been cleaned up. Now
