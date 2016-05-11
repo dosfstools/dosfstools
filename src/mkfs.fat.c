@@ -519,6 +519,16 @@ static void establish_params(struct device_info *info)
     unsigned int cluster_size = 4;  /* starting point for FAT12 and FAT16 */
     int def_root_dir_entries = 512;
 
+    if (info->size < 512 * 1024 * 1024) {
+	/*
+	 * These values are more or less meaningless, but we can at least
+	 * use less extreme values for smaller filesystems where the large
+	 * dummy values signifying LBA only access are not needed.
+	 */
+	sec_per_track = 32;
+	heads = 64;
+    }
+
     if (info->type != TYPE_FIXED) {
 	/* enter default parameters for floppy disks if the size matches */
 	switch (info->size / 1024) {
