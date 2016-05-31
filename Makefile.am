@@ -1,4 +1,4 @@
-SUBDIRS = src manpages
+SUBDIRS = src manpages tests
 
 dist_doc_DATA = doc/ANNOUNCE.mkdosfs \
 		doc/ChangeLog.dosfsck \

@@ -3,6 +3,8 @@ src/fatlabel
 src/fsck.fat
 src/mkfs.fat
 src/testdevinfo
+tests/*.log
+tests/*.trs
 
 tags
 TAGS
@@ -23,6 +25,7 @@ compile
 depcomp
 install-sh
 missing
+test-driver
 .deps
 .dirstamp
 

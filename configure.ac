@@ -61,7 +61,11 @@ fi
 
 AC_SEARCH_LIBS(iconv_open, iconv)
 
+# xxd (distributed with vim) is used in the testsuite
+AC_CHECK_PROG([XXD_FOUND], [xxd], [yes])
+
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8
-		 manpages/fsck.fat.8 manpages/fatlabel.8])
+		 manpages/fsck.fat.8 manpages/fatlabel.8
+		 tests/Makefile])
 AC_OUTPUT

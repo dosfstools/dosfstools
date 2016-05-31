@@ -1,3 +1,9 @@
+dosfstools 4.1 - released TBD
+====================================
+
+A test suite is now included and can be run with "make check".
+
+
 dosfstools 4.0 - released 2016-05-06
 ====================================
 
