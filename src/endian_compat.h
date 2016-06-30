@@ -5,7 +5,7 @@
 #include <endian.h>
 #elif defined(HAVE_SYS_ENDIAN_H)
 #include <sys/endian.h>
-#elif defined(__APPLE__)
+#elif defined(HAVE_LIBKERN_OSBYTEORDER_H)
 	#include <libkern/OSByteOrder.h>
 
 	#define htobe16(x) OSSwapHostToBigInt16(x)
