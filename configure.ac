@@ -47,7 +47,7 @@ AC_CHECK_HEADERS([\
 		  sys/queue.h \
 		  ])
 
-AC_CHECK_HEADERS([endian.h sys/endian.h])
+AC_CHECK_HEADERS([endian.h sys/endian.h libkern/OSByteOrder.h])
 
 AC_CHECK_DECLS([getmntent], [], [], [[#include <mntent.h>]])
 AC_CHECK_DECLS([getmntinfo], [], [], [[#include <sys/mount.h>]])
