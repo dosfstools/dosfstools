@@ -111,14 +111,12 @@ struct boot_sector_16 {
 
 struct info_sector {
     uint32_t magic;		/* Magic for info sector ('RRaA') */
-    uint8_t junk[0x1dc];
-    uint32_t reserved1;		/* Nothing as far as I can tell */
+    uint8_t reserved1[480];
     uint32_t signature;		/* 0x61417272 ('rrAa') */
     uint32_t free_clusters;	/* Free cluster count.  -1 if unknown */
     uint32_t next_cluster;	/* Most recently allocated cluster. */
-    uint32_t reserved2[3];
-    uint16_t reserved3;
-    uint16_t boot_sign;
+    uint8_t reserved2[12];
+    uint32_t boot_sign;
 };
 
 typedef struct {
