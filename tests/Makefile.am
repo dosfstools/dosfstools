@@ -5,6 +5,7 @@ TESTS = referenceFAT12.mkfs              \
 	referenceFAT32.mkfs              \
 	check-chain_to_free_cluster.fsck \
 	check-chain_too_long.fsck        \
+	check-circular_chain.fsck        \
 	check-duplicate_names.fsck       \
 	check-dot_entries.fsck
 
