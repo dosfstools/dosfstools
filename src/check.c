@@ -879,6 +879,9 @@ static void test_file(DOS_FS * fs, DOS_FILE * file, int read_test)
 		    MODIFY_START(file, next_cluster(fs, walk), fs);
 		set_fat(fs, walk, -2);
 	    }
+	} else {
+	    prev = walk;
+	    clusters++;
 	}
 	set_owner(fs, walk, file);
     }
