@@ -113,18 +113,15 @@ int file_cvt(unsigned char *name, unsigned char *fixed)
 	}
 	if (c == '\\') {
 	    c = 0;
+	    name++;
 	    for (cnt = 3; cnt; cnt--) {
 		if (*name < '0' || *name > '7') {
-		    printf("Invalid octal character.\n");
+		    printf("Expected three octal digits.\n");
 		    return 0;
 		}
 		c = c * 8 + *name++ - '0';
 	    }
-	    if (cnt < 4) {
-		printf("Expected three octal digits.\n");
-		return 0;
-	    }
-	    name += 3;
+	    name--;
 	}
 	if (islower(c))
 	    c = toupper(c);
