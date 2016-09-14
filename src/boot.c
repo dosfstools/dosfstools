@@ -130,7 +130,7 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
     printf("%10u sectors total\n", sectors ? sectors : le32toh(b->total_sect));
 }
 
-static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, int lss)
+static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 {
     struct boot_sector b2;
 
@@ -145,7 +145,7 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, int lss)
 	else
 	    printf("  Auto-creating backup boot block.\n");
 	if (!interactive || get_key("12", "?") == '1') {
-	    int bbs;
+	    unsigned int bbs;
 	    /* The usual place for the backup boot sector is sector 6. Choose
 	     * that or the last reserved sector. */
 	    if (le16toh(b->reserved) >= 7 && le16toh(b->info_sector) != 6)
@@ -218,7 +218,7 @@ static void init_fsinfo(struct info_sector *i)
     i->boot_sign = htole32(0xaa550000);
 }
 
-static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, int lss)
+static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 {
     struct info_sector i;
 
@@ -329,7 +329,7 @@ void read_boot(DOS_FS * fs)
 {
     struct boot_sector b;
     unsigned total_sectors;
-    unsigned short logical_sector_size, sectors;
+    unsigned int logical_sector_size, sectors;
     off_t fat_length;
     unsigned total_fat_entries;
     off_t data_size;
@@ -458,7 +458,7 @@ void read_boot(DOS_FS * fs)
 	die("Root directory (%d entries) doesn't span an integral number of "
 	    "sectors.", fs->root_entries);
     if (logical_sector_size & (SECTOR_SIZE - 1))
-	die("Logical sector size (%d bytes) is not a multiple of the physical "
+	die("Logical sector size (%u bytes) is not a multiple of the physical "
 	    "sector size.", logical_sector_size);
 #if 0				/* linux kernel doesn't check that either */
     /* ++roman: On Atari, these two fields are often left uninitialized */

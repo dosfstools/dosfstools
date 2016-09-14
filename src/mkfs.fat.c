@@ -225,7 +225,7 @@ static long volume_id;		/* Volume ID number */
 static time_t create_time;	/* Creation time */
 static char volume_name[] = NO_NAME;	/* Volume name */
 static uint64_t blocks;	/* Number of blocks in filesystem */
-static int sector_size = 512;	/* Size of a logical sector */
+static unsigned sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
 static int backup_boot = 0;	/* Sector# of backup boot sector */
 static int reserved_sectors = 0;	/* Number of reserved sectors */
