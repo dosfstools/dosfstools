@@ -416,7 +416,8 @@ void read_boot(DOS_FS * fs)
 	 * much clusers otherwise. */
 	fs->fat_bits = (fs->data_clusters >= FAT12_THRESHOLD) ? 16 : 12;
 	if (fs->data_clusters >= FAT16_THRESHOLD)
-	    die("Too many clusters (%lu) for FAT16 filesystem.", fs->data_clusters);
+	    die("Too many clusters (%lu) for FAT16 filesystem.",
+		    (unsigned long)fs->data_clusters);
 	check_fat_state_bit(fs, &b);
     } else {
 	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs

@@ -23,11 +23,13 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-void die(const char *msg, ...) __attribute((noreturn));
+void die(const char *msg, ...)
+    __attribute((noreturn, format(printf, 1, 2)));
 
 /* Displays a prinf-style message and terminates the program. */
 
-void pdie(const char *msg, ...) __attribute((noreturn));
+void pdie(const char *msg, ...)
+    __attribute((noreturn, format(printf, 1, 2)));
 
 /* Like die, but appends an error message according to the state of errno. */
 

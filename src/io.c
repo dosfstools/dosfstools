@@ -81,11 +81,11 @@ void fs_read(off_t pos, int size, void *data)
     int got;
 
     if (lseek(fd, pos, 0) != pos)
-	pdie("Seek to %lld", pos);
+	pdie("Seek to %lld", (long long)pos);
     if ((got = read(fd, data, size)) < 0)
-	pdie("Read %d bytes at %lld", size, pos);
+	pdie("Read %d bytes at %lld", size, (long long)pos);
     if (got != size)
-	die("Got %d bytes instead of %d at %lld", got, size, pos);
+	die("Got %d bytes instead of %d at %lld", got, size, (long long)pos);
     for (walk = changes; walk; walk = walk->next) {
 	if (walk->pos < pos + size && walk->pos + walk->size > pos) {
 	    if (walk->pos < pos)
@@ -104,7 +104,7 @@ int fs_test(off_t pos, int size)
     int okay;
 
     if (lseek(fd, pos, 0) != pos)
-	pdie("Seek to %lld", pos);
+	pdie("Seek to %lld", (long long)pos);
     scratch = alloc(size);
     okay = read(fd, scratch, size) == size;
     free(scratch);
@@ -119,12 +119,12 @@ void fs_write(off_t pos, int size, void *data)
     if (write_immed) {
 	did_change = 1;
 	if (lseek(fd, pos, 0) != pos)
-	    pdie("Seek to %lld", pos);
+	    pdie("Seek to %lld", (long long)pos);
 	if ((did = write(fd, data, size)) == size)
 	    return;
 	if (did < 0)
-	    pdie("Write %d bytes at %lld", size, pos);
-	die("Wrote %d bytes instead of %d at %lld", did, size, pos);
+	    pdie("Write %d bytes at %lld", size, (long long)pos);
+	die("Wrote %d bytes instead of %d at %lld", did, size, (long long)pos);
     }
     new = alloc(sizeof(CHANGE));
     new->pos = pos;
