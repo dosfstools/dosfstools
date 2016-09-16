@@ -16,7 +16,7 @@
 
 AC_INIT([dosfstools], [4.0+git])
 AC_SUBST([RELEASE_DATE], [2016-05-06])
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.11 foreign subdir-objects parallel-tests])
 
 AC_ARG_ENABLE([compat-symlinks],
 	[AS_HELP_STRING([--enable-compat-symlinks],
@@ -63,6 +63,10 @@ AC_SEARCH_LIBS(iconv_open, iconv)
 
 # xxd (distributed with vim) is used in the testsuite
 AC_CHECK_PROG([XXD_FOUND], [xxd], [yes])
+
+# check if automake is 1.11 or 1.12 for using a workaround for the parallel test harness
+# (we check for a minimum version of 1.11 above, so these are the only two values to check)
+AM_CONDITIONAL(AUTOMAKE_TEST_COMPAT, test $am__api_version = 1.11 -o $am__api_version = 1.12)
 
 AC_CONFIG_FILES([Makefile src/Makefile src/version.h
 		 manpages/Makefile manpages/mkfs.fat.8

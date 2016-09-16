@@ -1,5 +1,9 @@
 AM_TESTS_ENVIRONMENT = XXD_FOUND=@XXD_FOUND@; export XXD_FOUND;
 
+if AUTOMAKE_TEST_COMPAT
+TESTS_ENVIRONMENT = $(AM_TESTS_ENVIRONMENT)
+endif
+
 TESTS = referenceFAT12.mkfs              \
 	referenceFAT16.mkfs              \
 	referenceFAT32.mkfs              \
