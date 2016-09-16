@@ -1627,8 +1627,24 @@ int main(int argc, char **argv)
     if (devinfo.size <= 0)
 	die("unable to discover size of %s");
 
-    if (devinfo.sector_size > 0)
-	sector_size = devinfo.sector_size;
+    if (devinfo.sector_size > 0) {
+	if (sector_size_set) {
+	    if (sector_size < devinfo.sector_size) {
+		sector_size = devinfo.sector_size;
+		fprintf(stderr,
+			"Warning: sector size was set to %d (minimal for this device)\n",
+			sector_size);
+	    }
+	} else {
+	    sector_size = devinfo.sector_size;
+	    sector_size_set = 1;
+	}
+    }
+
+    if (sector_size > 4096)
+	fprintf(stderr,
+		"Warning: sector size %d > 4096 is non-standard, filesystem may not be usable\n",
+		sector_size);
 
     cblocks = devinfo.size / BLOCK_SIZE;
     orphaned_sectors = (devinfo.size % BLOCK_SIZE) / sector_size;
@@ -1652,25 +1668,6 @@ int main(int argc, char **argv)
 
     if (!ignore_full_disk && devinfo.has_children > 0)
 	die("Partitions or virtual mappings on device '%s', not making filesystem (use -I to override)");
-
-    if (devinfo.sector_size > 0) {
-	if (sector_size_set) {
-	    if (sector_size < devinfo.sector_size) {
-		sector_size = devinfo.sector_size;
-		fprintf(stderr,
-			"Warning: sector size was set to %d (minimal for this device)\n",
-			sector_size);
-	    }
-	} else {
-	    sector_size = devinfo.sector_size;
-	    sector_size_set = 1;
-	}
-    }
-
-    if (sector_size > 4096)
-	fprintf(stderr,
-		"Warning: sector size %d > 4096 is non-standard, filesystem may not be usable\n",
-		sector_size);
 
     establish_params(&devinfo);
     /* Establish the media parameters */
