@@ -258,7 +258,7 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
     fs_read(fs->fsinfo_start, sizeof(i), &i);
 
     if (i.magic != htole32(0x41615252) ||
-	i.signature != htole32(0x61417272) || i.boot_sign != htole16(0xaa55)) {
+	i.signature != htole32(0x61417272) || i.boot_sign != htole32(0xaa550000)) {
 	printf("FSINFO sector has bad magic number(s):\n");
 	if (i.magic != htole32(0x41615252))
 	    printf("  Offset %llu: 0x%08x != expected 0x%08x\n",
@@ -268,10 +268,10 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 	    printf("  Offset %llu: 0x%08x != expected 0x%08x\n",
 		   (unsigned long long)offsetof(struct info_sector, signature),
 		   le32toh(i.signature), 0x61417272);
-	if (i.boot_sign != htole16(0xaa55))
-	    printf("  Offset %llu: 0x%04x != expected 0x%04x\n",
+	if (i.boot_sign != htole32(0xaa550000))
+	    printf("  Offset %llu: 0x%08x != expected 0x%08x\n",
 		   (unsigned long long)offsetof(struct info_sector, boot_sign),
-		   le16toh(i.boot_sign), 0xaa55);
+		   le32toh(i.boot_sign), 0xaa550000);
 	if (interactive)
 	    printf("1) Correct\n2) Don't correct (FSINFO invalid then)\n");
 	else
