@@ -602,22 +602,22 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    if (!owner->offset) {
 		printf("  Truncating second to %llu bytes because first "
 		       "is FAT32 root dir.\n",
-		       (unsigned long long)clusters2 * fs->cluster_size);
+		       (unsigned long long)clusters * fs->cluster_size);
 		do_trunc = 2;
 	    } else if (!file->offset) {
 		printf("  Truncating first to %llu bytes because second "
 		       "is FAT32 root dir.\n",
-		       (unsigned long long)clusters * fs->cluster_size);
+		       (unsigned long long)clusters2 * fs->cluster_size);
 		do_trunc = 1;
 	    } else if (interactive)
 		printf("1) Truncate first to %llu bytes%s\n"
 		       "2) Truncate second to %llu bytes\n",
-		       (unsigned long long)clusters * fs->cluster_size,
+		       (unsigned long long)clusters2 * fs->cluster_size,
 		       restart ? " and restart" : "",
-		       (unsigned long long)clusters2 * fs->cluster_size);
+		       (unsigned long long)clusters * fs->cluster_size);
 	    else
 		printf("  Truncating second to %llu bytes.\n",
-		       (unsigned long long)clusters2 * fs->cluster_size);
+		       (unsigned long long)clusters * fs->cluster_size);
 	    if (do_trunc != 2
 		&& (do_trunc == 1
 		    || (interactive && get_key("12", "?") == '1'))) {
