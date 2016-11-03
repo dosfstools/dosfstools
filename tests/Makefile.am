@@ -7,6 +7,7 @@ endif
 TESTS = referenceFAT12.mkfs              \
 	referenceFAT16.mkfs              \
 	referenceFAT32.mkfs              \
+	check-bad_names.fsck             \
 	check-chain_to_free_cluster.fsck \
 	check-chain_too_long.fsck        \
 	check-chain_to_other_file.fsck   \
