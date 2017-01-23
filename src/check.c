@@ -79,7 +79,7 @@ static DOS_FILE *root;
     }									\
   } while(0)
 
-off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
+off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern, int gen_name)
 {
     static int curr_num = 0;
     off_t offset;
@@ -133,32 +133,36 @@ off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 		fs_write(offset + i, sizeof(d2), &d2);
 	}
 	memset(de, 0, sizeof(DIR_ENT));
-	while (1) {
-	    char expanded[12];
-	    sprintf(expanded, pattern, curr_num);
-	    memcpy(de->name, expanded, MSDOS_NAME);
-	    clu_num = fs->root_cluster;
-	    i = 0;
-	    offset2 = cluster_start(fs, clu_num);
-	    while (clu_num > 0 && clu_num != -1) {
-		fs_read(offset2, sizeof(DIR_ENT), &d2);
-		if (offset2 != offset &&
-		    !strncmp((const char *)d2.name, (const char *)de->name,
-			     MSDOS_NAME))
-		    break;
-		i += sizeof(DIR_ENT);
-		offset2 += sizeof(DIR_ENT);
-		if ((i % fs->cluster_size) == 0) {
-		    if ((clu_num = next_cluster(fs, clu_num)) == 0 ||
-			clu_num == -1)
+	if (gen_name) {
+	    while (1) {
+		char expanded[12];
+		sprintf(expanded, pattern, curr_num);
+		memcpy(de->name, expanded, MSDOS_NAME);
+		clu_num = fs->root_cluster;
+		i = 0;
+		offset2 = cluster_start(fs, clu_num);
+		while (clu_num > 0 && clu_num != -1) {
+		    fs_read(offset2, sizeof(DIR_ENT), &d2);
+		    if (offset2 != offset &&
+			!strncmp((const char *)d2.name, (const char *)de->name,
+				 MSDOS_NAME))
 			break;
-		    offset2 = cluster_start(fs, clu_num);
+		    i += sizeof(DIR_ENT);
+		    offset2 += sizeof(DIR_ENT);
+		    if ((i % fs->cluster_size) == 0) {
+			if ((clu_num = next_cluster(fs, clu_num)) == 0 ||
+			    clu_num == -1)
+			    break;
+			offset2 = cluster_start(fs, clu_num);
+		    }
 		}
+		if (clu_num == 0 || clu_num == -1)
+		    break;
+		if (++curr_num >= 10000)
+		    die("Unable to create unique name");
 	    }
-	    if (clu_num == 0 || clu_num == -1)
-		break;
-	    if (++curr_num >= 10000)
-		die("Unable to create unique name");
+	} else {
+	    memcpy(de->name, pattern, MSDOS_NAME);
 	}
     } else {
 	DIR_ENT *root;
@@ -177,19 +181,23 @@ off_t alloc_rootdir_entry(DOS_FS * fs, DIR_ENT * de, const char *pattern)
 	    die("Root directory is full.");
 	offset = fs->root_start + next_free * sizeof(DIR_ENT);
 	memset(de, 0, sizeof(DIR_ENT));
-	while (1) {
-	    char expanded[12];
-	    sprintf(expanded, pattern, curr_num);
-	    memcpy(de->name, expanded, MSDOS_NAME);
-	    for (scan = 0; scan < fs->root_entries; scan++)
-		if (scan != next_free &&
-		    !strncmp((const char *)root[scan].name,
-			     (const char *)de->name, MSDOS_NAME))
+	if (gen_name) {
+	    while (1) {
+		char expanded[12];
+		sprintf(expanded, pattern, curr_num);
+		memcpy(de->name, expanded, MSDOS_NAME);
+		for (scan = 0; scan < fs->root_entries; scan++)
+		    if (scan != next_free &&
+			!strncmp((const char *)root[scan].name,
+				 (const char *)de->name, MSDOS_NAME))
+			break;
+		if (scan == fs->root_entries)
 		    break;
-	    if (scan == fs->root_entries)
-		break;
-	    if (++curr_num >= 10000)
-		die("Unable to create unique name");
+		if (++curr_num >= 10000)
+		    die("Unable to create unique name");
+	    }
+	} else {
+	    memcpy(de->name, pattern, MSDOS_NAME);
 	}
 	free(root);
     }

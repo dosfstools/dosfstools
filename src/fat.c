@@ -503,7 +503,7 @@ void reclaim_file(DOS_FS * fs)
 	    DIR_ENT de;
 	    off_t offset;
 	    files++;
-	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04dREC");
+	    offset = alloc_rootdir_entry(fs, &de, "FSCK%04dREC", 1);
 	    de.start = htole16(i & 0xffff);
 	    if (fs->fat_bits == 32)
 		de.starthi = htole16(i >> 16);

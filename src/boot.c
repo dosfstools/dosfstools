@@ -542,7 +542,7 @@ static void write_volume_label(DOS_FS * fs, char *label)
     offset = find_volume_de(fs, &de);
     if (offset == 0) {
 	created = 1;
-	offset = alloc_rootdir_entry(fs, &de, label);
+	offset = alloc_rootdir_entry(fs, &de, label, 0);
     }
     memcpy(de.name, label, 11);
     de.time = htole16((unsigned short)((mtime->tm_sec >> 1) +
