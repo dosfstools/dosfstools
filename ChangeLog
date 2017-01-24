@@ -1,3 +1,363 @@
+commit cad2c17
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Jan 23 03:10:56 2017 +0100
+
+    fatlabel: Make sure printf style patterns in label are not expanded
+    
+    Writing a label to an unlabeled filesystem involves creating a root
+    directory entry to contain the label. For this, the
+    alloc_rootdir_entry() function used for creating new directory nodes for
+    recovered orphan cluster chains is reused. However, this expects the
+    filename to be a printf style pattern to generate a unique name.
+    
+    If the filesystem is unlabeled and the new label contains a printf
+    specifier other than %d or similar, the attempted expansion of the
+    pattern might crash fatlabel.
+    
+    Change alloc_rootdir_entry() to take an additional argument gen_name and
+    only expand the name if its value is true.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 77371e2
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Nov 4 13:10:58 2016 +0100
+
+    testsuite: Add missing fsck test files to dist_check_DATA
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit d6df1d4
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Thu Nov 3 20:03:25 2016 +0100
+
+    testsuite: Test for bad characters in file names
+    
+    The FAT16 test image contains four files with three errors. One has a
+    space in the name, one a space in the extension and one contains '>' in
+    the name.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 307966c
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sun Sep 18 00:11:43 2016 +0200
+
+    fsck: Fix reporting of length to truncate with shared clusters
+    
+    When files share clusters and one of the two files has been selected to
+    truncate fsck reports which file has been selected and the length to
+    which it will be truncated. All code paths erronously printed the length
+    of the file that was not going to be truncated, leading to possible user
+    confusion.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit b33424e
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sat Sep 17 23:34:07 2016 +0200
+
+    testsuite: Test for files sharing clusters
+    
+    The FAT32 test image contains three files. One shares a cluster with the
+    root directory and the other two share clusters among themselves.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit db5ec04
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sat Sep 17 22:41:07 2016 +0200
+
+    testsuite: Run fsck in test-mkfs
+    
+    Now the test-mkfs script also runs fsck on the created image to test its
+    basic operation. The test fails if fsck reports seeing an error.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 4ac17ae
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Sat Sep 17 22:25:06 2016 +0200
+
+    Fix FAT32 FSInfo signature checking
+    
+    In commit 7444694 the definition of struct info_sector was corrected to
+    match the FSInfo sector specification. The initialization was adapted,
+    but other places were missed. All runs of fsck would then incorrectly
+    report a signature error on the FSInfo sector.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit e883d07
+Author: Nico Roeser <nico@n1c0.de>
+Date:   Fri Sep 16 20:05:08 2016 +0200
+
+    mkfs: Bring back ability to set sector size.
+    
+    This had accidently been broken when the code was overhauled, resulting
+    in unconditionally setting the sector size when devinfo detected it.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 4ef83db
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Sep 16 03:32:12 2016 +0200
+
+    Request minimum automake version 1.11 and add workaround for <1.13
+    
+    Before automake 1.13, parallel-tests wasn't the default set it
+    explicitly in the automake options list. The parallel test harness was
+    introduced in 1.11 therefore that is the minimum now.
+    
+    However, the AM_TESTS_ENVIRONMENT variable was only starting to work in
+    1.13, so there is now a version check and a conditional assignment to
+    TESTS_ENVIRONMENT (which should be for user setting only) in case
+    automake is 1.11 or 1.12.
+    
+    Without it, the fact of xxd being found is not passed to the test
+    scripts which then skip all tests due to perceived lack of xxd.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 6a8c8b7
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Sep 16 01:45:17 2016 +0200
+
+    Add missing autoreconf step to Travis CI configuration
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 54f7aef
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri Sep 16 01:39:08 2016 +0200
+
+    Add configuration for the Travis CI build service
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 5421752
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Sep 14 20:37:57 2016 +0200
+
+    Check and fix printf style arguments to die() and pdie()
+    
+    Add the "format" gcc style attribute to the declarations of die() and
+    pdie() so that the compiler knows how to check their arguments for
+    correctness.
+    
+    Fix all problematic calls detected by this.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 83e5ec5
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Sep 14 03:38:08 2016 +0200
+
+    Make some implicit integer conversions safer
+    
+    Coverity reports a few places where signed or short integers are
+    promoted to int and then extended to long which might cause unintended
+    sign extension. Given the context (being sector sizes and similar) the
+    values should never actually reach unsafe values, but this patch cleans
+    it up anyway.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit ff5e718
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue Sep 13 20:25:34 2016 +0200
+
+    mkfs: Remove redundant unreachable warning message
+    
+    At some point the check for too many clusters for user requested FAT16
+    was moved a few lines above. The original location can only be reached
+    when the cluster count is too low for FAT16 which means the too many
+    clusters message can not be triggered there.
+    
+    Found through the dead code detection of Coverity Scan.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit e359a33
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue Sep 13 20:12:21 2016 +0200
+
+    Fix octal character parsing in file_cvt()
+    
+    Apparently the octal code parsing got rewritten into a loop at some
+    point while the rest of the code was not removed. It was impossible to
+    specify an octal character code without the function returning an error.
+    
+    This affected the -u and -d options for fsck.
+    
+    Found through the dead code detection of Coverity Scan.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit ccd0a9d
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Sep 12 20:21:53 2016 +0200
+
+    testsuite: Test for circular cluster chain
+    
+    The test image contains a file four clusters in length where the third
+    cluster has been modified to point back to the second cluster.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit fab40f8
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Sep 12 19:51:10 2016 +0200
+
+    Fix truncation logic in circular chain check
+    
+    When scanning for circular chains, the first FAT entry that appeared a
+    second time in a chain should cause the previous cluster to be the
+    termination of the chain.
+    
+    To that end, test_file() keeps variables to point to the previous
+    cluster and the current number of clusters. When the -t option is given,
+    all clusters are checked to be readable and skipped (variables not
+    updates) in test_file() when they are not.
+    
+    The problem was that the variables were updated only when the read check
+    succeeded. If the -t option is not given, that check does not happen and
+    the variables keep their initial value. The circular chain fix would
+    then always truncate to zero length and fail to update the free cluster
+    count, requiring a second fsck run.
+    
+    Fix by updating these variables unconditionally when -t option is not
+    given.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 8394ceb
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Mon Sep 12 14:39:11 2016 +0200
+
+    testsuite: Test for too long cluster chain
+    
+    The test image contains a file marked as 7 bytes in length (just a small
+    part of 1 cluster) in the directory entry that has 2 clusters assigned
+    to it in the FAT.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 7444694
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Sep 7 21:09:41 2016 +0200
+
+    Fix definition and initialization of fsinfo sector
+    
+    Change the definition of the fsinfo struct to be more in line with the
+    official definition, in particular make the trailing signature field 32
+    bit instead of 16 bit. During initialization in init_fsinfo(), first
+    clear the whole struct to zero before setting fields, to make sure
+    reserved fields are zeroed.
+    
+    Fixes #33.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit f78cb68
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Sep 7 20:45:29 2016 +0200
+
+    Add fsck testsuite
+    
+    Add the framework for a fsck testsuite and a few tests, including a test
+    for the yet unimplemented check for misordered dot/dotdot directory
+    entries.
+    
+    The test driver runs fsck twice on a given image and fails the test if
+    the first run does not detect an error or the second run still detects
+    an error.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 7667295
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Tue May 31 03:32:42 2016 +0200
+
+    Add testsuite foundations
+    
+    Add testsuite on the basis of the automake framework. As a start, three
+    tests for basic mkfs functionality compare mkfs generated images against
+    references images.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit f881195
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed Sep 7 03:48:16 2016 +0200
+
+    Append +git to version number in configure.ac
+    
+    Don't let dosfstools compiled from git with additional commits show the
+    exact release version number.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 8788615
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Jun 30 08:43:50 2016 +0200
+
+    Add config.guess and config.sub to gitignore
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 39ab842
+Author: Álvaro Fernández Rojas <noltari@gmail.com>
+Date:   Thu Jun 30 08:41:51 2016 +0200
+
+    Use autoconf to look for OS X endian include.
+    
+    Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 69ac2b0
+Author: Alessio Sergi <al3hex@gmail.com>
+Date:   Fri May 6 18:18:18 2016 +0200
+
+    src/device_info.c: Fix undefined PATH_MAX under musl
+    
+    In musl libc, PATH_MAX is defined in <limits.h>.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 744db84
+Author: Lars Wendler <polynomial-c@gentoo.org>
+Date:   Tue May 10 09:47:57 2016 +0200
+
+    Don't link to udev via LDFLAGS. There's LDADD for such a task.
+    
+    See also:
+    https://www.gnu.org/software/automake/manual/html_node/Linking.html
+    
+    Signed-off-by: Lars Wendler <polynomial-c@gentoo.org>
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 1e76e57
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Wed May 11 03:44:58 2016 +0200
+
+    mkfs: Default to 64/32 heads/sectors for targets smaller than 512 MB
+    
+    This may put defaults in certain use cases a little bit more in line
+    with the old defaults in versions up to 3.0.28. It has mostly aesthetic
+    value in most cases.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
+commit 786e66e (tag: v4.0)
+Author: Andreas Bombe <aeb@debian.org>
+Date:   Fri May 6 03:19:07 2016 +0200
+
+    Releasing version 4.0.
+    
+    Signed-off-by: Andreas Bombe <aeb@debian.org>
+
 commit a79ff90
 Author: Andreas Bombe <aeb@debian.org>
 Date:   Fri May 6 02:34:42 2016 +0200
