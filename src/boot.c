@@ -435,18 +435,14 @@ void read_boot(DOS_FS * fs)
     fs->eff_fat_bits = (fs->fat_bits == 32) ? 28 : fs->fat_bits;
     fs->fat_size = fat_length * logical_sector_size;
 
-    fs->label = calloc(12, sizeof(uint8_t));
+    fs->label[0] = 0;
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
 	struct boot_sector_16 *b16 = (struct boot_sector_16 *)&b;
 	if (b16->extended_sig == 0x29)
 	    memmove(fs->label, b16->label, 11);
-	else
-	    fs->label = NULL;
     } else if (fs->fat_bits == 32) {
 	if (b.extended_sig == 0x29)
 	    memmove(fs->label, &b.label, 11);
-	else
-	    fs->label = NULL;
     }
 
     total_fat_entries = (uint64_t)fs->fat_size * 8 / fs->fat_bits;
