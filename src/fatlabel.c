@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     if (!rw) {
 	offset = find_volume_de(&fs, &de);
 	if (offset == 0)
-	    fprintf(stdout, "%11s\n", fs.label);
+	    fprintf(stdout, "%.11s\n", fs.label);
 	else
 	    fprintf(stdout, "%.8s%.3s\n", de.name, de.name + 8);
 	exit(0);
