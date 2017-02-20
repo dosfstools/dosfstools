@@ -96,6 +96,44 @@ int min(int a, int b)
     return a < b ? a : b;
 }
 
+
+#ifndef HAVE_VASPRINTF
+static int vasprintf(char **strp, const char *fmt, va_list va)
+{
+    int length;
+    va_list vacopy;
+
+    va_copy(vacopy, va);
+
+    length = vsnprintf(NULL, 0, fmt, vacopy);
+    if (length < 0)
+	return length;
+
+    *strp = malloc(length + 1);
+    if (!*strp) {
+	errno = ENOMEM;
+	return -1;
+    }
+
+    return vsnprintf(*strp, length + 1, fmt, va);
+}
+#endif
+
+int xasprintf(char **strp, const char *fmt, ...)
+{
+    va_list va;
+    int retval;
+
+    va_start(va, fmt);
+    retval = vasprintf(strp, fmt, va);
+    va_end(va);
+
+    if (retval < 0)
+	pdie("asprintf");
+
+    return retval;
+}
+
 char get_key(const char *valid, const char *prompt)
 {
     int ch, okay;

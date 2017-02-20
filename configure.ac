@@ -29,6 +29,7 @@ AC_ARG_ENABLE([compat-symlinks],
 	[symlinks=false])
 AM_CONDITIONAL([COMPAT_SYMLINKS], [test x$symlinks = xtrue])
 
+AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_CC
 AC_PROG_LN_S
@@ -48,6 +49,8 @@ AC_CHECK_HEADERS([\
 		  ])
 
 AC_CHECK_HEADERS([endian.h sys/endian.h libkern/OSByteOrder.h])
+
+AC_CHECK_FUNCS([vasprintf])
 
 AC_CHECK_DECLS([getmntent], [], [], [[#include <mntent.h>]])
 AC_CHECK_DECLS([getmntinfo], [], [], [[#include <sys/mount.h>]])

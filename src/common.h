@@ -50,6 +50,11 @@ int min(int a, int b);
 
 /* Returns the smaller integer value of a and b. */
 
+int xasprintf(char **strp, const char *fmt, ...)
+    __attribute((format(printf, 2, 3)));
+
+/* Runs asprintf() and terminates the program if it fails. */
+
 char get_key(const char *valid, const char *prompt);
 
 /* Displays PROMPT and waits for user input. Only characters in VALID are
