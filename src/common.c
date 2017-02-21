@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <termios.h>
 
 #include "common.h"
 
@@ -154,4 +155,28 @@ char get_key(const char *valid, const char *prompt)
 	    return okay;
 	printf("Invalid input.\n");
     }
+}
+
+
+char *get_line(const char *prompt, char *dest, size_t length)
+{
+    struct termios tio, tio_orig;
+    int tio_fail;
+    char *retval;
+
+    tio_fail = tcgetattr(0, &tio_orig);
+    if (!tio_fail) {
+	tio = tio_orig;
+	tio.c_lflag |= ICANON | ECHO;
+	tcsetattr(0, TCSAFLUSH, &tio);
+    }
+
+    printf("%s: ", prompt);
+    fflush(stdout);
+
+    retval = fgets(dest, length, stdin);
+
+    if (!tio_fail)
+	tcsetattr(0, TCSAFLUSH, &tio_orig);
+    return retval;
 }

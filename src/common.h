@@ -60,4 +60,13 @@ char get_key(const char *valid, const char *prompt);
 /* Displays PROMPT and waits for user input. Only characters in VALID are
    accepted. Terminates the program on EOF. Returns the character. */
 
+char *get_line(const char *prompt, char *dest, size_t length);
+
+/*
+ * Display prompt and read a line, placing it in dest with at most length-1
+ * characters plus a null byte. This behaves like printing a prompt and fgets()
+ * afterwards with the addition of temporarily enabling canonical input mode
+ * with echo if needed.
+ */
+
 #endif
