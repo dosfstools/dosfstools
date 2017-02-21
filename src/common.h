@@ -57,11 +57,6 @@ int xasprintf(char **strp, const char *fmt, ...)
 
 /* Runs asprintf() and terminates the program if it fails. */
 
-char get_key(const char *valid, const char *prompt);
-
-/* Displays PROMPT and waits for user input. Only characters in VALID are
-   accepted. Terminates the program on EOF. Returns the character. */
-
 int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	       int choices, ...);
 

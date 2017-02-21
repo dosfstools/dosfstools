@@ -139,28 +139,6 @@ int xasprintf(char **strp, const char *fmt, ...)
     return retval;
 }
 
-char get_key(const char *valid, const char *prompt)
-{
-    int ch, okay;
-
-    while (1) {
-	if (prompt)
-	    printf("%s ", prompt);
-	fflush(stdout);
-	while (ch = getchar(), ch == ' ' || ch == '\t') ;
-	if (ch == EOF)
-	    exit(1);
-	if (!strchr(valid, okay = ch))
-	    okay = 0;
-	while (ch = getchar(), ch != '\n' && ch != EOF) ;
-	if (ch == EOF)
-	    exit(1);
-	if (okay)
-	    return okay;
-	printf("Invalid input.\n");
-    }
-}
-
 
 int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	       int choices, ...)
