@@ -33,6 +33,10 @@
 
 #include "common.h"
 
+
+int interactive;
+
+
 typedef struct _link {
     void *data;
     struct _link *next;
@@ -155,6 +159,70 @@ char get_key(const char *valid, const char *prompt)
 	    return okay;
 	printf("Invalid input.\n");
     }
+}
+
+
+int get_choice(int noninteractive_result, const char *noninteractive_msg,
+	       int choices, ...)
+{
+    int choice_values[9];
+    const char *choice_strings[9];
+    int choice;
+    int print_choices, print_full_choices;
+    va_list va;
+    int i;
+
+    if (!interactive) {
+	printf("%s\n", noninteractive_msg);
+	return noninteractive_result;
+    }
+
+    if (choices < 2 || choices > 9)
+	die("internal error: invalid number %u of choices in get_choice()",
+	    choices);
+
+    va_start(va, choices);
+    for (i = 0; i < choices; i++) {
+	choice_values[i] = va_arg(va, int);
+	choice_strings[i] = va_arg(va, const char *);
+    }
+    va_end(va);
+
+    print_choices = 1;
+    print_full_choices = 0;
+    while (1) {
+	if (print_choices) {
+	    print_choices = 0;
+	    for (i = 0; i < choices; i++)
+		printf("%d) %s\n", i + 1, choice_strings[i]);
+
+	    if (print_full_choices) {
+		printf("?) List all choices\n");
+	    }
+	}
+
+	printf("[%.*s?]? ", choices, "123456789");
+	fflush(stdout);
+
+	do {
+	    choice = getchar();
+	} while (choice == '\n');  /* filter out enter presses */
+
+	if (choice == EOF)
+	    exit(1);
+
+	printf("%c\n", choice);
+
+	if (choice > '0' && choice <= '0' + choices)
+	    break;
+
+	if (choice == '?') {
+	    print_choices = 1;
+	    print_full_choices = 1;
+	}
+    }
+
+    return choice_values[choice - '1'];
 }
 
 

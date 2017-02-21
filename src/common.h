@@ -23,6 +23,8 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+extern int interactive;
+
 void die(const char *msg, ...)
     __attribute((noreturn, format(printf, 1, 2)));
 
@@ -59,6 +61,20 @@ char get_key(const char *valid, const char *prompt);
 
 /* Displays PROMPT and waits for user input. Only characters in VALID are
    accepted. Terminates the program on EOF. Returns the character. */
+
+int get_choice(int noninteractive_result, const char *noninteractive_msg,
+	       int choices, ...);
+
+/*
+ * Display a numbered list of choices and accept user input to select one. If
+ * interactive is false, it will instead print noninteractive_msg and return
+ * noninteractive_result. The number of options must be given in choices and
+ * must be more than one and less then ten.
+ *
+ * The variable arguments are choices times <int val, const char *desc>, where
+ * val is the value that is returned when the user selects this option and desc
+ * is the string describing this option.
+ */
 
 char *get_line(const char *prompt, char *dest, size_t length);
 
