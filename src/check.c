@@ -437,9 +437,7 @@ static void rename_file(DOS_FILE * file)
 	return;			/* cannot rename FAT32 root dir */
     }
     while (1) {
-	printf("New name: ");
-	fflush(stdout);
-	if (fgets((char *)name, 45, stdin)) {
+	if (get_line("New name", (char *)name, 45)) {
 	    if ((here = (unsigned char *)strchr((const char *)name, '\n')))
 		*here = 0;
 	    for (walk = (unsigned char *)strrchr((const char *)name, 0);
@@ -475,23 +473,23 @@ static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dots)
 		MSDOS_NAME) ? ".." : ".";
     if (!(file->dir_ent.attr & ATTR_DIR)) {
 	printf("%s\n  Is a non-directory.\n", path_name(file));
-	if (interactive)
-	    printf("1) Drop it\n2) Auto-rename\n3) Rename\n"
-		   "4) Convert to directory\n");
-	else
-	    printf("  Auto-renaming it.\n");
-	switch (interactive ? get_key("1234", "?") : '2') {
-	case '1':
+	switch (get_choice(2, "  Auto-renaming it.",
+			   4,
+			   1, "Drop it",
+			   2, "Auto-rename",
+			   3, "Rename",
+			   4, "Convert to directory")) {
+	case 1:
 	    drop_file(fs, file);
 	    return 1;
-	case '2':
+	case 2:
 	    auto_rename(file);
 	    printf("  Renamed to %s\n", file_name(file->dir_ent.name));
 	    return 0;
-	case '3':
+	case 3:
 	    rename_file(file);
 	    return 0;
-	case '4':
+	case 4:
 	    MODIFY(file, size, htole32(0));
 	    MODIFY(file, attr, file->dir_ent.attr | ATTR_DIR);
 	    break;
@@ -617,18 +615,33 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		       "is FAT32 root dir.\n",
 		       (unsigned long long)clusters2 * fs->cluster_size);
 		do_trunc = 1;
-	    } else if (interactive)
-		printf("1) Truncate first to %llu bytes%s\n"
-		       "2) Truncate second to %llu bytes\n",
-		       (unsigned long long)clusters2 * fs->cluster_size,
-		       restart ? " and restart" : "",
-		       (unsigned long long)clusters * fs->cluster_size);
-	    else
-		printf("  Truncating second to %llu bytes.\n",
-		       (unsigned long long)clusters * fs->cluster_size);
-	    if (do_trunc != 2
-		&& (do_trunc == 1
-		    || (interactive && get_key("12", "?") == '1'))) {
+	    } else {
+		char *trunc_first_string;
+		char *trunc_second_string;
+		char *noninteractive_string;
+
+		xasprintf(&trunc_first_string,
+			 "Truncate first to %llu bytes%s",
+			 (unsigned long long)clusters2 * fs->cluster_size,
+			 restart ? " and restart" : "");
+		xasprintf(&trunc_second_string,
+			  "Truncate second to %llu bytes",
+			  (unsigned long long)clusters * fs->cluster_size);
+		xasprintf(&noninteractive_string,
+			  "  Truncating second to %llu bytes.",
+			  (unsigned long long)clusters * fs->cluster_size);
+
+		do_trunc = get_choice(2, noninteractive_string,
+				      2,
+				      1, trunc_first_string,
+				      2, trunc_second_string);
+
+		free(trunc_first_string);
+		free(trunc_second_string);
+		free(noninteractive_string);
+	    }
+
+	    if (do_trunc == 1) {
 		prev = 0;
 		clusters = 0;
 		for (this = FSTART(owner, fs); this > 0 && this != -1; this =
@@ -712,9 +725,10 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 	       path_name(parent), bad, good + bad);
 	if (!dots)
 	    printf("  Not dropping root directory.\n");
-	else if (!interactive)
-	    printf("  Not dropping it in auto-mode.\n");
-	else if (get_key("yn", "Drop directory ? (y/n)") == 'y') {
+	else if (get_choice(2, "  Not dropping it in auto-mode.",
+			    2,
+			    1, "Drop directory",
+			    2, "Keep directory") == 1) {
 	    truncate_file(fs, parent, 0);
 	    MODIFY(parent, name[0], DELETED_FLAG);
 	    /* buglet: deleted directory stays in the list. */
@@ -742,25 +756,25 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 	    puts(path_name(*walk));
 	    printf("  Bad short file name (%s).\n",
 		   file_name((*walk)->dir_ent.name));
-	    if (interactive)
-		printf("1) Drop file\n2) Rename file\n3) Auto-rename\n"
-		       "4) Keep it\n");
-	    else
-		printf("  Auto-renaming it.\n");
-	    switch (interactive ? get_key("1234", "?") : '3') {
-	    case '1':
+	    switch (get_choice(3, "  Auto-renaming it.",
+			       4,
+			       1, "Drop file",
+			       2, "Rename file",
+			       3, "Auto-rename",
+			       4, "Keep it")) {
+	    case 1:
 		drop_file(fs, *walk);
 		walk = &(*walk)->next;
 		continue;
-	    case '2':
+	    case 2:
 		rename_file(*walk);
 		redo = 1;
 		break;
-	    case '3':
+	    case 3:
 		auto_rename(*walk);
 		printf("  Renamed to %s\n", file_name((*walk)->dir_ent.name));
 		break;
-	    case '4':
+	    case 4:
 		break;
 	    }
 	}
@@ -775,39 +789,39 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 		    printf("%s\n  Duplicate directory entry.\n  First  %s\n",
 			   path_name(*walk), file_stat(*walk));
 		    printf("  Second %s\n", file_stat(*scan));
-		    if (interactive)
-			printf
-			    ("1) Drop first\n2) Drop second\n3) Rename first\n"
-			     "4) Rename second\n5) Auto-rename first\n"
-			     "6) Auto-rename second\n");
-		    else
-			printf("  Auto-renaming second.\n");
-		    switch (interactive ? get_key("123456", "?") : '6') {
-		    case '1':
+		    switch (get_choice(6, "  Auto-renaming second.",
+				       6,
+				       1, "Drop first",
+				       2, "Drop second",
+				       3, "Rename first",
+				       4, "Rename second",
+				       5, "Auto-rename first",
+				       6, "Auto-rename second")) {
+		    case 1:
 			drop_file(fs, *walk);
 			*walk = (*walk)->next;
 			skip = 1;
 			break;
-		    case '2':
+		    case 2:
 			drop_file(fs, *scan);
 			*scan = (*scan)->next;
 			continue;
-		    case '3':
+		    case 3:
 			rename_file(*walk);
 			printf("  Renamed to %s\n", path_name(*walk));
 			redo = 1;
 			break;
-		    case '4':
+		    case 4:
 			rename_file(*scan);
 			printf("  Renamed to %s\n", path_name(*walk));
 			redo = 1;
 			break;
-		    case '5':
+		    case 5:
 			auto_rename(*walk);
 			printf("  Renamed to %s\n",
 			       file_name((*walk)->dir_ent.name));
 			break;
-		    case '6':
+		    case 6:
 			auto_rename(*scan);
 			printf("  Renamed to %s\n",
 			       file_name((*scan)->dir_ent.name));

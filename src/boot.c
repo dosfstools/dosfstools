@@ -140,11 +140,10 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int l
 	    printf("And there is no space for creating one!\n");
 	    return;
 	}
-	if (interactive)
-	    printf("1) Create one\n2) Do without a backup\n");
-	else
-	    printf("  Auto-creating backup boot block.\n");
-	if (!interactive || get_key("12", "?") == '1') {
+	if (get_choice(1, "  Auto-creating backup boot block.",
+		       2,
+		       1, "Create one",
+		       2, "Do without a backup") == 1) {
 	    unsigned int bbs;
 	    /* The usual place for the backup boot sector is sector 6. Choose
 	     * that or the last reserved sector. */
@@ -190,16 +189,15 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int l
 	}
 	printf("\n");
 
-	if (interactive)
-	    printf("1) Copy original to backup\n"
-		   "2) Copy backup to original\n" "3) No action\n");
-	else
-	    printf("  Not automatically fixing this.\n");
-	switch (interactive ? get_key("123", "?") : '3') {
-	case '1':
+	switch (get_choice(3, "  Not automatically fixing this.",
+			   3,
+			   1, "Copy original to backup",
+			   2, "Copy backup to original",
+			   3, "No action")) {
+	case 1:
 	    fs_write(fs->backupboot_start, sizeof(*b), b);
 	    break;
-	case '2':
+	case 2:
 	    fs_write(0, sizeof(b2), &b2);
 	    break;
 	default:
@@ -224,11 +222,10 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 
     if (!b->info_sector) {
 	printf("No FSINFO sector\n");
-	if (interactive)
-	    printf("1) Create one\n2) Do without FSINFO\n");
-	else
-	    printf("  Not automatically creating it.\n");
-	if (interactive && get_key("12", "?") == '1') {
+	if (get_choice(2, "  Not automatically creating it.",
+		       2,
+		       1, "Create one",
+		       2, "Do without FSINFO") == 1) {
 	    /* search for a free reserved sector (not boot sector and not
 	     * backup boot sector) */
 	    uint32_t s;
@@ -272,11 +269,10 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 	    printf("  Offset %llu: 0x%08x != expected 0x%08x\n",
 		   (unsigned long long)offsetof(struct info_sector, boot_sign),
 		   le32toh(i.boot_sign), 0xaa550000);
-	if (interactive)
-	    printf("1) Correct\n2) Don't correct (FSINFO invalid then)\n");
-	else
-	    printf("  Auto-correcting it.\n");
-	if (!interactive || get_key("12", "?") == '1') {
+	if (get_choice(1, "  Auto-correcting it.",
+		       2,
+		       1, "Correct",
+		       2, "Don't correct (FSINFO invalid then)") == 1) {
 	    init_fsinfo(&i);
 	    fs_write(fs->fsinfo_start, sizeof(i), &i);
 	} else
@@ -292,12 +288,10 @@ static char print_fat_dirty_state(void)
     printf("Dirty bit is set. Fs was not properly unmounted and"
 	   " some data may be corrupt.\n");
 
-    if (interactive) {
-	printf("1) Remove dirty bit\n" "2) No action\n");
-	return get_key("12", "?");
-    } else
-	printf(" Automatically removing dirty bit.\n");
-    return '1';
+    return get_choice(1, " Automatically removing dirty bit.",
+		      2,
+		      1, "Remove dirty bit",
+		      2, "No action");
 }
 
 static void check_fat_state_bit(DOS_FS * fs, void *b)
@@ -307,7 +301,7 @@ static void check_fat_state_bit(DOS_FS * fs, void *b)
 
 	if (b32->reserved3 & FAT_STATE_DIRTY) {
 	    printf("0x41: ");
-	    if (print_fat_dirty_state() == '1') {
+	    if (print_fat_dirty_state() == 1) {
 		b32->reserved3 &= ~FAT_STATE_DIRTY;
 		fs_write(0, sizeof(*b32), b32);
 	    }
@@ -317,7 +311,7 @@ static void check_fat_state_bit(DOS_FS * fs, void *b)
 
 	if (b16->reserved2 & FAT_STATE_DIRTY) {
 	    printf("0x25: ");
-	    if (print_fat_dirty_state() == '1') {
+	    if (print_fat_dirty_state() == 1) {
 		b16->reserved2 &= ~FAT_STATE_DIRTY;
 		fs_write(0, sizeof(*b16), b16);
 	    }

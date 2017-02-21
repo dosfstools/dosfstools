@@ -31,6 +31,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <termios.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -46,6 +47,15 @@ int rw = 0, list = 0, test = 0, verbose = 0, write_immed = 0;
 int atari_format = 0, boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
+
+static struct termios original_termios;
+
+
+static void restore_termios(void)
+{
+    tcsetattr(0, TCSAFLUSH, &original_termios);
+}
+
 
 static void usage(char *name)
 {
@@ -106,6 +116,14 @@ int main(int argc, char **argv)
     DOS_FS fs;
     int salvage_files, verify, c;
     uint32_t free_clusters = 0;
+    struct termios tio;
+
+    if (!tcgetattr(0, &original_termios)) {
+	tio = original_termios;
+	tio.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(0, TCSAFLUSH, &tio);
+	atexit(restore_termios);
+    }
 
     memset(&fs, 0, sizeof(fs));
     salvage_files = verify = 0;
@@ -207,10 +225,10 @@ int main(int argc, char **argv)
 exit:
     if (fs_changed()) {
 	if (rw) {
-	    if (interactive)
-		rw = get_key("yn", "Perform changes ? (y/n)") == 'y';
-	    else
-		printf("Performing changes.\n");
+	    rw = get_choice(1, "Performing changes.",
+			    2,
+			    1, "Perform changes",
+			    2, "Leave filesystem unchanged") == 1;
 	} else
 	    printf("Leaving filesystem unchanged.\n");
     }

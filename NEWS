@@ -1,3 +1,12 @@
+dosfstools 4.2 - released <TBD>
+====================================
+
+The user prompting for interactive fsck has been overhauled. Now it will
+directly react to a pressed key without the user having to additionally press
+enter. The changed prompting is also consistently repeating the prompt when
+invalid input is given.
+
+
 dosfstools 4.1 - released 2017-01-24
 ====================================
 

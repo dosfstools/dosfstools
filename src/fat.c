@@ -131,19 +131,15 @@ void read_fat(DOS_FS * fs)
 	    memcpy(first, second, eff_size);
 	}
 	if (first_ok && second_ok) {
-	    if (interactive) {
-		printf("FATs differ but appear to be intact. Use which FAT ?\n"
-		       "1) Use first FAT\n2) Use second FAT\n");
-		if (get_key("12", "?") == '1') {
-		    fs_write(fs->fat_start + fs->fat_size, eff_size, first);
-		} else {
-		    fs_write(fs->fat_start, eff_size, second);
-		    memcpy(first, second, eff_size);
-		}
-	    } else {
-		printf("FATs differ but appear to be intact. Using first "
-		       "FAT.\n");
+	    printf("FATs differ but appear to be intact.");
+	    if (get_choice(1, "  Using first FAT.",
+			   2,
+			   1, "Use first FAT",
+			   2, "Use second FAT") == 1) {
 		fs_write(fs->fat_start + fs->fat_size, eff_size, first);
+	    } else {
+		fs_write(fs->fat_start, eff_size, second);
+		memcpy(first, second, eff_size);
 	    }
 	}
 	if (!first_ok && !second_ok) {
@@ -546,21 +542,19 @@ uint32_t update_free(DOS_FS * fs)
 	if (free != fs->free_clusters) {
 	    printf("Free cluster summary wrong (%ld vs. really %ld)\n",
 		   (long)fs->free_clusters, (long)free);
-	    if (interactive)
-		printf("1) Correct\n2) Don't correct\n");
-	    else
-		printf("  Auto-correcting.\n");
-	    if (!interactive || get_key("12", "?") == '1')
+	    if (get_choice(1, "  Auto-correcting.",
+			   2,
+			   1, "Correct",
+			   2, "Don't correct") == 1)
 		do_set = 1;
 	}
     } else {
 	printf("Free cluster summary uninitialized (should be %ld)\n", (long)free);
 	if (rw) {
-	    if (interactive)
-		printf("1) Set it\n2) Leave it uninitialized\n");
-	    else
-		printf("  Auto-setting.\n");
-	    if (!interactive || get_key("12", "?") == '1')
+	    if (get_choice(1, "  Auto-setting.",
+			   2,
+			   1, "Set it",
+			   2, "Leave it uninitialized") == 1)
 		do_set = 1;
 	}
     }
