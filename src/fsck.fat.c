@@ -223,7 +223,7 @@ int main(int argc, char **argv)
     }
 
 exit:
-    if (fs_changed()) {
+    if (!write_immed && fs_changed()) {
 	if (rw) {
 	    rw = get_choice(1, "Performing changes.",
 			    2,
