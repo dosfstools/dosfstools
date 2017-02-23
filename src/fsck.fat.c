@@ -225,12 +225,17 @@ int main(int argc, char **argv)
 exit:
     if (!write_immed && fs_changed()) {
 	if (rw) {
-	    rw = get_choice(1, "Performing changes.",
+	    printf("\n*** Filesystem was changed ***\n");
+	    if (interactive)
+		printf("The changes have not yet been written, you can still choose to leave the\n"
+		       "filesystem unmodified:\n");
+
+	    rw = get_choice(1, "Writing changes.",
 			    2,
-			    1, "Perform changes",
+			    1, "Write changes",
 			    2, "Leave filesystem unchanged") == 1;
 	} else
-	    printf("Leaving filesystem unchanged.\n");
+	    printf("\nLeaving filesystem unchanged.\n");
     }
 
     if (!boot_only)
