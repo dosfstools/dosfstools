@@ -35,6 +35,7 @@
 
 
 int interactive;
+int write_immed;
 
 
 typedef struct _link {
@@ -146,9 +147,11 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
     int choice_values[9];
     const char *choice_strings[9];
     int choice;
+    int quit_choice;
     int print_choices, print_full_choices;
     va_list va;
     int i;
+    static int inhibit_quit_choice;
 
     if (!interactive) {
 	printf("%s\n", noninteractive_msg);
@@ -176,10 +179,11 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 
 	    if (print_full_choices) {
 		printf("?) List all choices\n");
+		printf("q) Quit fsck\n");
 	    }
 	}
 
-	printf("[%.*s?]? ", choices, "123456789");
+	printf("[%.*s?%s]? ", choices, "123456789", inhibit_quit_choice ? "" : "q");
 	fflush(stdout);
 
 	do {
@@ -197,6 +201,27 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	if (choice == '?') {
 	    print_choices = 1;
 	    print_full_choices = 1;
+	}
+
+	if (!inhibit_quit_choice && (choice == 'q' || choice == 'Q')) {
+	    if (!write_immed)
+		printf("No changes have been written to the filesystem yet. If you choose\n"
+		       "to quit, it will be left in the same state it was in before you\n"
+		       "started this program.\n");
+	    else
+		printf("fsck is running in immediate write mode. All changes so far have\n"
+		       "already been written and can not be undone now. If you choose to\n"
+		       "quit now, these changes will stay in place.\n");
+
+	    inhibit_quit_choice = 1;
+	    quit_choice = get_choice(1, "This is never non-interactive.",
+				     2,
+				     1, "Quit now",
+				     2, "Continue");
+	    inhibit_quit_choice = 0;
+
+	    if (quit_choice == 1)
+		exit(0);
 	}
     }
 

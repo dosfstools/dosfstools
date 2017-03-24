@@ -24,6 +24,7 @@
 #define _COMMON_H
 
 extern int interactive;
+extern int write_immed;
 
 void die(const char *msg, ...)
     __attribute((noreturn, format(printf, 1, 2)));

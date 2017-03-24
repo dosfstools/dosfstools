@@ -43,7 +43,7 @@
 #include "check.h"
 #include "charconv.h"
 
-int rw = 0, list = 0, test = 0, verbose = 0, write_immed = 0;
+int rw = 0, list = 0, test = 0, verbose = 0;
 int atari_format = 0, boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
