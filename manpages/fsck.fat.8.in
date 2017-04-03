@@ -161,6 +161,8 @@ Write changes to disk immediately.
 .IP "\fB\-y\fR" 4
 Same as \fB\-a\fR (automatically repair filesystem) for compatibility with other
 fsck tools.
+.IP "\fB\-\-help\fR" 4
+Display help message describing usage and options then exit.
 .\" ----------------------------------------------------------------------------
 .SH "EXIT STATUS"
 .IP "0" 4

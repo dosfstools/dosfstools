@@ -78,6 +78,7 @@ static void usage(char *name, int exitval)
     fprintf(stderr, "  -V       perform a verification pass\n");
     fprintf(stderr, "  -w       write changes to disk immediately\n");
     fprintf(stderr, "  -y       same as -a, for compat with other *fsck\n");
+    fprintf(stderr, "  --help   print this message\n");
     exit(exitval);
 }
 
@@ -116,6 +117,12 @@ int main(int argc, char **argv)
     uint32_t free_clusters = 0;
     struct termios tio;
 
+    enum {OPT_HELP=1000,};
+    const struct option long_options[] = {
+	    {"help", no_argument, NULL, OPT_HELP},
+	    {0,}
+    };
+
     if (!tcgetattr(0, &original_termios)) {
 	tio = original_termios;
 	tio.c_lflag &= ~(ICANON | ECHO);
@@ -128,7 +135,8 @@ int main(int argc, char **argv)
     rw = interactive = 1;
     check_atari();
 
-    while ((c = getopt(argc, argv, "Aac:d:bflnprtu:vVwy")) != -1)
+    while ((c = getopt_long(argc, argv, "Aac:d:bflnprtu:vVwy",
+				    long_options, NULL)) != -1)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
 	    atari_format = !atari_format;
@@ -179,6 +187,9 @@ int main(int argc, char **argv)
 	    break;
 	case 'w':
 	    write_immed = 1;
+	    break;
+	case OPT_HELP:
+	    usage(argv[0], 0);
 	    break;
 	default:
 	    usage(argv[0], 2);
