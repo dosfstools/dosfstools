@@ -57,7 +57,7 @@ static void restore_termios(void)
 }
 
 
-static void usage(char *name)
+static void usage(char *name, int exitval)
 {
     fprintf(stderr, "usage: %s [OPTIONS] DEVICE\n", name);
     fprintf(stderr, "  -a       automatically repair the filesystem\n");
@@ -78,7 +78,7 @@ static void usage(char *name)
     fprintf(stderr, "  -V       perform a verification pass\n");
     fprintf(stderr, "  -w       write changes to disk immediately\n");
     fprintf(stderr, "  -y       same as -a, for compat with other *fsck\n");
-    exit(2);
+    exit(exitval);
 }
 
 /*
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 	    write_immed = 1;
 	    break;
 	default:
-	    usage(argv[0]);
+	    usage(argv[0], 2);
 	}
     set_dos_codepage(-1);	/* set default codepage if none was given in command line */
     if ((test || write_immed) && !rw) {
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 	exit(2);
     }
     if (optind != argc - 1)
-	usage(argv[0]);
+	usage(argv[0], 2);
 
     printf("fsck.fat " VERSION " (" VERSION_DATE ")\n");
     fs_open(argv[optind], rw);
