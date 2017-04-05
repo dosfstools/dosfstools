@@ -168,7 +168,6 @@ typedef struct {
 } DOS_FS;
 
 extern int rw, list, verbose, test;
-extern int atari_format;
 extern unsigned n_files;
 extern void *mem_queue;
 

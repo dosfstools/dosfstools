@@ -44,7 +44,7 @@
 #include "charconv.h"
 
 int rw = 0, list = 0, test = 0, verbose = 0;
-int atari_format = 0, boot_only = 0;
+int boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
@@ -80,34 +80,6 @@ static void usage(char *name, int exitval)
     fprintf(stderr, "  -y       same as -a, for compat with other *fsck\n");
     fprintf(stderr, "  --help   print this message\n");
     exit(exitval);
-}
-
-/*
- * ++roman: On m68k, check if this is an Atari; if yes, turn on Atari variant
- * of MS-DOS filesystem by default.
- */
-static void check_atari(void)
-{
-#ifdef __mc68000__
-    FILE *f;
-    char line[128], *p;
-
-    if (!(f = fopen("/proc/hardware", "r"))) {
-	perror("/proc/hardware");
-	return;
-    }
-
-    while (fgets(line, sizeof(line), f)) {
-	if (strncmp(line, "Model:", 6) == 0) {
-	    p = line + 6;
-	    p += strspn(p, " \t");
-	    if (strncmp(p, "Atari ", 6) == 0)
-		atari_format = 1;
-	    break;
-	}
-    }
-    fclose(f);
-#endif
 }
 
 int main(int argc, char **argv)

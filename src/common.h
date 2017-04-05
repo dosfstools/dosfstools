@@ -25,6 +25,7 @@
 
 extern int interactive;
 extern int write_immed;
+extern int atari_format;	/* Use Atari variation of MS-DOS FS format */
 
 /* program_name used for printing messages; no name will be printed when it is
  * left as NULL */
@@ -83,6 +84,13 @@ char *get_line(const char *prompt, char *dest, size_t length);
  * characters plus a null byte. This behaves like printing a prompt and fgets()
  * afterwards with the addition of temporarily enabling canonical input mode
  * with echo if needed.
+ */
+
+void check_atari(void);
+
+/*
+ * ++roman: On m68k Linux, check if this is an Atari; if yes, turn on Atari
+ * variant of MS-DOS filesystem by default.
  */
 
 #endif

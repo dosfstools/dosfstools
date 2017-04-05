@@ -214,7 +214,6 @@ char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
 /* Global variables - the root of all evil :-) - see these and weep! */
 
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
-static int atari_format = 0;	/* Use Atari variation of MS-DOS FS format */
 static int check = FALSE;	/* Default to no readablity checking */
 static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
@@ -1265,34 +1264,6 @@ Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-secto
        [--help]\n\
        /dev/name [blocks]\n");
     exit(exitval);
-}
-
-/*
- * ++roman: On m68k, check if this is an Atari; if yes, turn on Atari variant
- * of MS-DOS filesystem by default.
- */
-static void check_atari(void)
-{
-#ifdef __mc68000__
-    FILE *f;
-    char line[128], *p;
-
-    if (!(f = fopen("/proc/hardware", "r"))) {
-	perror("/proc/hardware");
-	return;
-    }
-
-    while (fgets(line, sizeof(line), f)) {
-	if (strncmp(line, "Model:", 6) == 0) {
-	    p = line + 6;
-	    p += strspn(p, " \t");
-	    if (strncmp(p, "Atari ", 6) == 0)
-		atari_format = 1;
-	    break;
-	}
-    }
-    fclose(f);
-#endif
 }
 
 /* The "main" entry point into the utility - we pick up the options and attempt to process them in some sort of sensible
