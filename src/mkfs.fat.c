@@ -63,6 +63,7 @@
 #include <getopt.h>
 #include "endian_compat.h"
 
+#include "common.h"
 #include "msdos_fs.h"
 #include "device_info.h"
 
@@ -80,10 +81,6 @@
 #define NO_NAME "NO NAME    "
 
 /* Macro definitions */
-
-/* Report a failure message and return a failure error code */
-
-#define die( str ) fatal_error( "%s: " str "\n" )
 
 /* Mark a cluster in the FAT as bad */
 
@@ -216,7 +213,6 @@ char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
 
 /* Global variables - the root of all evil :-) - see these and weep! */
 
-static const char *program_name = "mkfs.fat";	/* Name of the program */
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
 static int atari_format = 0;	/* Use Atari variation of MS-DOS FS format */
 static int check = FALSE;	/* Default to no readablity checking */
@@ -263,7 +259,6 @@ static int invariant = 0;		/* Whether to set normally randomized or
 
 /* Function prototype definitions */
 
-static void fatal_error(const char *fmt_string) __attribute__ ((noreturn));
 static void mark_FAT_cluster(int cluster, unsigned int value);
 static void mark_FAT_sector(int sector, unsigned int value);
 static long do_check(char *buffer, int try, off_t current_block);
@@ -276,14 +271,6 @@ static void setup_tables(void);
 static void write_tables(void);
 
 /* The function implementations */
-
-/* Handle the reporting of fatal errors.  Volatile to let gcc know that this doesn't return */
-
-static void fatal_error(const char *fmt_string)
-{
-    fprintf(stderr, fmt_string, program_name, device_name);
-    exit(1);			/* The error exit code is 1! */
-}
 
 /* Mark the specified cluster as having a particular value */
 
@@ -506,7 +493,7 @@ static void get_list_blocks(char *filename)
 static void check_mount(char *device_name)
 {
     if (is_device_mounted(device_name))
-	die("%s contains a mounted filesystem.");
+	die("%s contains a mounted filesystem.", device_name);
 }
 
 /* Establish the geometry and media parameters for the device */
@@ -1331,6 +1318,7 @@ int main(int argc, char **argv)
 	    {0,}
     };
 
+    program_name = "mkfs.fat";
     if (argc && *argv) {	/* What's the program name? */
 	char *p;
 	program_name = *argv;
@@ -1613,20 +1601,20 @@ int main(int argc, char **argv)
 	dev = open(device_name, O_EXCL | O_RDWR | O_CREAT, 0666);
 	if (dev < 0) {
 	    if (errno == EEXIST)
-		die("file %s already exists");
+		die("file %s already exists", device_name);
 	    else
-		die("unable to create %s");
+		die("unable to create %s", device_name);
 	}
 	/* expand to desired size */
 	if (ftruncate(dev, blocks * BLOCK_SIZE))
-	    die("unable to resize %s");
+	    die("unable to resize %s", device_name);
     }
 
     if (get_device_info(dev, &devinfo) < 0)
-	die("error collecting information about %s");
+	die("error collecting information about %s", device_name);
 
     if (devinfo.size <= 0)
-	die("unable to discover size of %s");
+	die("unable to discover size of %s", device_name);
 
     if (devinfo.sector_size > 0) {
 	if (sector_size_set) {
@@ -1665,10 +1653,12 @@ int main(int argc, char **argv)
      */
     if (!ignore_full_disk && devinfo.type == TYPE_FIXED &&
 	    devinfo.partition == 0)
-	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)");
+	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)",
+	    device_name);
 
     if (!ignore_full_disk && devinfo.has_children > 0)
-	die("Partitions or virtual mappings on device '%s', not making filesystem (use -I to override)");
+	die("Partitions or virtual mappings on device '%s', not making filesystem (use -I to override)",
+	    device_name);
 
     establish_params(&devinfo);
     /* Establish the media parameters */

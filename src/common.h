@@ -26,6 +26,10 @@
 extern int interactive;
 extern int write_immed;
 
+/* program_name used for printing messages; no name will be printed when it is
+ * left as NULL */
+extern const char *program_name;
+
 void die(const char *msg, ...)
     __attribute((noreturn, format(printf, 1, 2)));
 

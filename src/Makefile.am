@@ -29,6 +29,7 @@ fatlabel_SOURCES = fatlabel.c $(fscklabel_common_sources)
 
 mkfs_common_sources = device_info.c device_info.h \
 		      blkdev/blkdev.c blkdev/blkdev.h \
+		      common.c common.h \
 		      endian_compat.h \
 		      blkdev/linux_version.c blkdev/linux_version.h
 mkfs_fat_SOURCES  = mkfs.fat.c msdos_fs.h $(mkfs_common_sources)

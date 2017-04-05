@@ -36,6 +36,7 @@
 
 int interactive;
 int write_immed;
+const char *program_name;
 
 
 typedef struct _link {
@@ -47,6 +48,9 @@ void die(const char *msg, ...)
 {
     va_list args;
 
+    if (program_name)
+	fprintf(stderr, "%s: ", program_name);
+
     va_start(args, msg);
     vfprintf(stderr, msg, args);
     va_end(args);
@@ -57,6 +61,9 @@ void die(const char *msg, ...)
 void pdie(const char *msg, ...)
 {
     va_list args;
+
+    if (program_name)
+	fprintf(stderr, "%s: ", program_name);
 
     va_start(args, msg);
     vfprintf(stderr, msg, args);
