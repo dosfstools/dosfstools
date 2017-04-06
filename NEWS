@@ -6,6 +6,10 @@ directly react to a pressed key without the user having to additionally press
 enter. The changed prompting is also consistently repeating the prompt when
 invalid input is given.
 
+The legacy check whether it is running on Atari hardware when compiled for 68k
+in order to automatically switch to Atari mode is now disabled by default. It
+can be compiled in with the new configure switch --enable-atari-check.
+
 
 dosfstools 4.1 - released 2017-01-24
 ====================================

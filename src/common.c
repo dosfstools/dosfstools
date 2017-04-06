@@ -267,7 +267,7 @@ char *get_line(const char *prompt, char *dest, size_t length)
  */
 void check_atari(void)
 {
-#ifdef __mc68000__
+#if defined(__mc68000__) && defined(__linux__) && defined(CONF_CHECK_ATARI)
     FILE *f;
     char line[128], *p;
 
