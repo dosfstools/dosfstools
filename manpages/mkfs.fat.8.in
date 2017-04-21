@@ -44,9 +44,9 @@ This option disables alignment; this may provide a handful of additional
 clusters of storage at the expense of a significant performance degradation on
 RAIDs, flash media or large-sector hard disks.
 .IP "\fB \-A\fR" 4
-Use Atari variation of the MS-DOS filesystem.
-This is default if \fBmkfs.fat\fR is run on an Atari, then this option turns off
-Atari format.
+Select using the Atari variation of the FAT filesystem if that isn't active
+already, otherwise select standard FAT filesystem.
+This is selected by default if \fBmkfs.fat\fR is run on 68k Atari Linux.
 There are some differences when using Atari format:
 If not directed otherwise by the user, \fBmkfs.fat\fR will always use 2 sectors
 per cluster, since GEMDOS doesn't like other values very much.

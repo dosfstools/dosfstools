@@ -103,9 +103,9 @@ No user intervention is necessary.
 Whenever there is more than one method to solve a problem, the least
 destructive approach is used.
 .IP "\fB\-A\fR" 4
-Use Atari variation of the MS\-DOS filesystem.
-This is default if \fBfsck.fat\fR is run on an Atari, then this option turns
-off Atari format.
+Select using the Atari variation of the FAT filesystem if that isn't active
+already, otherwise select standard FAT filesystem.
+This is selected by default if \fBmkfs.fat\fR is run on 68k Atari Linux.
 There are some minor differences in Atari format:
 Some boot sector fields are interpreted slightly different, and the special FAT
 entries for end\-of\-file and bad cluster can be different.

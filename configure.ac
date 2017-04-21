@@ -33,7 +33,7 @@ AC_ARG_ENABLE([atari-check],
 	[AS_HELP_STRING([--enable-atari-check],
 		      [enable legacy check to let tools switch to Atari mode
 		       when they detect they are running on 68k Atari
-		       hardware])],
+		       hardware (Linux only)])],
 	[case "${enableval}" in
 	yes) AC_SUBST(CHECKATARI, [1])
 	     AC_DEFINE(CONF_CHECK_ATARI) ;;
