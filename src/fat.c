@@ -131,7 +131,7 @@ void read_fat(DOS_FS * fs)
 	    memcpy(first, second, eff_size);
 	}
 	if (first_ok && second_ok) {
-	    printf("FATs differ but appear to be intact.");
+	    printf("FATs differ but appear to be intact.\n");
 	    if (get_choice(1, "  Using first FAT.",
 			   2,
 			   1, "Use first FAT",
