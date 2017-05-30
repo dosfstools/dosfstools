@@ -20,19 +20,21 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH MKFS.FAT 8 2016\-01\-25 "dosfstools @PACKAGE_VERSION@"
+.TH MKFS.FAT 8 2016\-05\-30 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-\fBmkfs.fat\fR \- create an MS-DOS filesystem under Linux
+\fBmkfs.fat\fR \- create an MS\-DOS FAT filesystem
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBmkfs.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fIBLOCK-COUNT\fR]
 .\" ----------------------------------------------------------------------------
 .SH DESCRIPTION
-\fBmkfs.fat\fR is used to create an MS-DOS filesystem under Linux on a device
-(usually a disk partition).
-\fIDEVICE\fR is the special file corresponding to the device (e.g. /dev/sdXX).
+\fBmkfs.fat\fR is used to create a FAT filesystem on a device or in an image
+file.
+\fIDEVICE\fR is the special file corresponding to the device (e.g. /dev/sdXX) or
+the image file (which does not need to exist when the option \fB-C\fR is given).
 \fIBLOCK-COUNT\fR is the number of blocks on the device.
-If omitted, \fBmkfs.fat\fR automatically determines the filesystem size.
+If omitted, \fBmkfs.fat\fR automatically chooses a filesystem size to fill the
+available space.
 .\" ----------------------------------------------------------------------------
 .SH OPTIONS
 .IP "\fB\-a\fR" 4
