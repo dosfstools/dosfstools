@@ -59,26 +59,30 @@ static void restore_termios(void)
 
 static void usage(char *name, int exitval)
 {
-    fprintf(stderr, "usage: %s [OPTIONS] DEVICE\n", name);
-    fprintf(stderr, "  -a       automatically repair the filesystem\n");
-    fprintf(stderr, "  -A       toggle Atari filesystem format\n");
-    fprintf(stderr, "  -b       make read-only boot sector check\n");
-    fprintf(stderr, "  -c N     use DOS codepage N to decode short file names (default: %d)\n",
+    fprintf(stderr, "Usage: %s [OPTIONS] DEVICE\n", name);
+    fprintf(stderr, "Check FAT filesystem on DEVICE for errors.\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -a              automatically repair the filesystem\n");
+    fprintf(stderr, "  -A              toggle Atari variant of the FAT filesystem\n");
+    fprintf(stderr, "  -b              make read-only boot sector check\n");
+    fprintf(stderr, "  -c N            use DOS codepage N to decode short file names (default: %d)\n",
 	    DEFAULT_DOS_CODEPAGE);
-    fprintf(stderr, "  -d PATH  drop file with name PATH (can be given multiple times)\n");
-    fprintf(stderr, "  -f       salvage unused chains to files\n");
-    fprintf(stderr, "  -l       list path names\n");
-    fprintf(stderr, "  -n       no-op, check non-interactively without changing\n");
-    fprintf(stderr, "  -p       same as -a, for compat with other *fsck\n");
-    fprintf(stderr, "  -r       interactively repair the filesystem (default)\n");
-    fprintf(stderr, "  -t       test for bad clusters\n");
-    fprintf(stderr, "  -u PATH  try to undelete (non-directory) file that was named PATH (can be\n");
-    fprintf(stderr, "             given multiple times)\n");
-    fprintf(stderr, "  -v       verbose mode\n");
-    fprintf(stderr, "  -V       perform a verification pass\n");
-    fprintf(stderr, "  -w       write changes to disk immediately\n");
-    fprintf(stderr, "  -y       same as -a, for compat with other *fsck\n");
-    fprintf(stderr, "  --help   print this message\n");
+    fprintf(stderr, "  -d PATH         drop file with name PATH (can be given multiple times)\n");
+    fprintf(stderr, "  -f              salvage unused chains to files\n");
+    fprintf(stderr, "  -l              list path names\n");
+    fprintf(stderr, "  -n              no-op, check non-interactively without changing\n");
+    fprintf(stderr, "  -p              same as -a, for compat with other *fsck\n");
+    fprintf(stderr, "  -r              interactively repair the filesystem (default)\n");
+    fprintf(stderr, "  -t              test for bad clusters\n");
+    fprintf(stderr, "  -u PATH         try to undelete (non-directory) file that was named PATH (can be\n");
+    fprintf(stderr, "                    given multiple times)\n");
+    fprintf(stderr, "  -v              verbose mode\n");
+    fprintf(stderr, "  -V              perform a verification pass\n");
+    fprintf(stderr, "  --variant=TYPE  handle variant TYPE of the filesystem\n");
+    fprintf(stderr, "  -w              write changes to disk immediately\n");
+    fprintf(stderr, "  -y              same as -a, for compat with other *fsck\n");
+    fprintf(stderr, "  --help          print this message\n");
     exit(exitval);
 }
 
@@ -89,9 +93,10 @@ int main(int argc, char **argv)
     uint32_t free_clusters = 0;
     struct termios tio;
 
-    enum {OPT_HELP=1000,};
+    enum {OPT_HELP=1000, OPT_VARIANT};
     const struct option long_options[] = {
-	    {"help", no_argument, NULL, OPT_HELP},
+	    {"variant", required_argument, NULL, OPT_VARIANT},
+	    {"help",    no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
 
@@ -156,6 +161,16 @@ int main(int argc, char **argv)
 	    break;
 	case 'V':
 	    verify = 1;
+	    break;
+	case OPT_VARIANT:
+	    if (!strcasecmp(optarg, "standard")) {
+		    atari_format = 0;
+	    } else if (!strcasecmp(optarg, "atari")) {
+		    atari_format = 1;
+	    } else {
+		    fprintf(stderr, "Unknown variant: %s\n", optarg);
+		    usage(argv[0], 2);
+	    }
 	    break;
 	case 'w':
 	    write_immed = 1;

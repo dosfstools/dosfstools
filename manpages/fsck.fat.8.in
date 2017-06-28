@@ -19,9 +19,9 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FSCK.FAT 8 2015\-04\-16 "dosfstools @PACKAGE_VERSION@"
+.TH FSCK.FAT 8 2017\-06\-28 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-\fBfsck.fat\fR \- check and repair MS\-DOS filesystems
+\fBfsck.fat\fR \- check and repair MS\-DOS FAT filesystems
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfsck.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR
@@ -95,6 +95,19 @@ Absence of . and .. entries in non\-root directories
 When \fBfsck.fat\fR checks a filesystem, it accumulates all changes in memory
 and performs them only after all checks are complete.
 This can be disabled with the \fB\-w\fR option.
+.PP
+Two different variants of the FAT filesystem are supported.
+Standard is the FAT12, FAT16 and FAT32 filesystems as defined by Microsoft and
+widely used on hard disks and removable media like USB sticks and SD cards.
+The other is the legacy Atari variant used on Atari ST.
+.PP
+There are some minor differences in Atari format:
+Some boot sector fields are interpreted slightly different, and the special FAT
+entries for end\-of\-file and bad cluster can be different.
+Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but
+both systems recognize all values from 0xfff8...0xffff as end\-of\-file.
+MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7
+are for this purpose (but the standard value is still 0xfff7).
 .\" ----------------------------------------------------------------------------
 .SH OPTIONS
 .IP "\fB\-a\fR" 4
@@ -106,13 +119,6 @@ destructive approach is used.
 Select using the Atari variation of the FAT filesystem if that isn't active
 already, otherwise select standard FAT filesystem.
 This is selected by default if \fBmkfs.fat\fR is run on 68k Atari Linux.
-There are some minor differences in Atari format:
-Some boot sector fields are interpreted slightly different, and the special FAT
-entries for end\-of\-file and bad cluster can be different.
-Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but
-both systems recognize all values from 0xfff8...0xffff as end\-of\-file.
-MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7
-are for this purpose (but the standard value is still 0xfff7).
 .IP "\fB-b\fR" 4
 Make read-only boot sector check.
 .IP "\fB-c\fR \fIPAGE\fR" 4
@@ -156,6 +162,11 @@ The second pass should never report any fixable errors.
 It may take considerably longer than the first pass, because the first pass may
 have generated long list of modifications that have to be scanned for each disk
 read.
+.IP "\fB\-\-variant\fR \fITYPE\fR" 4
+Create a filesystem of variant \fITYPE\fR.
+Acceptable values are 'standard' and 'atari' (in any combination of upper/lower
+case).
+See above under DESCRIPTION for the differences.
 .IP "\fB\-w\fR" 4
 Write changes to disk immediately.
 .IP "\fB\-y\fR" 4

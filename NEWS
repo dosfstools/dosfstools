@@ -10,6 +10,10 @@ The legacy check whether it is running on Atari hardware when compiled for 68k
 in order to automatically switch to Atari mode is now disabled by default. It
 can be compiled in with the new configure switch --enable-atari-check.
 
+Both mkfs and fsck now have a new option --variant=TYPE where TYPE can be
+'standard' or 'atari' to explicitly select one of those variants rather than
+having to toggle between them with -A.
+
 
 dosfstools 4.1 - released 2017-01-24
 ====================================

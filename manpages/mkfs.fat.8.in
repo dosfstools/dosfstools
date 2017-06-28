@@ -20,7 +20,7 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH MKFS.FAT 8 2016\-05\-30 "dosfstools @PACKAGE_VERSION@"
+.TH MKFS.FAT 8 2016\-06\-28 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
 \fBmkfs.fat\fR \- create an MS\-DOS FAT filesystem
 .\" ----------------------------------------------------------------------------
@@ -35,6 +35,23 @@ the image file (which does not need to exist when the option \fB-C\fR is given).
 \fIBLOCK-COUNT\fR is the number of blocks on the device.
 If omitted, \fBmkfs.fat\fR automatically chooses a filesystem size to fill the
 available space.
+.PP
+Two different variants of the FAT filesystem are supported.
+Standard is the FAT12, FAT16 and FAT32 filesystems as defined by Microsoft and
+widely used on hard disks and removable media like USB sticks and SD cards.
+The other is the legacy Atari variant used on Atari ST.
+.PP
+In Atari mode, if not directed otherwise by the user, \fBmkfs.fat\fR will
+always use 2 sectors per cluster, since GEMDOS doesn't like other values very
+much.
+It will also obey the maximum number of sectors GEMDOS can handle.
+Larger filesystems are managed by raising the logical sector size.
+An Atari-compatible serial number for the filesystem is generated, and a 12 bit
+FAT is used only for filesystems that have one of the usual floppy sizes (720k,
+1.2M, 1.44M, 2.88M), a 16 bit FAT otherwise.
+This can be overridden with the \fB\-F\fR option.
+Some PC-specific boot sector fields aren't written, and a boot message (option
+\fB\-m\fR) is ignored.
 .\" ----------------------------------------------------------------------------
 .SH OPTIONS
 .IP "\fB\-a\fR" 4
@@ -45,21 +62,10 @@ filesystem.
 This option disables alignment; this may provide a handful of additional
 clusters of storage at the expense of a significant performance degradation on
 RAIDs, flash media or large-sector hard disks.
-.IP "\fB \-A\fR" 4
+.IP "\fB\-A\fR" 4
 Select using the Atari variation of the FAT filesystem if that isn't active
 already, otherwise select standard FAT filesystem.
 This is selected by default if \fBmkfs.fat\fR is run on 68k Atari Linux.
-There are some differences when using Atari format:
-If not directed otherwise by the user, \fBmkfs.fat\fR will always use 2 sectors
-per cluster, since GEMDOS doesn't like other values very much.
-It will also obey the maximum number of sectors GEMDOS can handle.
-Larger filesystems are managed by raising the logical sector size.
-Under Atari format, an Atari-compatible serial number for the filesystem is
-generated, and a 12 bit FAT is used only for filesystems that have one of the
-usual floppy sizes (720k, 1.2M, 1.44M, 2.88M), a 16 bit FAT otherwise.
-This can be overridden with the \fB\-F\fR option.
-Some PC-specific boot sector fields aren't written, and a boot message (option
-\fB\-m\fR) is ignored.
 .IP "\fB\-b\fR \fISECTOR-OF-BACKUP\fR" 4
 Selects the location of the backup boot sector for FAT32.
 Default depends on number of reserved sectors, but usually is sector 6.
@@ -142,14 +148,19 @@ Values larger than 4096 are not conforming to the FAT file system specification
 and may not work everywhere.
 .IP "\fB\-v\fR" 4
 Verbose execution.
+.IP "\fB\-\-variant\fR \fITYPE\fR" 4
+Create a filesystem of variant \fITYPE\fR.
+Acceptable values are 'standard' and 'atari' (in any combination of upper/lower
+case).
+See above under DESCRIPTION for the differences.
+.IP "\fB\-\-help\fR" 4
+Display option summary and exit.
 .IP "\fB\-\-invariant\fR" 4
 Use constants for normally randomly generated or time based data such as
 volume ID and creation time.
 Multiple runs of \fBmkfs.fat\fR on the same device create identical results
 with this option.
 Its main purpose is testing \fBmkfs.fat\fR.
-.IP "\fB\-\-help\fR" 4
-Display option summary and exit.
 .\" ----------------------------------------------------------------------------
 .SH BUGS
 \fBmkfs.fat\fR can not create boot-able filesystems.

@@ -1261,6 +1261,7 @@ Usage: mkfs.fat [-a][-A][-c][-C][-v][-I][-l bad-block-file][-b backup-boot-secto
        [-h hidden-sectors][-F fat-size][-r root-dir-entries][-R reserved-sectors]\n\
        [-M FAT-media-byte][-D drive_number]\n\
        [--invariant]\n\
+       [--variant type]\n\
        [--help]\n\
        /dev/name [blocks]\n");
     exit(exitval);
@@ -1282,10 +1283,11 @@ int main(int argc, char **argv)
     int blocks_specified = 0;
     struct timeval create_timeval;
 
-    enum {OPT_HELP=1000, OPT_INVARIANT,};
+    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT};
     const struct option long_options[] = {
-	    {"help", no_argument, NULL, OPT_HELP},
-	    {"invariant", no_argument, NULL, OPT_INVARIANT},
+	    {"invariant", no_argument,       NULL, OPT_INVARIANT},
+	    {"variant",   required_argument, NULL, OPT_VARIANT},
+	    {"help",      no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
 
@@ -1522,6 +1524,17 @@ int main(int argc, char **argv)
 	    invariant = 1;
 	    volume_id = 0x1234abcd;
 	    create_time = 1426325213;
+	    break;
+
+	case OPT_VARIANT:
+	    if (!strcasecmp(optarg, "standard")) {
+		    atari_format = 0;
+	    } else if (!strcasecmp(optarg, "atari")) {
+		    atari_format = 1;
+	    } else {
+		    printf("Unknown variant: %s\n", optarg);
+		    usage(1);
+	    }
 	    break;
 
 	default:
