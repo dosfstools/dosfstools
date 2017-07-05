@@ -58,12 +58,14 @@ static void handle_label(bool change, const char *device, const char *newlabel)
     int i;
 
     if (change) {
-	strncpy(label, newlabel, 11);
 	if (strlen(newlabel) > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
+	sprintf(label, "%-11.11s", newlabel);
+	if (memcmp(label, "           ", 11) == 0 || label[0] == '\xE5')
+	    memcpy(label, "NO NAME    ", 11);
 	for (i = 0; label[i] && i < 11; i++)
 	    /* don't know if here should be more strict !uppercase(label[i]) */
 	    if (islower(label[i])) {
