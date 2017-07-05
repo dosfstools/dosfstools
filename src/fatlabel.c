@@ -81,12 +81,14 @@ int main(int argc, char *argv[])
 
     device = argv[1];
     if (argc == 3) {
-	strncpy(label, argv[2], 11);
 	if (strlen(argv[2]) > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
+	sprintf(label, "%-11.11s", argv[2]);
+	if (memcmp(label, "           ", 11) == 0 || label[0] == '\xE5')
+	    memcpy(label, "NO NAME    ", 11);
 	for (i = 0; label[i] && i < 11; i++)
 	    /* don't know if here should be more strict !uppercase(label[i]) */
 	    if (islower(label[i])) {
