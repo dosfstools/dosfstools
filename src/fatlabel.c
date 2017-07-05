@@ -105,10 +105,10 @@ int main(int argc, char *argv[])
 	read_fat(&fs);
     if (!rw) {
 	offset = find_volume_de(&fs, &de);
-	if (offset == 0)
-	    fprintf(stdout, "%.11s\n", fs.label);
-	else
+	if (offset != 0 && !IS_FREE(de.name))
 	    fprintf(stdout, "%.8s%.3s\n", de.name, de.name + 8);
+	else if (memcmp(fs.label, "NO NAME    ", 11) != 0)
+	    fprintf(stdout, "%.11s\n", fs.label);
 	exit(0);
     }
 
