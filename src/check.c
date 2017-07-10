@@ -47,7 +47,7 @@ static DOS_FILE *root;
 /* get start field of a dir entry */
 #define FSTART(p,fs) \
   ((uint32_t)le16toh(p->dir_ent.start) | \
-   (fs->fat_bits == 32 ? le16toh(p->dir_ent.starthi) << 16 : 0))
+   (fs->fat_bits == 32 ? (uint32_t)le16toh(p->dir_ent.starthi) << 16 : 0))
 
 #define MODIFY(p,i,v)					\
   do {							\
