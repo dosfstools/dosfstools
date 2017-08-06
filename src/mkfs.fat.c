@@ -243,6 +243,7 @@ static int size_root_dir;	/* Size of the root directory in bytes */
 static uint32_t num_sectors;		/* Total number of sectors in device */
 static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
+static int root_dir_entries_set = 0;	/* User selected root directory size */
 static char *blank_sector;	/* Blank sector - all zeros */
 static int hidden_sectors = 0;	/* Number of hidden sectors */
 static int hidden_sectors_by_user = 0;	/* -h option invoked */
@@ -646,6 +647,8 @@ static void setup_tables(void)
     if (size_fat == 32) {
 	/* Under FAT32, the root dir is in a cluster chain, and this is
 	 * signalled by bs.dir_entries being 0. */
+	if (root_dir_entries_set)
+	    fprintf(stderr, "Warning: root directory entries specified with -r have no effect on FAT32\n");
 	root_dir_entries = 0;
     }
 
@@ -1497,6 +1500,7 @@ int main(int argc, char **argv)
 		printf("Bad number of root directory entries : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    root_dir_entries_set = 1;
 	    break;
 
 	case 'R':		/* R : number of reserved sectors */
