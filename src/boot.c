@@ -535,6 +535,8 @@ static void write_volume_label(DOS_FS * fs, char *label)
 	offset = alloc_rootdir_entry(fs, &de, label, 0);
     }
     memcpy(de.name, label, 11);
+    if (memcmp(de.name, "NO NAME    ", 11) == 0)
+        memcpy(de.name, "\xE5          ", 11);
     de.time = htole16((unsigned short)((mtime->tm_sec >> 1) +
 				       (mtime->tm_min << 5) +
 				       (mtime->tm_hour << 11)));
