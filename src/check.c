@@ -495,6 +495,13 @@ static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dots)
 	    break;
 	}
     }
+    if (file->dir_ent.lcase & FAT_NO_83NAME) {
+	/* Some versions of mtools write these directory entries with random data in
+	   this field. */
+	printf("%s\n  Is a dot with no 8.3 name flag set, clearing.\n", path_name(file));
+	file->dir_ent.lcase &= ~FAT_NO_83NAME;
+	MODIFY(file, lcase, file->dir_ent.lcase);
+    }
     if (!dots) {
 	printf("Root contains directory \"%s\". Dropping it.\n", name);
 	drop_file(fs, file);
