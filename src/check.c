@@ -244,6 +244,7 @@ static time_t date_dos2unix(unsigned short time, unsigned short date)
 {
     int month, year;
     time_t secs;
+    long long int tempsecs;
 
     month = ((date >> 5) & 15) - 1;
     if (month < 0) {
@@ -251,11 +252,23 @@ static time_t date_dos2unix(unsigned short time, unsigned short date)
 	month = 0;
     }
     year = date >> 9;
-    secs =
+    tempsecs =
 	(time & 31) * 2 + 60 * ((time >> 5) & 63) + (time >> 11) * 3600 +
-	86400 * ((date & 31) - 1 + day_n[month] + (year / 4) + year * 365 -
+	(long long int)86400 * ((date & 31) - 1 + day_n[month] + (year / 4) + year * 365 -
 		 ((year & 3) == 0 && month < 2 ? 1 : 0) + 3653);
     /* days since 1.1.70 plus 80's leap day */
+
+    /* "time_t" is specified as "any arithmetic type" by POSIX, it can be as
+       small as a signed integer */
+    if (tempsecs > INT32_MAX) {
+      /* Date is completely invalid, return 01.01.1970 by default */
+      secs = (time_t)0;
+    }
+    else {
+      /* At this point it should be safe to cast into a "time_t" */
+      secs = (time_t)tempsecs;
+    }
+
     return secs;
 }
 
