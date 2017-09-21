@@ -56,10 +56,17 @@ static void usage(int error)
 
 int main(int argc, char *argv[])
 {
+    const struct option long_options[] = {
+	    {"version", no_argument, NULL, 'V'},
+	    {"help",    no_argument, NULL, 'h'},
+	    {0,}
+    };
+    int change;
+
     DOS_FS fs = { 0 };
     rw = 0;
 
-    int i;
+    int i, c;
 
     char *device = NULL;
     char label[12] = { 0 };
@@ -69,20 +76,36 @@ int main(int argc, char *argv[])
 
     check_atari();
 
-    if (argc < 2 || argc > 3)
-	usage(1);
+    while ((c = getopt_long(argc, argv, "Vh", long_options, NULL)) != -1) {
+	switch (c) {
+	    case 'V':
+		printf("fatlabel " VERSION " (" VERSION_DATE ")\n");
+		exit(0);
+		break;
 
-    if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help"))
-	usage(0);
-    else if (!strcmp(argv[1], "-V") || !strcmp(argv[1], "--version")) {
-	printf("fatlabel " VERSION " (" VERSION_DATE ")\n");
-	exit(0);
+	    case 'h':
+		usage(0);
+		break;
+
+	    default:
+		fprintf(stderr,
+			"Internal error: getopt_long() return unexpected value %d\n", c);
+		exit(2);
+	}
     }
 
-    device = argv[1];
-    if (argc == 3) {
-	strncpy(label, argv[2], 11);
-	if (strlen(argv[2]) > 11) {
+    if (optind == argc - 2) {
+	change = 1;
+    } else if (optind == argc - 1) {
+	change = 0;
+    } else {
+	usage(1);
+    }
+
+    device = argv[optind++];
+    if (change) {
+	strncpy(label, argv[optind], 11);
+	if (strlen(argv[optind]) > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
