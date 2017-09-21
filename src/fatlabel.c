@@ -45,12 +45,21 @@ int rw = 0, list = 0, test = 0, verbose = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
-static void usage(int error)
+static void usage(int error, int usage_only)
 {
     FILE *f = error ? stderr : stdout;
     int status = error ? 1 : 0;
 
-    fprintf(f, "usage: fatlabel device [label]\n");
+    fprintf(f, "Usage: fatlabel DEVICE [LABEL]\n");
+    if (usage_only)
+	exit(status);
+
+    fprintf(f, "Change the FAT filesystem label on DEVICE to LABEL or display the existing\n");
+    fprintf(f, "label if LABEL is not given.\n");
+    fprintf(f, "\n");
+    fprintf(f, "Options:\n");
+    fprintf(f, "  -V, --version  Show version number and terminate\n");
+    fprintf(f, "  -h, --help     Print this message and terminate\n");
     exit(status);
 }
 
@@ -84,7 +93,7 @@ int main(int argc, char *argv[])
 		break;
 
 	    case 'h':
-		usage(0);
+		usage(0, 0);
 		break;
 
 	    default:
@@ -99,7 +108,7 @@ int main(int argc, char *argv[])
     } else if (optind == argc - 1) {
 	change = 0;
     } else {
-	usage(1);
+	usage(1, 1);
     }
 
     device = argv[optind++];
