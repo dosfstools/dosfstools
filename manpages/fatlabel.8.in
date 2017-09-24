@@ -1,6 +1,7 @@
 .\" fatlabel.8 - manpage for fatlabel
 .\"
 .\" Copyright (C) 2006-2014 Daniel Baumann <daniel@debian.org>
+.\" Copyright (C) 2017 Andreas Bombe <aeb@debian.org>
 .\"
 .\" This program is free software: you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -19,30 +20,38 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FATLABEL 8 2015\-04\-16 "dosfstools @PACKAGE_VERSION@"
+.TH FATLABEL 8 2017\-09\-25 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-\fBfatlabel\fR \- set or get MS\-DOS filesystem label
+\fBfatlabel\fR \- set or get MS\-DOS filesystem label or volume ID
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
-\fBfatlabel\fR \fIDEVICE\fR [\fILABEL\fR]
+\fBfatlabel\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fINEW\fR]
 .\" ----------------------------------------------------------------------------
 .SH DESCRIPTION
-\fBfatlabel\fR set or gets a MS\-DOS filesystem label from a given device.
+\fBfatlabel\fR will display or change the volume label or volume ID on the
+MS\-DOS filesystem located on \fIDEVICE\fR.
+By default it works in label mode.
+It can be switched to volume ID mode with the option \fB\-i\fR or
+\fB\-\-volume\-id\fR.
 .PP
-If \fILABEL\fR is omitted, then the label name of the specified device is
-written on the standard output.
-A label can't be longer than 11 bytes.
+If \fINEW\fR is omitted, then the existing label or volume ID is written to the
+standard output.
+A label can't be longer than 11 bytes and should be in all upper case for best
+compatibility.
+A volume ID must be given as a hexadecimal number (no leading "0x" or
+similar) and must fit into 32 bits.
 .\" ----------------------------------------------------------------------------
 .SH OPTIONS
+.IP "\fB\-i\fR, \fB\-\-volume\-id\fR" 4
+Switch to volume ID mode.
 .IP "\fB\-h\fR, \fB\-\-help\fR" 4
-Displays a help message.
+Display a help message and terminate.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4
-Shows version.
+Show version number and terminate.
 .\" ----------------------------------------------------------------------------
 .SH SEE ALSO
-\fBfsck.fat\fR(8)
-.br
-\fBmkfs.fat\fR(8)
+.BR fsck.fat (8),
+.BR mkfs.fat (8)
 .\" ----------------------------------------------------------------------------
 .SH HOMEPAGE
 The home for the \fBdosfstools\fR project is its

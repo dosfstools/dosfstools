@@ -4,7 +4,7 @@
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2007 Red Hat, Inc.
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
-   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2015-2017 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 
 #include "version.h"
 
+#include <stdbool.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,76 +47,19 @@ int rw = 0, list = 0, test = 0, verbose = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
-static void usage(int error, int usage_only)
+
+static void handle_label(bool change, const char *device, const char *newlabel)
 {
-    FILE *f = error ? stderr : stdout;
-    int status = error ? 1 : 0;
-
-    fprintf(f, "Usage: fatlabel DEVICE [LABEL]\n");
-    if (usage_only)
-	exit(status);
-
-    fprintf(f, "Change the FAT filesystem label on DEVICE to LABEL or display the existing\n");
-    fprintf(f, "label if LABEL is not given.\n");
-    fprintf(f, "\n");
-    fprintf(f, "Options:\n");
-    fprintf(f, "  -V, --version  Show version number and terminate\n");
-    fprintf(f, "  -h, --help     Print this message and terminate\n");
-    exit(status);
-}
-
-int main(int argc, char *argv[])
-{
-    const struct option long_options[] = {
-	    {"version", no_argument, NULL, 'V'},
-	    {"help",    no_argument, NULL, 'h'},
-	    {0,}
-    };
-    int change;
-
     DOS_FS fs = { 0 };
-    rw = 0;
-
-    int i, c;
-
-    char *device = NULL;
-    char label[12] = { 0 };
-
     off_t offset;
     DIR_ENT de;
 
-    check_atari();
+    char label[12] = { 0 };
+    int i;
 
-    while ((c = getopt_long(argc, argv, "Vh", long_options, NULL)) != -1) {
-	switch (c) {
-	    case 'V':
-		printf("fatlabel " VERSION " (" VERSION_DATE ")\n");
-		exit(0);
-		break;
-
-	    case 'h':
-		usage(0, 0);
-		break;
-
-	    default:
-		fprintf(stderr,
-			"Internal error: getopt_long() return unexpected value %d\n", c);
-		exit(2);
-	}
-    }
-
-    if (optind == argc - 2) {
-	change = 1;
-    } else if (optind == argc - 1) {
-	change = 0;
-    } else {
-	usage(1, 1);
-    }
-
-    device = argv[optind++];
     if (change) {
-	strncpy(label, argv[optind], 11);
-	if (strlen(argv[optind]) > 11) {
+	strncpy(label, newlabel, 11);
+	if (strlen(newlabel) > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
@@ -126,6 +71,7 @@ int main(int argc, char *argv[])
 			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
 		break;
 	    }
+
 	rw = 1;
     }
 
@@ -133,16 +79,130 @@ int main(int argc, char *argv[])
     read_boot(&fs);
     if (fs.fat_bits == 32)
 	read_fat(&fs);
-    if (!rw) {
+    if (!change) {
 	offset = find_volume_de(&fs, &de);
 	if (offset == 0)
 	    fprintf(stdout, "%.11s\n", fs.label);
 	else
 	    fprintf(stdout, "%.8s%.3s\n", de.name, de.name + 8);
+
 	exit(0);
     }
 
     write_label(&fs, label);
+}
+
+
+static void handle_volid(bool change, const char *device, const char *newserial)
+{
+    DOS_FS fs = { 0 };
+    char *tmp;
+    unsigned long long conversion;
+    uint32_t serial;
+
+    if (change) {
+	errno = 0;
+	conversion = strtoull(newserial, &tmp, 16);
+
+	if (errno) {
+	    fprintf(stderr, "fatlabel: parsing volume ID failed (%s)\n", strerror(errno));
+	    exit(1);
+	}
+	if (*tmp) {
+	    fprintf(stderr, "fatlabel: volume ID must be a hexadecimal number\n");
+	    exit(1);
+	}
+	if (conversion > UINT32_MAX) {
+	    fprintf(stderr, "fatlabel: given volume ID does not fit in 32 bit\n");
+	    exit(1);
+	}
+
+	serial = conversion;
+	rw = 1;
+    }
+
+    fs_open(device, rw);
+    read_boot(&fs);
+    if (!change) {
+	printf("%08x\n", fs.serial);
+	exit(0);
+    }
+
+    write_serial(&fs, serial);
+}
+
+
+static void usage(int error, int usage_only)
+{
+    FILE *f = error ? stderr : stdout;
+    int status = error ? 1 : 0;
+
+    fprintf(f, "Usage: fatlabel [OPTIONS] DEVICE [NEW]\n");
+    if (usage_only)
+	exit(status);
+
+    fprintf(f, "Change the FAT filesystem label or serial on DEVICE to NEW or display the\n");
+    fprintf(f, "existing label or serial if NEW is not given.\n");
+    fprintf(f, "\n");
+    fprintf(f, "Options:\n");
+    fprintf(f, "  -i, --volume-id  Work on serial number instead of label\n");
+    fprintf(f, "  -V, --version    Show version number and terminate\n");
+    fprintf(f, "  -h, --help       Print this message and terminate\n");
+    exit(status);
+}
+
+
+int main(int argc, char *argv[])
+{
+    const struct option long_options[] = {
+	{"volume-id", no_argument, NULL, 'i'},
+	{"version",   no_argument, NULL, 'V'},
+	{"help",      no_argument, NULL, 'h'},
+	{0,}
+    };
+    bool change;
+    bool volid_mode = false;
+    char *device = NULL;
+    int c;
+
+    check_atari();
+
+    while ((c = getopt_long(argc, argv, "iVh", long_options, NULL)) != -1) {
+	switch (c) {
+	    case 'i':
+		volid_mode = 1;
+		break;
+
+	    case 'V':
+		printf("fatlabel " VERSION " (" VERSION_DATE ")\n");
+		exit(0);
+		break;
+
+	    case 'h':
+		usage(0, 0);
+		break;
+
+	    default:
+		fprintf(stderr,
+			"Internal error: getopt_long() returned unexpected value %d\n", c);
+		exit(2);
+	}
+    }
+
+    if (optind == argc - 2) {
+	change = true;
+    } else if (optind == argc - 1) {
+	change = false;
+    } else {
+	usage(1, 1);
+    }
+
+    device = argv[optind++];
+    if (!volid_mode)
+	handle_label(change, device, argv[optind]);
+    else
+	handle_volid(change, device, argv[optind]);
+
     fs_close(rw);
     return 0;
 }
