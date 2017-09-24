@@ -2,6 +2,7 @@
 
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
+   Copyright (C) 2017 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,8 +24,11 @@
 #ifndef _BOOT_H
 #define _BOOT_H
 
+#include <stdint.h>
+
 void read_boot(DOS_FS * fs);
 void write_label(DOS_FS * fs, char *label);
+void write_serial(DOS_FS * fs, uint32_t serial);
 off_t find_volume_de(DOS_FS * fs, DIR_ENT * de);
 
 /* Reads the boot sector from the currently open device and initializes *FS */

@@ -3,7 +3,7 @@
    Copyright (C) 1993 Werner Almesberger <werner.almesberger@lrc.di.epfl.ch>
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
-   Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2015-2017 Andreas Bombe <aeb@debian.org>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -464,7 +464,8 @@ void read_boot(DOS_FS * fs)
 	dump_boot(fs, &b, logical_sector_size);
 }
 
-static void write_boot_label(DOS_FS * fs, char *label)
+static void write_boot_label_or_serial(int label_mode, DOS_FS * fs,
+	char *label, uint32_t serial)
 {
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
 	struct boot_sector_16 b16;
@@ -473,10 +474,16 @@ static void write_boot_label(DOS_FS * fs, char *label)
 	if (b16.extended_sig != 0x29) {
 	    b16.extended_sig = 0x29;
 	    b16.serial = 0;
+	    memmove(b16.label, "NO NAME    ", 11);
 	    memmove(b16.fs_type, fs->fat_bits == 12 ? "FAT12   " : "FAT16   ",
 		    8);
 	}
-	memmove(b16.label, label, 11);
+
+	if (label_mode)
+	    memmove(b16.label, label, 11);
+	else
+	    b16.serial = serial;
+
 	fs_write(0, sizeof(b16), &b16);
     } else if (fs->fat_bits == 32) {
 	struct boot_sector b;
@@ -485,13 +492,29 @@ static void write_boot_label(DOS_FS * fs, char *label)
 	if (b.extended_sig != 0x29) {
 	    b.extended_sig = 0x29;
 	    b.serial = 0;
+	    memmove(b.label, "NO NAME    ", 11);
 	    memmove(b.fs_type, "FAT32   ", 8);
 	}
-	memmove(b.label, label, 11);
+
+	if (label_mode)
+	    memmove(b.label, label, 11);
+	else
+	    b.serial = serial;
+
 	fs_write(0, sizeof(b), &b);
 	if (fs->backupboot_start)
 	    fs_write(fs->backupboot_start, sizeof(b), &b);
     }
+}
+
+static void write_boot_label(DOS_FS * fs, char *label)
+{
+    write_boot_label_or_serial(1, fs, label, 0);
+}
+
+void write_serial(DOS_FS * fs, uint32_t serial)
+{
+    write_boot_label_or_serial(0, fs, NULL, serial);
 }
 
 off_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
