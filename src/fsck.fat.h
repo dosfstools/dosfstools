@@ -164,6 +164,7 @@ typedef struct {
     off_t backupboot_start;	/* 0 if not present */
     unsigned char *fat;
     DOS_FILE **cluster_owner;
+    uint32_t serial;
     char label[11];
 } DOS_FS;
 
