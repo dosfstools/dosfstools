@@ -104,16 +104,16 @@ static void handle_volid(bool change, const char *device, const char *newserial)
 	errno = 0;
 	conversion = strtoull(newserial, &tmp, 16);
 
-	if (errno) {
-	    fprintf(stderr, "fatlabel: parsing volume ID failed (%s)\n", strerror(errno));
-	    exit(1);
-	}
-	if (*tmp) {
+	if (!*newserial || *tmp) {
 	    fprintf(stderr, "fatlabel: volume ID must be a hexadecimal number\n");
 	    exit(1);
 	}
 	if (conversion > UINT32_MAX) {
 	    fprintf(stderr, "fatlabel: given volume ID does not fit in 32 bit\n");
+	    exit(1);
+	}
+	if (errno) {
+	    fprintf(stderr, "fatlabel: parsing volume ID failed (%s)\n", strerror(errno));
 	    exit(1);
 	}
 
