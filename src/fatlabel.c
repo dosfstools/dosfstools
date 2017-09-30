@@ -64,8 +64,13 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 	    exit(1);
 	}
 	sprintf(label, "%-11.11s", newlabel);
-	if (memcmp(label, "           ", 11) == 0)
-	    memcpy(label, "NO NAME    ", 11);
+
+	if (memcmp(label, "           ", 11) == 0) {
+	    fprintf(stderr,
+		    "fatlabel: labels can't be empty or white space only\n");
+	    exit(1);
+	}
+
 	for (i = 0; label[i] && i < 11; i++)
 	    /* don't know if here should be more strict !uppercase(label[i]) */
 	    if (islower(label[i])) {
