@@ -530,6 +530,11 @@ off_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 	    offset = cluster_start(fs, cluster);
 	    for (i = 0; i * sizeof(DIR_ENT) < fs->cluster_size; i++) {
 		fs_read(offset, sizeof(DIR_ENT), de);
+
+		/* no point in scanning after end of directory marker */
+		if (!de->name[0])
+		    return 0;
+
 		if (!IS_FREE(de->name) &&
 		    de->attr != VFAT_LN_ATTR && de->attr & ATTR_VOLUME)
 		    return offset;
@@ -540,6 +545,11 @@ off_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 	for (i = 0; i < fs->root_entries; i++) {
 	    offset = fs->root_start + i * sizeof(DIR_ENT);
 	    fs_read(offset, sizeof(DIR_ENT), de);
+
+	    /* no point in scanning after end of directory marker */
+	    if (!de->name[0])
+		return 0;
+
 	    if (!IS_FREE(de->name) &&
 		de->attr != VFAT_LN_ATTR && de->attr & ATTR_VOLUME)
 		return offset;
