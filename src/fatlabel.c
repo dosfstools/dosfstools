@@ -64,7 +64,7 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 	    exit(1);
 	}
 	sprintf(label, "%-11.11s", newlabel);
-	if (memcmp(label, "           ", 11) == 0 || label[0] == '\xE5')
+	if (memcmp(label, "           ", 11) == 0)
 	    memcpy(label, "NO NAME    ", 11);
 	for (i = 0; label[i] && i < 11; i++)
 	    /* don't know if here should be more strict !uppercase(label[i]) */
@@ -83,10 +83,13 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 	read_fat(&fs);
     if (!change) {
 	offset = find_volume_de(&fs, &de);
-	if (offset == 0)
+	if (offset == 0) {
 	    fprintf(stdout, "%.11s\n", fs.label);
-	else
+	} else {
+	    if (de.name[0] == 0x05)
+		de.name[0] = 0xe5;
 	    fprintf(stdout, "%.11s\n", de.name);
+	}
 
 	exit(0);
     }

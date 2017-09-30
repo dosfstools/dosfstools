@@ -573,7 +573,11 @@ static void write_volume_label(DOS_FS * fs, char *label)
 	created = 1;
 	offset = alloc_rootdir_entry(fs, &de, label, 0);
     }
+
     memcpy(de.name, label, 11);
+    if (de.name[0] == 0xe5)
+	de.name[0] = 0x05;
+
     de.time = htole16((unsigned short)((mtime->tm_sec >> 1) +
 				       (mtime->tm_min << 5) +
 				       (mtime->tm_hour << 11)));
