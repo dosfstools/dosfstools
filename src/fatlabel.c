@@ -86,7 +86,7 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 	if (offset == 0)
 	    fprintf(stdout, "%.11s\n", fs.label);
 	else
-	    fprintf(stdout, "%.8s%.3s\n", de.name, de.name + 8);
+	    fprintf(stdout, "%.11s\n", de.name);
 
 	exit(0);
     }
