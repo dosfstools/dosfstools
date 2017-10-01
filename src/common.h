@@ -23,6 +23,8 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#include <stdint.h>
+
 extern int interactive;
 extern int write_immed;
 extern int atari_format;	/* Use Atari variation of MS-DOS FS format */
@@ -91,6 +93,12 @@ void check_atari(void);
 /*
  * ++roman: On m68k Linux, check if this is an Atari; if yes, turn on Atari
  * variant of MS-DOS filesystem by default.
+ */
+
+uint32_t generate_volume_id(void);
+
+/*
+ * Generate a 32 bit volume ID
  */
 
 #endif

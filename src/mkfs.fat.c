@@ -1324,7 +1324,7 @@ int main(int argc, char **argv)
 
     gettimeofday(&create_timeval, NULL);
     create_time = create_timeval.tv_sec;
-    volume_id = (uint32_t) ((create_timeval.tv_sec << 20) | create_timeval.tv_usec);	/* Default volume ID = creation time, fudged for more uniqueness */
+    volume_id = generate_volume_id();
     check_atari();
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");

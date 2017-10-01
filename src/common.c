@@ -30,6 +30,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <termios.h>
+#include <sys/time.h>
 
 #include "common.h"
 
@@ -287,4 +288,15 @@ void check_atari(void)
     }
     fclose(f);
 #endif
+}
+
+
+uint32_t generate_volume_id(void)
+{
+    struct timeval now;
+
+    gettimeofday(&now, NULL);
+
+    /* volume ID = current time, fudged for more uniqueness */
+    return (now.tv_sec << 20) | now.tv_usec;
 }
