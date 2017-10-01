@@ -173,6 +173,7 @@ int main(int argc, char *argv[])
     bool change;
     bool volid_mode = false;
     char *device = NULL;
+    char *new = NULL;
     int c;
 
     check_atari();
@@ -208,10 +209,13 @@ int main(int argc, char *argv[])
     }
 
     device = argv[optind++];
+    if (change)
+	new = argv[optind];
+
     if (!volid_mode)
-	handle_label(change, device, argv[optind]);
+	handle_label(change, device, new);
     else
-	handle_volid(change, device, argv[optind]);
+	handle_volid(change, device, new);
 
     fs_close(rw);
     return 0;
