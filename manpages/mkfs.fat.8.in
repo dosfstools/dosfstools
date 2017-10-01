@@ -169,9 +169,8 @@ has been discussed a lot already.
 \fBmkfs.fat\fR simply will not support it ;)
 .\" ----------------------------------------------------------------------------
 .SH SEE ALSO
-\fBfatlabel\fR(8)
-.br
-\fBfsck.fat\fR(8)
+.BR fatlabel (8),
+.BR fsck.fat (8)
 .\" ----------------------------------------------------------------------------
 .SH HOMEPAGE
 The home for the \fBdosfstools\fR project is its
