@@ -465,7 +465,7 @@ void read_boot(DOS_FS * fs)
 }
 
 static void write_boot_label_or_serial(int label_mode, DOS_FS * fs,
-	char *label, uint32_t serial)
+	const char *label, uint32_t serial)
 {
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
 	struct boot_sector_16 b16;
@@ -507,7 +507,7 @@ static void write_boot_label_or_serial(int label_mode, DOS_FS * fs,
     }
 }
 
-static void write_boot_label(DOS_FS * fs, char *label)
+static void write_boot_label(DOS_FS * fs, const char *label)
 {
     write_boot_label_or_serial(1, fs, label, 0);
 }
@@ -607,4 +607,19 @@ void write_label(DOS_FS * fs, char *label)
 
     write_boot_label(fs, label);
     write_volume_label(fs, label);
+}
+
+void remove_label(DOS_FS *fs)
+{
+    off_t offset;
+    DIR_ENT de;
+
+    write_boot_label(fs, "NO NAME    ");
+
+    offset = find_volume_de(fs, &de);
+    if (offset) {
+	/* mark entry as deleted */
+	de.name[0] = 0xe5;
+	fs_write(offset, sizeof(DIR_ENT), &de);
+    }
 }
