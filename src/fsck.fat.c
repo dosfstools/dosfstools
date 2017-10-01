@@ -178,8 +178,13 @@ int main(int argc, char **argv)
 	case OPT_HELP:
 	    usage(argv[0], 0);
 	    break;
-	default:
+	case '?':
 	    usage(argv[0], 2);
+	    break;
+	default:
+	    fprintf(stderr,
+		    "Internal error: getopt_long() returned unexpected value %d\n", c);
+	    exit(3);
 	}
     set_dos_codepage(-1);	/* set default codepage if none was given in command line */
     if ((test || write_immed) && !rw) {

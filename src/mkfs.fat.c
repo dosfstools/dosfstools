@@ -1563,9 +1563,14 @@ int main(int argc, char **argv)
 	    }
 	    break;
 
-	default:
-	    printf("Unknown option: %c\n", c);
+	case '?':
 	    usage(argv[0], 1);
+	    exit(1);
+
+	default:
+	    fprintf(stderr,
+		    "Internal error: getopt_long() returned unexpected value %d\n", c);
+	    exit(2);
 	}
 
     if (optind == argc || !argv[optind]) {

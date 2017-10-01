@@ -203,6 +203,10 @@ int main(int argc, char *argv[])
 		usage(0, 0);
 		break;
 
+	    case '?':
+		usage(1, 0);
+		exit(1);
+
 	    default:
 		fprintf(stderr,
 			"Internal error: getopt_long() returned unexpected value %d\n", c);
