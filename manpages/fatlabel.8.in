@@ -20,7 +20,7 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FATLABEL 8 2017\-09\-25 "dosfstools @PACKAGE_VERSION@"
+.TH FATLABEL 8 2017\-10\-01 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
 \fBfatlabel\fR \- set or get MS\-DOS filesystem label or volume ID
 .\" ----------------------------------------------------------------------------
@@ -38,6 +38,7 @@ If \fINEW\fR is omitted, then the existing label or volume ID is written to the
 standard output.
 A label can't be longer than 11 bytes and should be in all upper case for best
 compatibility.
+An empty string or a label consisting only of white space is not allowed.
 A volume ID must be given as a hexadecimal number (no leading "0x" or
 similar) and must fit into 32 bits.
 .\" ----------------------------------------------------------------------------
