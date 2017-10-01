@@ -44,6 +44,8 @@ similar) and must fit into 32 bits.
 .SH OPTIONS
 .IP "\fB\-i\fR, \fB\-\-volume\-id\fR" 4
 Switch to volume ID mode.
+.IP "\fB\-r\fR, \fB\-\-reset\fR" 4
+Remove label in label mode or generate new ID in volume ID mode.
 .IP "\fB\-h\fR, \fB\-\-help\fR" 4
 Display a help message and terminate.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4

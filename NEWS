@@ -1,9 +1,11 @@
 dosfstools 4.2 - released <TBD>
 ====================================
 
-When given the new -i or --volume-id option, fatlabel now changes to an
-alternate mode where it displays or changes the volume serial number instead of
-the volume label.
+fatlabel now accepts two new options. When given the -i or --volume-id option,
+fatlabel changes to an alternate mode where it displays or changes the volume
+serial number instead of the volume label. With the -r or --reset option, it
+will remove the label or (in the alternate mode) generate a new volume serial
+number.
 
 The user prompting for interactive fsck has been overhauled. Now it will
 directly react to a pressed key without the user having to additionally press

@@ -48,7 +48,7 @@ unsigned n_files = 0;
 void *mem_queue = NULL;
 
 
-static void handle_label(bool change, const char *device, const char *newlabel)
+static void handle_label(bool change, bool reset, const char *device, const char *newlabel)
 {
     DOS_FS fs = { 0 };
     off_t offset;
@@ -78,15 +78,13 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
 		break;
 	    }
-
-	rw = 1;
     }
 
     fs_open(device, rw);
     read_boot(&fs);
     if (fs.fat_bits == 32)
 	read_fat(&fs);
-    if (!change) {
+    if (!change && !reset) {
 	offset = find_volume_de(&fs, &de);
 	if (offset == 0) {
 	    fprintf(stdout, "%.11s\n", fs.label);
@@ -99,16 +97,19 @@ static void handle_label(bool change, const char *device, const char *newlabel)
 	exit(0);
     }
 
-    write_label(&fs, label);
+    if (!reset)
+	write_label(&fs, label);
+    else
+	remove_label(&fs);
 }
 
 
-static void handle_volid(bool change, const char *device, const char *newserial)
+static void handle_volid(bool change, bool reset, const char *device, const char *newserial)
 {
     DOS_FS fs = { 0 };
     char *tmp;
     unsigned long long conversion;
-    uint32_t serial;
+    uint32_t serial = 0;
 
     if (change) {
 	errno = 0;
@@ -128,12 +129,14 @@ static void handle_volid(bool change, const char *device, const char *newserial)
 	}
 
 	serial = conversion;
-	rw = 1;
     }
+
+    if (reset)
+	serial = generate_volume_id();
 
     fs_open(device, rw);
     read_boot(&fs);
-    if (!change) {
+    if (!change && !reset) {
 	printf("%08x\n", fs.serial);
 	exit(0);
     }
@@ -156,6 +159,7 @@ static void usage(int error, int usage_only)
     fprintf(f, "\n");
     fprintf(f, "Options:\n");
     fprintf(f, "  -i, --volume-id  Work on serial number instead of label\n");
+    fprintf(f, "  -r, --reset      Remove label or generate new serial number\n");
     fprintf(f, "  -V, --version    Show version number and terminate\n");
     fprintf(f, "  -h, --help       Print this message and terminate\n");
     exit(status);
@@ -166,11 +170,13 @@ int main(int argc, char *argv[])
 {
     const struct option long_options[] = {
 	{"volume-id", no_argument, NULL, 'i'},
+	{"reset",     no_argument, NULL, 'r'},
 	{"version",   no_argument, NULL, 'V'},
 	{"help",      no_argument, NULL, 'h'},
 	{0,}
     };
     bool change;
+    bool reset = false;
     bool volid_mode = false;
     char *device = NULL;
     char *new = NULL;
@@ -178,10 +184,14 @@ int main(int argc, char *argv[])
 
     check_atari();
 
-    while ((c = getopt_long(argc, argv, "iVh", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "irVh", long_options, NULL)) != -1) {
 	switch (c) {
 	    case 'i':
 		volid_mode = 1;
+		break;
+
+	    case 'r':
+		reset = true;
 		break;
 
 	    case 'V':
@@ -208,14 +218,22 @@ int main(int argc, char *argv[])
 	usage(1, 1);
     }
 
+    if (change || reset)
+	rw = 1;
+
+    if (change && reset) {
+	fprintf(stderr, "fatlabel: giving new value with --reset not allowed\n");
+	exit(1);
+    }
+
     device = argv[optind++];
     if (change)
 	new = argv[optind];
 
     if (!volid_mode)
-	handle_label(change, device, new);
+	handle_label(change, reset, device, new);
     else
-	handle_volid(change, device, new);
+	handle_volid(change, reset, device, new);
 
     fs_close(rw);
     return 0;
