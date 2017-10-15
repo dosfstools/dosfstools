@@ -21,7 +21,7 @@
 .\"
 .TH FSCK.FAT 8 2017\-06\-28 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-\fBfsck.fat\fR \- check and repair MS\-DOS FAT filesystems
+fsck.fat \- check and repair MS\-DOS FAT filesystems
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfsck.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR

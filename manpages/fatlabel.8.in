@@ -22,7 +22,7 @@
 .\"
 .TH FATLABEL 8 2017\-10\-01 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-\fBfatlabel\fR \- set or get MS\-DOS filesystem label or volume ID
+fatlabel \- set or get MS\-DOS filesystem label or volume ID
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfatlabel\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fINEW\fR]
