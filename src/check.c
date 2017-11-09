@@ -172,7 +172,7 @@ static int bad_name(DOS_FILE * file)
 	return 0;
 
     for (i = 0; i < MSDOS_NAME; i++) {
-	if (name[i] < ' ' || name[i] == 0x7f)
+	if ((name[i] < ' ' && !(i == 0 && name[0] == 0x05)) || name[i] == 0x7f)
 	    return 1;
 	if (name[i] > 0x7f)
 	    ++suspicious;

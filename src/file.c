@@ -66,7 +66,13 @@ char *file_name(unsigned char *fixed)
     int i, j;
 
     p = path;
-    for (i = j = 0; i < 8; i++)
+    i = j = 0;
+    if (fixed[0] == 0x05) {
+        put_char(&p, 0xe5);
+        ++i;
+        ++j;
+    }
+    for (; i < 8; i++)
 	if (fixed[i] != ' ') {
 	    while (j++ < i)
 		*p++ = ' ';
@@ -126,7 +132,10 @@ int file_cvt(unsigned char *name, unsigned char *fixed)
 	if (islower(c))
 	    c = toupper(c);
 	if (size) {
-	    *fixed++ = c;
+	    if (size == 8 && c == 0xE5)
+		*fixed++ = 0x05;
+	    else
+		*fixed++ = c;
 	    size--;
 	}
 	name++;
