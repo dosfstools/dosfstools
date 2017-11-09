@@ -1131,6 +1131,8 @@ static void setup_tables(void)
     if (memcmp(volume_name, NO_NAME, MSDOS_NAME)) {
 	struct msdos_dir_entry *de = &root_dir[0];
 	memcpy(de->name, volume_name, MSDOS_NAME);
+	if (de->name[0] == 0xe5)
+	    de->name[0] = 0x05;
 	de->attr = ATTR_VOLUME;
 	if (!invariant)
 		ctime = localtime(&create_time);
