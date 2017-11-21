@@ -1483,6 +1483,10 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'n':		/* n : Volume name */
+      if (strlen(optarg) > 11) {
+        printf("labels can be no longer than 11 characters\n");
+        usage(argv[0], 1);
+      }
 	    sprintf(volume_name, "%-11.11s", optarg);
 	    if (memcmp(volume_name, "           ", MSDOS_NAME) == 0)
 	        memcpy(volume_name, NO_NAME, MSDOS_NAME);
