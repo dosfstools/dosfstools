@@ -620,6 +620,9 @@ void remove_label(DOS_FS *fs)
     if (offset) {
 	/* mark entry as deleted */
 	de.name[0] = 0xe5;
+	/* remove ATTR_VOLUME for compatibility with older fatlabel version
+	 * which ignores above deletion mark for entries with ATTR_VOLUME */
+	de.attr = 0;
 	fs_write(offset, sizeof(DIR_ENT), &de);
     }
 }
