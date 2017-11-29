@@ -52,6 +52,36 @@ Display a help message and terminate.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4
 Show version number and terminate.
 .\" ----------------------------------------------------------------------------
+.SH COMPATIBILITY and BUGS
+For historic reasons FAT label is stored in two different locations: in the boot
+sector and as a special volume label entry in the root directory. MS-DOS 5.00,
+MS-DOS 6.22, MS-DOS 7.10, Windows 98, Windows XP and also Windows 10 read FAT
+label only from the root directory. Absence of the volume label in the root
+directory is interpreted as empty or none label, even if boot sector contains
+some valid label.
+
+When Windows XP or Windows 10 system changes a FAT label it stores it only in
+the root directory -- letting boot sector unchanged. Which leads to problems
+when a label is removed on Windows. Old label is still stored in the boot sector
+but removed from the root directory.
+
+\fBdosfslabel\fR prior to the version 3.0.7 operated only with FAT labels stored
+in the boot sector, completely ignoring a volume label in the root directory.
+
+\fBdosfslabel\fR in versions 3.0.7 - 3.0.15 reads FAT labels from the root
+directory and in case of absence, it fallbacks to a label stored in the boot
+sector. Change operation resulted in updating a label in the boot sector and
+\fIsometimes\fR also in the root directory due to the bug. That bug was fixed in
+\fBdosfslabel\fR version 3.0.16 and since this version \fBdosfslabel\fR updates
+label in both location.
+
+Since version 4.2, \fBfatlabel\fR reads a FAT label only from the root directory
+(like MS-DOS and Windows systems), but changes a FAT label in both locations. In
+version 4.2 was fixed handling of empty labels and labels which starts with a
+byte 0xE5.
+
+It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
+.\" ----------------------------------------------------------------------------
 .SH SEE ALSO
 .BR fsck.fat (8),
 .BR mkfs.fat (8)
