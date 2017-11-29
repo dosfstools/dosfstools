@@ -32,6 +32,7 @@
 #include "common.h"
 #include "fsck.fat.h"
 #include "io.h"
+#include "boot.h"
 #include "check.h"
 #include "fat.h"
 
