@@ -86,9 +86,7 @@ static void handle_label(bool change, bool reset, const char *device, const char
 	read_fat(&fs);
     if (!change && !reset) {
 	offset = find_volume_de(&fs, &de);
-	if (offset == 0) {
-	    fprintf(stdout, "%.11s\n", fs.label);
-	} else {
+	if (offset != 0) {
 	    if (de.name[0] == 0x05)
 		de.name[0] = 0xe5;
 	    fprintf(stdout, "%.11s\n", de.name);
