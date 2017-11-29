@@ -89,6 +89,11 @@ static void handle_label(bool change, bool reset, const char *device, const char
 	if (offset != 0) {
 	    if (de.name[0] == 0x05)
 		de.name[0] = 0xe5;
+	    for (i = 10; i >= 0; i--) {
+		if (de.name[i] != ' ')
+		    break;
+		de.name[i] = 0;
+	    }
 	    fprintf(stdout, "%.11s\n", de.name);
 	}
 
