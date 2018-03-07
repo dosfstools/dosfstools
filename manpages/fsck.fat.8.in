@@ -123,7 +123,7 @@ This is selected by default if \fBmkfs.fat\fR is run on 68k Atari Linux.
 Make read-only boot sector check.
 .IP "\fB-c\fR \fIPAGE\fR" 4
 Use DOS codepage \fIPAGE\fR to decode short file names.
-By default codepage 437 is used.
+By default codepage 850 is used.
 .IP "\fB\-d\fR \fIPATH\fR" 4
 Delete the specified file.
 If more than one file with that name exist, the first one is deleted.
