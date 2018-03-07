@@ -42,13 +42,14 @@
 #include "fat.h"
 #include "file.h"
 #include "check.h"
+#include "charconv.h"
 
 int rw = 0, list = 0, test = 0, verbose = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
 
-static void handle_label(bool change, bool reset, const char *device, const char *newlabel)
+static void handle_label(bool change, bool reset, const char *device, char *newlabel)
 {
     DOS_FS fs = { 0 };
     off_t offset;
@@ -63,21 +64,30 @@ static void handle_label(bool change, bool reset, const char *device, const char
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
-	sprintf(label, "%-11.11s", newlabel);
+
+	for (i = 0; newlabel[i] && i < 11; i++)
+	    /* don't know if here should be more strict !uppercase(label[i]) */
+	    if (islower(newlabel[i])) {
+		fprintf(stderr,
+			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
+		break;
+	    }
+
+	if (!local_string_to_dos_string(label, newlabel, 12)) {
+	    fprintf(stderr,
+		    "fatlabel: error when processing label\n");
+	    exit(1);
+	}
+
+	for (i = strlen(label); i < 11; ++i)
+	    label[i] = ' ';
+	label[11] = 0;
 
 	if (memcmp(label, "           ", 11) == 0) {
 	    fprintf(stderr,
 		    "fatlabel: labels can't be empty or white space only\n");
 	    exit(1);
 	}
-
-	for (i = 0; label[i] && i < 11; i++)
-	    /* don't know if here should be more strict !uppercase(label[i]) */
-	    if (islower(label[i])) {
-		fprintf(stderr,
-			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
-		break;
-	    }
     }
 
     fs_open(device, rw);
@@ -89,12 +99,7 @@ static void handle_label(bool change, bool reset, const char *device, const char
 	if (offset != 0) {
 	    if (de.name[0] == 0x05)
 		de.name[0] = 0xe5;
-	    for (i = 10; i >= 0; i--) {
-		if (de.name[i] != ' ')
-		    break;
-		de.name[i] = 0;
-	    }
-	    fprintf(stdout, "%.11s\n", de.name);
+	    printf("%s\n", pretty_label((char *)de.name));
 	}
 
 	exit(0);
@@ -161,10 +166,11 @@ static void usage(int error, int usage_only)
     fprintf(f, "existing label or serial if NEW is not given.\n");
     fprintf(f, "\n");
     fprintf(f, "Options:\n");
-    fprintf(f, "  -i, --volume-id  Work on serial number instead of label\n");
-    fprintf(f, "  -r, --reset      Remove label or generate new serial number\n");
-    fprintf(f, "  -V, --version    Show version number and terminate\n");
-    fprintf(f, "  -h, --help       Print this message and terminate\n");
+    fprintf(f, "  -i, --volume-id     Work on serial number instead of label\n");
+    fprintf(f, "  -r, --reset         Remove label or generate new serial number\n");
+    fprintf(f, "  -c N, --codepage=N  use DOS codepage N to encode/decode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
+    fprintf(f, "  -V, --version       Show version number and terminate\n");
+    fprintf(f, "  -h, --help          Print this message and terminate\n");
     exit(status);
 }
 
@@ -174,6 +180,7 @@ int main(int argc, char *argv[])
     const struct option long_options[] = {
 	{"volume-id", no_argument, NULL, 'i'},
 	{"reset",     no_argument, NULL, 'r'},
+	{"codepage",  required_argument, NULL, 'c'},
 	{"version",   no_argument, NULL, 'V'},
 	{"help",      no_argument, NULL, 'h'},
 	{0,}
@@ -187,7 +194,7 @@ int main(int argc, char *argv[])
 
     check_atari();
 
-    while ((c = getopt_long(argc, argv, "irVh", long_options, NULL)) != -1) {
+    while ((c = getopt_long(argc, argv, "irc:Vh", long_options, NULL)) != -1) {
 	switch (c) {
 	    case 'i':
 		volid_mode = 1;
@@ -195,6 +202,10 @@ int main(int argc, char *argv[])
 
 	    case 'r':
 		reset = true;
+		break;
+
+	    case 'c':
+		set_dos_codepage(atoi(optarg));
 		break;
 
 	    case 'V':
@@ -216,6 +227,8 @@ int main(int argc, char *argv[])
 		exit(2);
 	}
     }
+
+    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
 
     if (optind == argc - 2) {
 	change = true;

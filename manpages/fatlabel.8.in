@@ -47,6 +47,9 @@ similar) and must fit into 32 bits.
 Switch to volume ID mode.
 .IP "\fB\-r\fR, \fB\-\-reset\fR" 4
 Remove label in label mode or generate new ID in volume ID mode.
+.IP "\fB-c\fR \fIPAGE\fR, \fB\-\-codepage\fR=\fIPAGE\fR" 4
+Use DOS codepage \fIPAGE\fR to encode/decode label.
+By default codepage 850 is used.
 .IP "\fB\-h\fR, \fB\-\-help\fR" 4
 Display a help message and terminate.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4
@@ -78,7 +81,8 @@ label in both location.
 Since version 4.2, \fBfatlabel\fR reads a FAT label only from the root directory
 (like MS-DOS and Windows systems), but changes a FAT label in both locations. In
 version 4.2 was fixed handling of empty labels and labels which starts with a
-byte 0xE5.
+byte 0xE5. Also in this version was added support for non-ASCII labels according
+to specified DOS codepage.
 
 It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
 .\" ----------------------------------------------------------------------------

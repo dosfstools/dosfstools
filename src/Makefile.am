@@ -20,11 +20,13 @@ AM_CFLAGS = -Wall -Wextra -Wno-sign-compare -Wno-missing-field-initializers \
 sbin_PROGRAMS = fsck.fat mkfs.fat fatlabel
 noinst_PROGRAMS = testdevinfo
 
+charconv_common_sources = charconv.c charconv.h
 fscklabel_common_sources = boot.c boot.h common.c common.h \
 			   fat.c fat.h io.c io.h msdos_fs.h \
+			   $(charconv_common_sources) \
 			   fsck.fat.h endian_compat.h
 fsck_fat_SOURCES = check.c check.h file.c file.h fsck.fat.c \
-		   charconv.c charconv.h lfn.c lfn.h \
+		   lfn.c lfn.h \
 		   $(fscklabel_common_sources)
 fatlabel_SOURCES = fatlabel.c $(fscklabel_common_sources)
 
