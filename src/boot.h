@@ -31,6 +31,7 @@ void write_label(DOS_FS * fs, char *label);
 void remove_label(DOS_FS *fs);
 void write_serial(DOS_FS * fs, uint32_t serial);
 off_t find_volume_de(DOS_FS * fs, DIR_ENT * de);
+const char *pretty_label(const char *label);
 
 /* Reads the boot sector from the currently open device and initializes *FS */
 

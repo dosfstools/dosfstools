@@ -3,19 +3,26 @@
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
-static iconv_t iconv_init_codepage(int codepage)
+static int iconv_init_codepage(int codepage, iconv_t *to_local, iconv_t *from_local)
 {
-    iconv_t result;
     char codepage_name[32];
     snprintf(codepage_name, sizeof(codepage_name), "CP%d//TRANSLIT", codepage);
-    result = iconv_open(nl_langinfo(CODESET), codepage_name);
-    if (result == (iconv_t) - 1)
+    *to_local = iconv_open(nl_langinfo(CODESET), codepage_name);
+    if (*to_local == (iconv_t) - 1)
 	perror(codepage_name);
-    return result;
+    snprintf(codepage_name, sizeof(codepage_name), "CP%d", codepage);
+    *from_local = iconv_open(codepage_name, nl_langinfo(CODESET));
+    if (*from_local == (iconv_t) - 1)
+	perror(codepage_name);
+    return (*to_local && *from_local) ? 1 : 0;
 }
 
 static iconv_t dos_to_local;
+static iconv_t local_to_dos;
+static int used_codepage;
 
 /*
  * Initialize conversion from codepage.
@@ -30,14 +37,16 @@ static int init_conversion(int codepage)
 	if (codepage < 0)
 	    codepage = DEFAULT_DOS_CODEPAGE;
 	setlocale(LC_CTYPE, "");	/* initialize locale for CODESET */
-	dos_to_local = iconv_init_codepage(codepage);
-	if (dos_to_local == (iconv_t) - 1 && codepage != DEFAULT_DOS_CODEPAGE) {
+	if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos)
+	    && codepage != DEFAULT_DOS_CODEPAGE) {
+	    codepage = DEFAULT_DOS_CODEPAGE;
 	    printf("Trying to set fallback DOS codepage %d\n",
-		   DEFAULT_DOS_CODEPAGE);
-	    dos_to_local = iconv_init_codepage(DEFAULT_DOS_CODEPAGE);
-	    if (dos_to_local == (iconv_t) - 1)
+		   codepage);
+	    if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos))
 		initialized = 0;	/* no conversion available */
 	}
+	if (initialized)
+	    used_codepage = codepage;
     }
     return initialized;
 }
@@ -56,4 +65,28 @@ int dos_char_to_printable(char **p, unsigned char c)
     if (!init_conversion(-1))
 	return 0;
     return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != -1;
+}
+
+int local_string_to_dos_string(char *out, char *in, unsigned int len)
+{
+    char *pin = in;
+    char *pout = out;
+    size_t bytes_in = strlen(in);
+    size_t bytes_out = len-1;
+    size_t ret;
+    if (!init_conversion(-1))
+        return 0;
+    ret = iconv(local_to_dos, &pin, &bytes_in, &pout, &bytes_out);
+    if (ret == (size_t)-1) {
+        fprintf(stderr, "Cannot convert input sequence '\\x%.02hhX' from codeset '%s' to 'CP%d': %s\n",
+                *pin, nl_langinfo(CODESET), used_codepage, strerror(errno));
+        return 0;
+    }
+    if (bytes_in != 0) {
+        fprintf(stderr, "Cannot convert input string '%s' to 'CP%d': String is too long\n",
+                in, used_codepage);
+        return 0;
+    }
+    out[len-bytes_out] = 0;
+    return 1;
 }

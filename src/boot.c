@@ -38,6 +38,7 @@
 #include "io.h"
 #include "boot.h"
 #include "check.h"
+#include "charconv.h"
 
 #define ROUND_TO_MULTIPLE(n,m) ((n) && (m) ? (n)+(m)-1-((n)-1)%(m) : 0)
     /* don't divide by zero */
@@ -751,4 +752,26 @@ void remove_label(DOS_FS *fs)
 	de.attr = 0;
 	fs_write(offset, sizeof(DIR_ENT), &de);
     }
+}
+
+const char *pretty_label(const char *label)
+{
+    static char buffer[11*4+1];
+    char *p;
+    int i;
+    int last;
+
+    for (last = 10; last >= 0; last--) {
+        if (label[last] != ' ')
+            break;
+    }
+
+    p = buffer;
+    for (i = 0; i <= last && label[i]; ++i) {
+        if (!dos_char_to_printable(&p, label[i]))
+            *p++ = '_';
+    }
+    *p = 0;
+
+    return buffer;
 }
