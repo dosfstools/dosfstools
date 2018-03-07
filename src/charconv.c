@@ -29,7 +29,7 @@ static int init_conversion(int codepage)
 	initialized = 1;
 	if (codepage < 0)
 	    codepage = DEFAULT_DOS_CODEPAGE;
-	setlocale(LC_ALL, "");	/* initialize locale */
+	setlocale(LC_CTYPE, "");	/* initialize locale for CODESET */
 	dos_to_local = iconv_init_codepage(codepage);
 	if (dos_to_local == (iconv_t) - 1 && codepage != DEFAULT_DOS_CODEPAGE) {
 	    printf("Trying to set fallback DOS codepage %d\n",
