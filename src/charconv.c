@@ -7,8 +7,8 @@
 static iconv_t iconv_init_codepage(int codepage)
 {
     iconv_t result;
-    char codepage_name[16];
-    snprintf(codepage_name, sizeof(codepage_name), "CP%d", codepage);
+    char codepage_name[32];
+    snprintf(codepage_name, sizeof(codepage_name), "CP%d//TRANSLIT", codepage);
     result = iconv_open(nl_langinfo(CODESET), codepage_name);
     if (result == (iconv_t) - 1)
 	perror(codepage_name);
