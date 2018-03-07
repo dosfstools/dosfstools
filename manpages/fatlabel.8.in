@@ -86,6 +86,52 @@ to specified DOS codepage.
 
 It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
 .\" ----------------------------------------------------------------------------
+.SH DOS CODEPAGES
+MS-DOS and Windows systems uses DOS (OEM) codepage according to global Language
+Country/Region system settings. DOS codepage is needed for encoding/decoding
+non-ASCII FAT label. Default DOS codepage is 850. See following mapping table
+between DOS codepage and Language Country/Region:
+.TS
+tab(:);
+c lx.
+\fBCodepage\fR:\fBLanguage Country/Region\fR
+437:T{
+English (India), English (Malaysia), English (Republic of the Philippines),
+English (Singapore), English (South Africa), English (United States),
+English (Zimbabwe), Filipino, Hausa, Igbo, Inuktitut, Kinyarwanda, Kiswahili,
+Yoruba
+T}
+737:Greek
+775:Estonian, Latvian, Lithuanian
+850:T{
+Afrikaans, Alsatian, Basque, Breton, Catalan, Corsican, Danish, Dutch,
+English (Australia), English (Belize), English (Canada), English (Caribbean),
+English (Ireland), English (Jamaica), English (New Zealand),
+English (Trinidad and Tobago), English (United Kingdom), Faroese, Finnish,
+French, Frisian, Galician, German, Greenlandic, Icelandic, Indonesian, Irish,
+isiXhosa, isiZulu, Italian, K'iche, Lower Sorbian, Luxembourgish, Malay,
+Mapudungun, Mohawk, Norwegian, Occitan, Portuguese, Quechua, Romansh, Sami,
+Scottish Gaelic, Sesotho sa Leboa, Setswana, Spanish, Swedish, Tamazight,
+Upper Sorbian, Welsh, Wolof
+T}
+852:T{
+Albanian, Bosnian (Latin), Croatian, Czech, Hungarian, Polish, Romanian,
+Serbian (Latin), Slovak, Slovenian, Turkmen
+T}
+855:Bosnian (Cyrillic), Serbian (Cyrillic)
+857:Azeri (Latin), Turkish, Uzbek (Latin)
+862:Hebrew (Israel)
+866:T{
+Azeri (Cyrillic), Bashkir, Belarusian, Bulgarian, Kyrgyz, Macedonian, Mongolian,
+Russian, Tajik, Tatar, Ukrainian, Uzbek (Cyrillic), Yakut
+T}
+874:Thai
+932:Japanese
+936:Chinese (Simplified)
+949:Korean (Korea)
+950:Chinese (Traditional)
+.TE
+.\" ----------------------------------------------------------------------------
 .SH SEE ALSO
 .BR fsck.fat (8),
 .BR mkfs.fat (8)
