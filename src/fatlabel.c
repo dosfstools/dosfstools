@@ -44,7 +44,7 @@
 #include "check.h"
 #include "charconv.h"
 
-int rw = 0, list = 0, test = 0, verbose = 0;
+int rw = 0, list = 0, test = 0, verbose = 0, no_spaces_in_sfns = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
 
