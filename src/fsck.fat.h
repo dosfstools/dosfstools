@@ -168,7 +168,7 @@ typedef struct {
     char label[11];
 } DOS_FS;
 
-extern int rw, list, verbose, test;
+extern int rw, list, verbose, test, no_spaces_in_sfns;
 extern unsigned n_files;
 extern void *mem_queue;
 
