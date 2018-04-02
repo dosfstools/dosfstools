@@ -37,8 +37,7 @@ TESTS = referenceFAT12.mkfs              \
 	label-fat32_xp_none.label
 
 
-XFAIL_TESTS = check-dot_entries.fsck \
-	      check-huge.fsck
+XFAIL_TESTS = check-huge.fsck
 
 TEST_EXTENSIONS = .mkfs .fsck .label
 MKFS_LOG_COMPILER = $(srcdir)/test-mkfs

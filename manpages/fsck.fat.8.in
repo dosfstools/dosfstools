@@ -66,6 +66,9 @@ The start pointer is adjusted.
 Directory .. does not point to parent of parent directory.
 The start pointer is adjusted.
 .IP "\(bu" 4
+. and .. are not the two first entries in a non-root directory.
+The entries are created, moving occupied slots if necessary.
+.IP "\(bu" 4
 Start cluster number of a file is invalid.
 The file is truncated.
 .IP "\(bu" 4
@@ -89,8 +92,6 @@ They are marked as free.
 Additionally, the following problems are detected, but not repaired:
 .IP "\(bu" 4
 Invalid parameters in boot sector
-.IP "\(bu" 4
-Absence of . and .. entries in non-root directories
 .PP
 When \fBfsck.fat\fP checks a filesystem, it accumulates all changes in memory
 and performs them only after all checks are complete.
@@ -205,8 +206,6 @@ When recovering from a corrupted filesystem, \fBfsck.fat\fP dumps recovered data
 into files named \fIfsckNNNN.rec\fP in the top level directory of the filesystem.
 .\" ----------------------------------------------------------------------------
 .SH BUGS
-.IP "\(bu" 4
-Does not create . and .. files where necessary.
 .IP "\(bu" 4
 Does not remove entirely empty directories.
 .IP "\(bu" 4

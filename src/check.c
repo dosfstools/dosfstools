@@ -139,7 +139,7 @@ static char *file_stat(DOS_FILE * file)
 static int bad_name(DOS_FILE * file)
 {
     int i, spc, suspicious = 0;
-    const char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:";
+    const char *bad_chars = atari_format ? "*?\\/:" : "*?<>|\"\\/:.";
     const unsigned char *name = file->dir_ent.name;
     const unsigned char *ext = name + 8;
 
@@ -220,14 +220,11 @@ static void lfn_remove(off_t from, off_t to)
 
 static void drop_file(DOS_FS * fs, DOS_FILE * file)
 {
-    uint32_t cluster;
+    (void) fs;
 
     MODIFY(file, name[0], DELETED_FLAG);
     if (file->lfn)
 	lfn_remove(file->lfn_offset, file->offset);
-    for (cluster = FSTART(file, fs); cluster > 0 && cluster <
-	 fs->data_clusters + 2; cluster = next_cluster(fs, cluster))
-	set_owner(fs, cluster, NULL);
     --n_files;
 }
 
@@ -333,35 +330,96 @@ static void rename_file(DOS_FILE * file)
     }
 }
 
-static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dots)
+static uint32_t scan_free_entry(DOS_FS * fs, DOS_FILE * this)
 {
-    const char *name;
+    uint32_t clu_num, offset;
+    int i;
+    DIR_ENT de;
 
-    name =
-	strncmp((const char *)file->dir_ent.name, MSDOS_DOT,
-		MSDOS_NAME) ? ".." : ".";
-    if (!(file->dir_ent.attr & ATTR_DIR)) {
-	printf("%s\n  Is a non-directory.\n", path_name(file));
-	switch (get_choice(2, "  Auto-renaming it.",
-			   4,
-			   1, "Drop it",
-			   2, "Auto-rename",
-			   3, "Rename",
-			   4, "Convert to directory")) {
-	case 1:
-	    drop_file(fs, file);
-	    return 1;
-	case 2:
-	    auto_rename(file);
-	    printf("  Renamed to %s\n", file_name(file->dir_ent.name));
-	    return 0;
-	case 3:
-	    rename_file(file);
-	    return 0;
-	case 4:
-	    MODIFY(file, size, htole32(0));
-	    MODIFY(file, attr, file->dir_ent.attr | ATTR_DIR);
-	    break;
+    i = 2 * sizeof(DIR_ENT); /* Skip '.' and '..' slots */
+    clu_num = FSTART(this, fs);
+    while (clu_num > 0 && clu_num != -1) {
+	offset = cluster_start(fs, clu_num) + (i % fs->cluster_size);
+	fs_read(offset, sizeof(DIR_ENT), &de);
+	if (IS_FREE(de.name))
+	    return offset;
+	i += sizeof(DIR_ENT);
+	if (!(i % fs->cluster_size))
+	    if ((clu_num = next_cluster(fs, clu_num)) == 0 || clu_num == -1)
+		break;
+    }
+
+    return 0;
+}
+
+static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dotdot)
+{
+    const char *name, *ent;
+    uint32_t new_offset, start;
+
+    if (dotdot) {
+	name = "..";
+	ent = MSDOS_DOTDOT;
+	if (!file->parent->parent) {
+	    start = 0;
+	} else {
+	    start = FSTART(file->parent->parent, fs);
+	    if (start == fs->root_cluster)
+		start = 0;
+	}
+    } else {
+	name = ".";
+	ent = MSDOS_DOT;
+	start = FSTART(file->parent, fs);
+    }
+
+    if (!(file->dir_ent.attr & ATTR_DIR) || (FSTART(file, fs) != start) ||
+	strncmp((const char *)(file->dir_ent.name), ent, MSDOS_NAME)) {
+
+	if (IS_FREE(file->dir_ent.name)) {
+	    printf("%s\n  Expected a valid '%s' entry in the %s slot, found free entry.\n",
+		path_name(file->parent), name, dotdot ? "second" : "first");
+	    switch (get_choice(1, "  Creating.",
+			       2,
+			       1, "Create entry",
+			       2, "Drop parent")) {
+	    case 1:
+		goto conjure;
+	    case 2:
+		drop_file(fs, file->parent);
+		return 1;
+	    }
+	}
+
+	if (!strncmp((const char *)(file->dir_ent.name), ent, MSDOS_NAME)) {
+	    printf("%s\n  Invalid '%s' entry in the %s slot. Fixing.\n",
+		path_name(file->parent), name, dotdot ? "second" : "first");
+	    MODIFY_START(file, start, fs);
+	    MODIFY(file, attr, ATTR_DIR);
+	} else {
+	    printf("%s\n  Expected a valid '%s' entry in this slot.\n",
+		   path_name(file), name);
+	    switch (get_choice(3, "  Moving entry down.",
+			       3,
+			       1, "Drop entry",
+			       2, "Drop parent",
+			       3, "Move entry down")) {
+	    case 1:
+		drop_file(fs, file);
+		goto conjure;
+	    case 2:
+		drop_file(fs, file->parent);
+		return 1;
+	    case 3:
+		new_offset = scan_free_entry(fs, file->parent);
+		if (!new_offset) {
+		    printf("No free entry found.\n");
+		    return 0;
+		}
+
+		fs_write(new_offset, sizeof(file->dir_ent), &file->dir_ent);
+		goto conjure;
+	    }
 	}
     }
     if (file->dir_ent.lcase & FAT_NO_83NAME) {
@@ -371,11 +429,15 @@ static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dots)
 	file->dir_ent.lcase &= ~FAT_NO_83NAME;
 	MODIFY(file, lcase, file->dir_ent.lcase);
     }
-    if (!dots) {
-	printf("Root contains directory \"%s\". Dropping it.\n", name);
-	drop_file(fs, file);
-	return 1;
-    }
+
+    return 0;
+
+conjure:
+    memset(&file->dir_ent, 0, sizeof(DIR_ENT));
+    memcpy(file->dir_ent.name, ent, MSDOS_NAME);
+    fs_write(file->offset, sizeof(file->dir_ent), &file->dir_ent);
+    MODIFY_START(file, start, fs);
+    MODIFY(file, attr, ATTR_DIR);
     return 0;
 }
 
@@ -383,7 +445,10 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 {
     DOS_FILE *owner;
     int restart;
-    uint32_t expect, curr, this, clusters, prev, walk, clusters2;
+    uint32_t parent, grandp, curr, this, clusters, prev, walk, clusters2;
+
+    if (IS_FREE(file->dir_ent.name))
+	return 0;
 
     if (file->dir_ent.attr & ATTR_DIR) {
 	if (le32toh(file->dir_ent.size)) {
@@ -391,36 +456,32 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		   path_name(file));
 	    MODIFY(file, size, htole32(0));
 	}
-	if (file->parent
-	    && !strncmp((const char *)file->dir_ent.name, MSDOS_DOT,
-			MSDOS_NAME)) {
-	    expect = FSTART(file->parent, fs);
-	    if (FSTART(file, fs) != expect) {
-		printf("%s\n  Start (%lu) does not point to parent (%lu)\n",
-		       path_name(file), (unsigned long)FSTART(file, fs), (long)expect);
-		MODIFY_START(file, expect, fs);
-	    }
-	    return 0;
-	}
-	if (file->parent
-	    && !strncmp((const char *)file->dir_ent.name, MSDOS_DOTDOT,
-			MSDOS_NAME)) {
-	    expect =
-		file->parent->parent ? FSTART(file->parent->parent, fs) : 0;
-	    if (fs->root_cluster && expect == fs->root_cluster)
-		expect = 0;
-	    if (FSTART(file, fs) != expect) {
-		printf("%s\n  Start (%lu) does not point to .. (%lu)\n",
-		       path_name(file), (unsigned long)FSTART(file, fs), (unsigned long)expect);
-		MODIFY_START(file, expect, fs);
-	    }
-	    return 0;
-	}
 	if (FSTART(file, fs) == 0) {
 	    printf("%s\n Start does point to root directory. Deleting dir. \n",
 		   path_name(file));
 	    MODIFY(file, name[0], DELETED_FLAG);
 	    return 0;
+	}
+	if (file->parent) {
+	    parent = FSTART(file->parent, fs);
+	    grandp = file->parent->parent ? FSTART(file->parent->parent, fs) : 0;
+	    if (fs->root_cluster && grandp == fs->root_cluster)
+		grandp = 0;
+
+	    if (FSTART(file, fs) == parent) {
+		printf("%s\n Start does point to containing directory. Deleting entry.\n",
+		       path_name(file));
+		MODIFY(file, name[0], DELETED_FLAG);
+		MODIFY_START(file, 0, fs);
+		return 0;
+	    }
+	    if (FSTART(file, fs) == grandp) {
+		printf("%s\n Start does point to containing directory's parent. Deleting entry.\n",
+		       path_name(file));
+		MODIFY(file, name[0], DELETED_FLAG);
+		MODIFY_START(file, 0, fs);
+		return 0;
+	    }
 	}
     }
     if (FSTART(file, fs) == 1) {
@@ -584,7 +645,7 @@ static int check_files(DOS_FS * fs, DOS_FILE * start)
 static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 {
     DOS_FILE *parent, **walk, **scan;
-    int dot, dotdot, skip, redo;
+    int skip, redo;
     int good, bad;
 
     if (!*root)
@@ -611,23 +672,9 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 	    return 1;
 	}
     }
-    dot = dotdot = redo = 0;
+    redo = 0;
     walk = root;
     while (*walk) {
-	if (!strncmp
-	    ((const char *)((*walk)->dir_ent.name), MSDOS_DOT, MSDOS_NAME)
-	    || !strncmp((const char *)((*walk)->dir_ent.name), MSDOS_DOTDOT,
-			MSDOS_NAME)) {
-	    if (handle_dot(fs, *walk, dots)) {
-		*walk = (*walk)->next;
-		continue;
-	    }
-	    if (!strncmp
-		((const char *)((*walk)->dir_ent.name), MSDOS_DOT, MSDOS_NAME))
-		dot++;
-	    else
-		dotdot++;
-	}
 	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) && bad_name(*walk)) {
 	    puts(path_name(*walk));
 	    printf("  Bad short file name (%s).\n",
@@ -713,15 +760,9 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 	    walk = &(*walk)->next;
 	else {
 	    walk = root;
-	    dot = dotdot = redo = 0;
+	    redo = 0;
 	}
     }
-    if (dots && !dot)
-	printf("%s\n  \".\" is missing. Can't fix this yet.\n",
-	       path_name(parent));
-    if (dots && !dotdot)
-	printf("%s\n  \"..\" is missing. Can't fix this yet.\n",
-	       path_name(parent));
     return 0;
 }
 
@@ -893,10 +934,8 @@ static void add_file(DOS_FS * fs, DOS_FILE *** chain, DOS_FILE * parent,
 	    printf(" (%s)", file_name(new->dir_ent.name));	/* (8.3) */
 	printf("\n");
     }
-    /* Don't include root directory, '.', or '..' in the total file count */
-    if (offset &&
-	strncmp((const char *)de.name, MSDOS_DOT, MSDOS_NAME) != 0 &&
-	strncmp((const char *)de.name, MSDOS_DOTDOT, MSDOS_NAME) != 0)
+    /* Don't include root directory in the total file count */
+    if (offset)
 	++n_files;
     test_file(fs, new, test);	/* Bad cluster check */
 }
@@ -913,6 +952,27 @@ static int scan_dir(DOS_FS * fs, DOS_FILE * this, FDSC ** cp)
     i = 0;
     clu_num = FSTART(this, fs);
     new_dir();
+    if (clu_num != 0 && clu_num != -1 && this->offset) {
+	DOS_FILE file;
+
+	file.lfn = NULL;
+	file.lfn_offset = 0;
+	file.next = NULL;
+	file.parent = this;
+	file.first = NULL;
+
+	file.offset = cluster_start(fs, clu_num) + (i % fs->cluster_size);
+	fs_read(file.offset, sizeof(DIR_ENT), &file.dir_ent);
+	if (handle_dot(fs, &file, 0))
+	    return 1;
+	i += sizeof(DIR_ENT);
+
+	file.offset = cluster_start(fs, clu_num) + (i % fs->cluster_size);
+	fs_read(file.offset, sizeof(DIR_ENT), &file.dir_ent);
+	if (handle_dot(fs, &file, 1))
+	    return 1;
+	i += sizeof(DIR_ENT);
+    }
     while (clu_num > 0 && clu_num != -1) {
 	add_file(fs, &chain, this,
 		 cluster_start(fs, clu_num) + (i % fs->cluster_size), cp);
@@ -944,12 +1004,9 @@ static int subdirs(DOS_FS * fs, DOS_FILE * parent, FDSC ** cp)
     DOS_FILE *walk;
 
     for (walk = parent ? parent->first : root; walk; walk = walk->next)
-	if (walk->dir_ent.attr & ATTR_DIR)
-	    if (strncmp((const char *)walk->dir_ent.name, MSDOS_DOT, MSDOS_NAME)
-		&& strncmp((const char *)walk->dir_ent.name, MSDOS_DOTDOT,
-			   MSDOS_NAME))
-		if (scan_dir(fs, walk, file_cd(cp, (char *)walk->dir_ent.name)))
-		    return 1;
+	if (!IS_FREE(walk->dir_ent.name) && (walk->dir_ent.attr & ATTR_DIR))
+	    if (scan_dir(fs, walk, file_cd(cp, (char *)walk->dir_ent.name)))
+		return 1;
     return 0;
 }
 
