@@ -13,15 +13,35 @@ TESTS = referenceFAT12.mkfs              \
 	check-chain_to_other_file.fsck   \
 	check-circular_chain.fsck        \
 	check-duplicate_names.fsck       \
-	check-dot_entries.fsck
+	check-dot_entries.fsck           \
+	label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
+	label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
+	label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.label        \
+	label-fat32_mkdosfs_label1_mlabel_erase.label              \
+	label-fat32_mkdosfs_label1_mlabel_NO_NAME.label            \
+	label-fat32_mkdosfs_label1_xp_erase.label                  \
+	label-fat32_mkdosfs_label1_xp_label2.label                 \
+	label-fat32_mkdosfs_label1.label                           \
+	label-fat32_mkdosfs_none_dosfslabel_label1_xp_label2.label \
+	label-fat32_mkdosfs_none_dosfslabel_label1.label           \
+	label-fat32_mkdosfs_none_dosfslabel_NO_NAME.label          \
+	label-fat32_mkdosfs_none_xp_label1_dosfslabel_label2.label \
+	label-fat32_mkdosfs_none_xp_label1.label                   \
+	label-fat32_mkdosfs_none.label                             \
+	label-fat32_xp_label1.label                                \
+	label-fat32_xp_none_dosfslabel_label1.label                \
+	label-fat32_xp_none_mlabel_label1.label                    \
+	label-fat32_xp_none.label
+
 
 XFAIL_TESTS = check-dot_entries.fsck
 
-TEST_EXTENSIONS = .mkfs .fsck
+TEST_EXTENSIONS = .mkfs .fsck .label
 MKFS_LOG_COMPILER = $(srcdir)/test-mkfs
 FSCK_LOG_COMPILER = $(srcdir)/test-fsck
+LABEL_LOG_COMPILER = $(srcdir)/test-label
 
-dist_check_DATA = test-mkfs test-fsck              \
+dist_check_DATA = test-mkfs test-fsck test-label   \
 		  referenceFAT12.mkfs              \
 		  referenceFAT12.xxd               \
 		  referenceFAT16.mkfs              \
@@ -34,4 +54,40 @@ dist_check_DATA = test-mkfs test-fsck              \
 		  check-chain_to_other_file.fsck   \
 		  check-circular_chain.fsck        \
 		  check-duplicate_names.fsck       \
-		  check-dot_entries.fsck
+		  check-dot_entries.fsck           \
+		  label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
+		  label-fat32_mkdosfs_label1_dosfslabel_empty.xxd            \
+		  label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
+		  label-fat32_mkdosfs_label1_dosfslabel_label2.xxd           \
+		  label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.label        \
+		  label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.xxd          \
+		  label-fat32_mkdosfs_label1_mlabel_erase.label              \
+		  label-fat32_mkdosfs_label1_mlabel_erase.xxd                \
+		  label-fat32_mkdosfs_label1_mlabel_NO_NAME.label            \
+		  label-fat32_mkdosfs_label1_mlabel_NO_NAME.xxd              \
+		  label-fat32_mkdosfs_label1_xp_erase.label                  \
+		  label-fat32_mkdosfs_label1_xp_erase.xxd                    \
+		  label-fat32_mkdosfs_label1_xp_label2.label                 \
+		  label-fat32_mkdosfs_label1_xp_label2.xxd                   \
+		  label-fat32_mkdosfs_label1.label                           \
+		  label-fat32_mkdosfs_label1.xxd                             \
+		  label-fat32_mkdosfs_none_dosfslabel_label1_xp_label2.label \
+		  label-fat32_mkdosfs_none_dosfslabel_label1_xp_label2.xxd   \
+		  label-fat32_mkdosfs_none_dosfslabel_label1.label           \
+		  label-fat32_mkdosfs_none_dosfslabel_label1.xxd             \
+		  label-fat32_mkdosfs_none_dosfslabel_NO_NAME.label          \
+		  label-fat32_mkdosfs_none_dosfslabel_NO_NAME.xxd            \
+		  label-fat32_mkdosfs_none_xp_label1_dosfslabel_label2.label \
+		  label-fat32_mkdosfs_none_xp_label1_dosfslabel_label2.xxd   \
+		  label-fat32_mkdosfs_none_xp_label1.label                   \
+		  label-fat32_mkdosfs_none_xp_label1.xxd                     \
+		  label-fat32_mkdosfs_none.label                             \
+		  label-fat32_mkdosfs_none.xxd                               \
+		  label-fat32_xp_label1.label                                \
+		  label-fat32_xp_label1.xxd                                  \
+		  label-fat32_xp_none_dosfslabel_label1.label                \
+		  label-fat32_xp_none_dosfslabel_label1.xxd                  \
+		  label-fat32_xp_none_mlabel_label1.label                    \
+		  label-fat32_xp_none_mlabel_label1.xxd                      \
+		  label-fat32_xp_none.label                                  \
+		  label-fat32_xp_none.xxd
