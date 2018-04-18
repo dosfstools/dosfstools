@@ -90,7 +90,9 @@ Additionally, the following problems are detected, but not repaired:
 .IP "*" 4
 Invalid parameters in boot sector
 .IP "*" 4
-Absence of . and .. entries in non\-root directories
+Absence of or too many . and .. entries in non-root directories
+.IP "*" 4
+\&. and .. in a non-root directories are not the very first two entries
 .PP
 When \fBfsck.fat\fR checks a filesystem, it accumulates all changes in memory
 and performs them only after all checks are complete.

@@ -590,6 +590,8 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 {
     DOS_FILE *parent, **walk, **scan;
     int dot, dotdot, skip, redo;
+    int dot_first, dotdot_second;
+    unsigned int i;
     int good, bad;
 
     if (!*root)
@@ -617,8 +619,11 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 	}
     }
     dot = dotdot = redo = 0;
+    dot_first = dotdot_second = 0;
+    i = 0;
     walk = root;
     while (*walk) {
+	++i;
 	if (!strncmp
 	    ((const char *)((*walk)->dir_ent.name), MSDOS_DOT, MSDOS_NAME)
 	    || !strncmp((const char *)((*walk)->dir_ent.name), MSDOS_DOTDOT,
@@ -628,10 +633,13 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
 		continue;
 	    }
 	    if (!strncmp
-		((const char *)((*walk)->dir_ent.name), MSDOS_DOT, MSDOS_NAME))
+		((const char *)((*walk)->dir_ent.name), MSDOS_DOT, MSDOS_NAME)) {
 		dot++;
-	    else
+		dot_first = (i == 1);
+	    } else {
 		dotdot++;
+		dotdot_second = (i == 2);
+	    }
 	}
 	if (!((*walk)->dir_ent.attr & ATTR_VOLUME) && bad_name(*walk)) {
 	    puts(path_name(*walk));
@@ -724,8 +732,20 @@ static int check_dir(DOS_FS * fs, DOS_FILE ** root, int dots)
     if (dots && !dot)
 	printf("%s\n  \".\" is missing. Can't fix this yet.\n",
 	       path_name(parent));
+    else if (dots && dot > 1)
+	printf("%s\n  \".\" is more then one. Can't fix this yet.\n",
+	       path_name(parent));
+    else if (dots && !dot_first)
+	printf("%s\n  \".\" is not first entry. Can't fix this yet.\n",
+	       path_name(parent));
     if (dots && !dotdot)
 	printf("%s\n  \"..\" is missing. Can't fix this yet.\n",
+	       path_name(parent));
+    else if (dots && dotdot > 1)
+	printf("%s\n  \"..\" is more then one. Can't fix this yet.\n",
+	       path_name(parent));
+    else if (dots && !dotdot_second)
+	printf("%s\n  \"..\" is not second entry. Can't fix this yet.\n",
 	       path_name(parent));
     return 0;
 }
