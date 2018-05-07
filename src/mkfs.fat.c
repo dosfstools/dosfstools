@@ -66,6 +66,7 @@
 #include "common.h"
 #include "msdos_fs.h"
 #include "device_info.h"
+#include "charconv.h"
 
 
 /* Constant definitions */
@@ -211,6 +212,8 @@ char dummy_boot_code[BOOTCODE_SIZE] = "\x0e"	/* push cs */
 
 #define MESSAGE_OFFSET 29	/* Offset of message in above code */
 
+static char initial_volume_name[] = NO_NAME; /* Initial volume name, make sure that is writable */
+
 /* Global variables - the root of all evil :-) - see these and weep! */
 
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
@@ -218,7 +221,7 @@ static int check = FALSE;	/* Default to no readablity checking */
 static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
 static time_t create_time;	/* Creation time */
-static char volume_name[] = NO_NAME;	/* Volume name */
+static char *volume_name = initial_volume_name;	/* Volume name */
 static uint64_t blocks;	/* Number of blocks in filesystem */
 static unsigned sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
@@ -621,6 +624,11 @@ static void setup_tables(void)
     struct tm *ctime;
     struct msdos_volume_info *vi =
 	(size_fat == 32 ? &bs.fat32.vi : &bs.oldfat.vi);
+    char label[12] = { 0 };
+    wchar_t wlabel[12] = { 0 };
+    size_t len;
+    int ret;
+    int i;
 
     if (atari_format) {
 	/* On Atari, the first few bytes of the boot sector are assigned
@@ -663,8 +671,36 @@ static void setup_tables(void)
 	vi->volume_id[3] = (unsigned char)(volume_id >> 24);
     }
 
+    len = mbstowcs(NULL, volume_name, 0);
+    if (len != (size_t)-1 && len > 11)
+	die("Label can be no longer than 11 characters");
+
+    if (mbstowcs(wlabel, volume_name, 12) == (size_t)-1)
+	pdie("Error when processing label");
+
+    if (!local_string_to_dos_string(label, volume_name, 12))
+	die("Error when processing label");
+
+    for (i = strlen(label); i < 11; ++i)
+	label[i] = ' ';
+    label[11] = 0;
+
+    if (memcmp(label, "           ", MSDOS_NAME) == 0)
+	memcpy(label, NO_NAME, MSDOS_NAME);
+
+    ret = validate_volume_label(wlabel, (unsigned char *)label);
+    if (ret & 0x1)
+	fprintf(stderr,
+		"mkfs.fat: Warning: lowercase labels might not work properly with DOS or Windows\n");
+    if (ret & 0x2)
+	die("Labels with characters below 0x20 are not allowed\n");
+    if (ret & 0x4)
+	die("Labels with characters *?.,;:/\\|+=<>[]\" are not allowed\n");
+    if (ret & 0x10)
+	die("Label can't start with a space character");
+
     if (!atari_format) {
-	memcpy(vi->volume_label, volume_name, 11);
+	memcpy(vi->volume_label, label, 11);
 
 	memcpy(bs.boot_jump, dummy_boot_jump, 3);
 	/* Patch in the correct offset to the boot code */
@@ -1089,7 +1125,7 @@ static void setup_tables(void)
 	}
 	printf("Volume ID is %08lx, ", volume_id &
 	       (atari_format ? 0x00ffffff : 0xffffffff));
-	if (strcmp(volume_name, NO_NAME))
+	if (memcmp(label, NO_NAME, MSDOS_NAME))
 	    printf("volume label %s.\n", volume_name);
 	else
 	    printf("no volume label.\n");
@@ -1128,9 +1164,9 @@ static void setup_tables(void)
     }
 
     memset(root_dir, 0, size_root_dir);
-    if (memcmp(volume_name, NO_NAME, MSDOS_NAME)) {
+    if (memcmp(label, NO_NAME, MSDOS_NAME)) {
 	struct msdos_dir_entry *de = &root_dir[0];
-	memcpy(de->name, volume_name, MSDOS_NAME);
+	memcpy(de->name, label, MSDOS_NAME);
 	if (de->name[0] == 0xe5)
 	    de->name[0] = 0x05;
 	de->attr = ATTR_VOLUME;
@@ -1280,6 +1316,7 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  -m FILENAME     Replace default error message in boot block with contents of FILENAME\n");
     fprintf(stderr, "  -M TYPE         Set media type in boot sector to TYPE\n");
     fprintf(stderr, "  -n LABEL        Set volume name to LABEL (up to 11 characters long)\n");
+    fprintf(stderr, "  --codepage=N    use DOS codepage N to encode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -r COUNT        Make room for COUNT entries in the root directory\n");
     fprintf(stderr, "  -R COUNT        Set number of reserved sectors to COUNT\n");
     fprintf(stderr, "  -s COUNT        Set number of sectors per cluster to COUNT\n");
@@ -1308,8 +1345,9 @@ int main(int argc, char **argv)
     int blocks_specified = 0;
     struct timeval create_timeval;
 
-    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT};
+    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE};
     const struct option long_options[] = {
+	    {"codepage",  required_argument, NULL, OPT_CODEPAGE},
 	    {"invariant", no_argument,       NULL, OPT_INVARIANT},
 	    {"variant",   required_argument, NULL, OPT_VARIANT},
 	    {"help",      no_argument,       NULL, OPT_HELP},
@@ -1485,21 +1523,11 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'n':		/* n : Volume name */
-	    if (strlen(optarg) > 11) {
-		printf("Labels can be no longer than 11 characters\n");
-		usage(argv[0], 1);
-	    }
-	    sprintf(volume_name, "%-11.11s", optarg);
-	    if (memcmp(volume_name, "           ", MSDOS_NAME) == 0)
-	        memcpy(volume_name, NO_NAME, MSDOS_NAME);
-	    for (i = 0; volume_name[i] && i < 11; i++)
-		/* don't know if here should be more strict !uppercase(label[i]) */
-		if (islower(volume_name[i])) {
-		    fprintf(stderr,
-		            "mkfs.fat: warning - lowercase labels might not work properly with DOS or Windows\n");
-		    break;
-		}
+	    volume_name = optarg;
+	    break;
 
+	case OPT_CODEPAGE:	/* --codepage : Code page */
+	    set_dos_codepage(atoi(optarg));
 	    break;
 
 	case 'r':		/* r : Root directory entries */
@@ -1578,6 +1606,8 @@ int main(int argc, char **argv)
 		    "Internal error: getopt_long() returned unexpected value %d\n", c);
 	    exit(2);
 	}
+
+    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
 
     if (optind == argc || !argv[optind]) {
 	printf("No device specified.\n");

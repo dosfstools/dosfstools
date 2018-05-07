@@ -133,6 +133,9 @@ Supplying an empty string, a string consisting only of white space or the
 string "NO NAME" as \fIVOLUME-NAME\fR has the same effect as not giving the
 \fB\-n\fR option.
 The default is no label.
+.IP "\fB\-\-codepage\fR=\fIPAGE\fR" 4
+Use DOS codepage \fIPAGE\fR to encode label.
+By default codepage 850 is used.
 .IP "\fB\-r\fR \fIROOT-DIR-ENTRIES\fR" 4
 Select the number of entries available in the root directory.
 The default is 112 or 224 for floppies and 512 for hard disks.
