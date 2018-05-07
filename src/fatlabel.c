@@ -5,6 +5,7 @@
    Copyright (C) 2007 Red Hat, Inc.
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
    Copyright (C) 2015-2017 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2017-2018 Pali Rohár <pali.rohar@gmail.com>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +34,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <ctype.h>
 
 #include "common.h"
 #include "fsck.fat.h"
@@ -56,22 +56,23 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
     DIR_ENT de;
 
     char label[12] = { 0 };
+    wchar_t wlabel[12] = { 0 };
+    size_t len;
+    int ret;
     int i;
 
     if (change) {
-	if (strlen(newlabel) > 11) {
+	len = mbstowcs(NULL, newlabel, 0);
+	if (len != (size_t)-1 && len > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
 	    exit(1);
 	}
 
-	for (i = 0; newlabel[i] && i < 11; i++)
-	    /* don't know if here should be more strict !uppercase(label[i]) */
-	    if (islower(newlabel[i])) {
-		fprintf(stderr,
-			"fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
-		break;
-	    }
+	if (mbstowcs(wlabel, newlabel, 12) == (size_t)-1) {
+	    perror("fatlabel: error when processing label");
+	    exit(1);
+	}
 
 	if (!local_string_to_dos_string(label, newlabel, 12)) {
 	    fprintf(stderr,
@@ -83,9 +84,29 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	    label[i] = ' ';
 	label[11] = 0;
 
-	if (memcmp(label, "           ", 11) == 0) {
+	ret = validate_volume_label(wlabel, (unsigned char *)label);
+	if (ret & 0x1) {
+	    fprintf(stderr,
+		    "fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
+	}
+	if (ret & 0x2) {
+	    fprintf(stderr,
+		    "fatlabel: labels with characters below 0x20 are not allowed\n");
+	    exit(1);
+	}
+	if (ret & 0x4) {
+	    fprintf(stderr,
+		    "fatlabel: labels with characters *?.,;:/\\|+=<>[]\" are not allowed\n");
+	    exit(1);
+	}
+	if (ret & 0x08) {
 	    fprintf(stderr,
 		    "fatlabel: labels can't be empty or white space only\n");
+	    exit(1);
+	}
+	if (ret & 0x10) {
+	    fprintf(stderr,
+		    "fatlabel: labels can't start with a space character\n");
 	    exit(1);
 	}
     }

@@ -101,4 +101,10 @@ uint32_t generate_volume_id(void);
  * Generate a 32 bit volume ID
  */
 
+int validate_volume_label(wchar_t *wlabel, unsigned char *doslabel);
+
+/*
+ * Validate volume label
+ */
+
 #endif
