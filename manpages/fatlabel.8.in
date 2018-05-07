@@ -82,7 +82,7 @@ Since version 4.2, \fBfatlabel\fR reads a FAT label only from the root directory
 (like MS-DOS and Windows systems), but changes a FAT label in both locations. In
 version 4.2 was fixed handling of empty labels and labels which starts with a
 byte 0xE5. Also in this version was added support for non-ASCII labels according
-to specified DOS codepage.
+to specified DOS codepage and were added checks if a new label is valid.
 
 It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
 .\" ----------------------------------------------------------------------------

@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <wctype.h>
 #include <termios.h>
 #include <sys/time.h>
 
@@ -299,4 +300,73 @@ uint32_t generate_volume_id(void)
 
     /* volume ID = current time, fudged for more uniqueness */
     return (now.tv_sec << 20) | now.tv_usec;
+}
+
+/*
+ * Validate volume label
+ *
+ * @param[in]   wlabel     Label stored in locale-independent wide string
+ * @param[in]   doslabel   Label stored according to current DOS codepage
+ *
+ * @return   bitmask of errors
+ *           0x01 - lowercase character
+ *           0x02 - character below 0x20
+ *           0x04 - character in disallowed set
+ *           0x08 - empty or space only label
+ *           0x10 - space at beginning
+ */
+int validate_volume_label(wchar_t *wlabel, unsigned char *doslabel)
+{
+    int i;
+    int ret = 0;
+
+    if (wlabel) {
+        for (i = 0; i < 11; i++) {
+            /* FAT specification: Lower case characters are not allowed in DIR_Name
+                                  (what these characters are is country specific)
+               Therefore it is needed to check original characters which are visible
+               to users before conversion into DOS OEM code page. And because orignal
+               label is stored according to current LC_CTYPE locale, conversion to
+               locale independent wchar_t* string is needed.
+            */
+            if (iswlower(wlabel[i])) {
+                ret |= 0x01;
+                break;
+            }
+        }
+    } else {
+        for (i = 0; i < 11; i++) {
+            /* In case we do not have locale independent wchar_t* string, check only
+               locale independent 7bit ASCII portion of characters.
+             */
+            if (doslabel[i] >= 'a' && doslabel[i] <= 'z') {
+                ret |= 0x01;
+                break;
+            }
+        }
+    }
+
+    /* According to FAT specification those bytes (after conversion to DOS OEM
+       code page) are not allowed.
+     */
+    for (i = 0; i < 11; i++) {
+        if (doslabel[i] < 0x20)
+            ret |= 0x02;
+        if (doslabel[i] == 0x22 ||
+            (doslabel[i] >= 0x2A && doslabel[i] <= 0x2C) ||
+            doslabel[i] == 0x2E ||
+            doslabel[i] == 0x2F ||
+            (doslabel[i] >= 0x3A && doslabel[i] <= 0x3F) ||
+            (doslabel[i] >= 0x5B && doslabel[i] <= 0x5D) ||
+            doslabel[i] == 0x7C)
+            ret |= 0x04;
+    }
+
+    if (memcmp(doslabel, "           ", 11) == 0)
+        ret |= 0x08;
+
+    if (doslabel[0] == ' ')
+        ret |= 0x10;
+
+    return ret;
 }
