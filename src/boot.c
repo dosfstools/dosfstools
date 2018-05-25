@@ -259,7 +259,8 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
     printf("%10u sectors total\n", sectors ? sectors : le32toh(b->total_sect));
 }
 
-static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
+static void check_backup_boot(DOS_FS * fs, struct boot_sector *b,
+                              unsigned int lss, off_t boot_sector_offset)
 {
     struct boot_sector b2;
 
@@ -292,6 +293,13 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int l
 	    return;
 	} else
 	    return;
+    }
+
+    if (boot_sector_offset && fs->backupboot_start &&
+        boot_sector_offset != fs->backupboot_start) {
+	die("Backup boot sector in unexpected location (%lld/%lld).",
+	    (long long)boot_sector_offset,
+	    (long long)fs->backupboot_start);
     }
 
     fs_read(fs->backupboot_start, sizeof(b2), &b2);
@@ -412,9 +420,61 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 	fs->free_clusters = le32toh(i.free_clusters);
 }
 
+static int is_fat32(const struct boot_sector *b)
+{
+    return !b->fat_length && b->fat32_length;
+}
+
+static int try_boot_sector(off_t *byte_offset, unsigned offset,
+                           struct boot_sector *b)
+{
+    unsigned int logical_sector_size;
+
+    *byte_offset = offset * SECTOR_SIZE;
+    fs_read(*byte_offset, sizeof(*b), b);
+    logical_sector_size = GET_UNALIGNED_W(b->sector_size);
+
+    return
+	logical_sector_size &&
+	/* ...else logical sector size is zero. */
+
+	/* This is the first thing that will fail if the platform needs special
+	 * handling of unaligned multibyte accesses but such handling isn't
+	 * being provided. See GET_UNALIGNED_W() above. */
+	!(logical_sector_size & (SECTOR_SIZE - 1)) &&
+	/* ...else logical sector size is not a multiple of the physical sector
+	 * size. */
+
+	b->cluster_size &&
+	/* ...else cluster size is zero. */
+
+	b->fats &&
+	/* ...else number of FATs is zero. (NTFS is like this.) */
+
+	!(*byte_offset % logical_sector_size);
+	/* ...else the boot sector isn't on a logical sector boundary. */
+}
+
+static int has_signature(const void *sector)
+{
+    return le16toh(((const uint16_t *)sector)[255]) == 0xaa55;
+}
+
+static int try_backup_boot_sector(off_t *byte_offset, unsigned offset,
+                                  struct boot_sector *b)
+{
+    /* Backup boot sectors are for FAT32 only. Also, check backup boot sectors
+     * for a signature. */
+    return
+	try_boot_sector(byte_offset, offset, b) &&
+	is_fat32(b) &&
+	has_signature(b);
+}
+
 void read_boot(DOS_FS * fs)
 {
     struct boot_sector b;
+    off_t boot_sector_offset;
     unsigned total_sectors;
     unsigned int logical_sector_size, sectors;
     long long fat_length;
@@ -422,21 +482,59 @@ void read_boot(DOS_FS * fs)
     off_t data_size;
     long long position;
 
-    fs_read(0, sizeof(b), &b);
-    logical_sector_size = GET_UNALIGNED_W(b.sector_size);
-    if (!logical_sector_size)
-	die("Logical sector size is zero.");
+    if (!try_boot_sector(&boot_sector_offset, 0, &b)) {
+	printf("Boot sector is unusable.\n");
 
-    /* This was moved up because it's the first thing that will fail */
-    /* if the platform needs special handling of unaligned multibyte accesses */
-    /* but such handling isn't being provided. See GET_UNALIGNED_W() above. */
-    if (logical_sector_size & (SECTOR_SIZE - 1))
-	die("Logical sector size (%u bytes) is not a multiple of the physical "
-	    "sector size.", logical_sector_size);
+	/* Backup boot sector is at sector 6 by default. Check that first, for
+	 * valid sector sizes of 512 to 4096 bytes.
+	 *
+	 * Might not be a bad idea to only check this only for disks large
+	 * enough to accommodate FAT32. */
+	if (!try_backup_boot_sector(&boot_sector_offset, 6, &b) &&
+	    !try_backup_boot_sector(&boot_sector_offset, 12, &b) &&
+	    !try_backup_boot_sector(&boot_sector_offset, 24, &b) &&
+	    !try_backup_boot_sector(&boot_sector_offset, 48, &b)) {
+	    unsigned sector = 1;
+	    for (;;) {
+		if (sector == 32)
+		    die ("Backup boot sector not found.");
+		if (sector != 6 &&
+		    sector != 12 &&
+		    sector != 24 &&
+		    try_backup_boot_sector(&boot_sector_offset, sector, &b)) {
+		    break;
+		}
+		sector++;
+	    }
+	}
+    }
+
+    logical_sector_size = GET_UNALIGNED_W(b.sector_size);
+
+    if (boot_sector_offset) {
+	printf("Restoring boot sector from backup found at logical sector %u.\n",
+	       (unsigned)(boot_sector_offset / logical_sector_size));
+
+	/* The backup boot sector in FAT32 *may* be followed by up to two more
+	 * backup sectors, usually FSInfo, followed by more boot code. Backup
+	 * sectors should be tagged with a 55 AA signature. */
+	void *bdata = alloc(logical_sector_size);
+	unsigned i;
+	for (i = 0; i != 3; ++i) {
+	    off_t offset = i * logical_sector_size;
+	    /* Don't read backup sectors from the FAT. */
+	    if (offset + logical_sector_size >
+	        le16toh(b.reserved) * logical_sector_size)
+		break;
+	    fs_read(boot_sector_offset + offset, logical_sector_size, bdata);
+	    if (!has_signature(bdata))
+		break;
+	    fs_write(offset, logical_sector_size, bdata);
+	}
+	free(bdata);
+    }
 
     fs->cluster_size = b.cluster_size * logical_sector_size;
-    if (!fs->cluster_size)
-	die("Cluster size is zero.");
     if (b.fats != 2 && b.fats != 1)
 	die("Currently, only 1 or 2 FATs are supported, not %d.\n", b.fats);
     fs->nfats = b.fats;
@@ -480,7 +578,7 @@ void read_boot(DOS_FS * fs)
     fs->root_cluster = 0;	/* indicates standard, pre-FAT32 root dir */
     fs->fsinfo_start = 0;	/* no FSINFO structure */
     fs->free_clusters = -1;	/* unknown */
-    if (!b.fat_length && b.fat32_length) {
+    if (is_fat32(&b)) {
 	fs->fat_bits = 32;
 	fs->root_cluster = le32toh(b.root_cluster);
 	if (!fs->root_cluster && fs->root_entries)
@@ -506,7 +604,7 @@ void read_boot(DOS_FS * fs)
 		   (unsigned long)fs->data_clusters, FAT16_THRESHOLD);
 
 	fs->backupboot_start = le16toh(b.backup_boot) * logical_sector_size;
-	check_backup_boot(fs, &b, logical_sector_size);
+	check_backup_boot(fs, &b, logical_sector_size, boot_sector_offset);
 
 	read_fsinfo(fs, &b, logical_sector_size);
     } else if (!atari_format) {
