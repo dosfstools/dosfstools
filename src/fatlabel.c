@@ -168,7 +168,7 @@ static void usage(int error, int usage_only)
     fprintf(f, "Options:\n");
     fprintf(f, "  -i, --volume-id     Work on serial number instead of label\n");
     fprintf(f, "  -r, --reset         Remove label or generate new serial number\n");
-    fprintf(f, "  -c N, --codepage=N  use DOS codepage N to encode/decode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
+    fprintf(f, "  -c N, --codepage=N  use DOS codepage N to encode/decode label (default: %d)\n", default_dos_codepage());
     fprintf(f, "  -V, --version       Show version number and terminate\n");
     fprintf(f, "  -h, --help          Print this message and terminate\n");
     exit(status);
