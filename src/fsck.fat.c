@@ -68,7 +68,7 @@ static void usage(char *name, int exitval)
     fprintf(stderr, "  -A              toggle Atari variant of the FAT filesystem\n");
     fprintf(stderr, "  -b              make read-only boot sector check\n");
     fprintf(stderr, "  -c N            use DOS codepage N to decode short file names (default: %d)\n",
-	    DEFAULT_DOS_CODEPAGE);
+	    default_dos_codepage());
     fprintf(stderr, "  -d PATH         drop file with name PATH (can be given multiple times)\n");
     fprintf(stderr, "  -f              salvage unused chains to files\n");
     fprintf(stderr, "  -l              list path names\n");

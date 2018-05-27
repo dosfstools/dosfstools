@@ -49,7 +49,7 @@ Switch to volume ID mode.
 Remove label in label mode or generate new ID in volume ID mode.
 .IP "\fB-c\fR \fIPAGE\fR, \fB\-\-codepage\fR=\fIPAGE\fR" 4
 Use DOS codepage \fIPAGE\fR to encode/decode label.
-By default codepage 850 is used.
+By default a codepage appropriate to your locale is used.
 .IP "\fB\-h\fR, \fB\-\-help\fR" 4
 Display a help message and terminate.
 .IP "\fB\-V\fR, \fB\-\-version\fR" 4
@@ -89,8 +89,8 @@ It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
 .SH DOS CODEPAGES
 MS-DOS and Windows systems uses DOS (OEM) codepage according to global Language
 Country/Region system settings. DOS codepage is needed for encoding/decoding
-non-ASCII FAT label. Default DOS codepage is 850. See following mapping table
-between DOS codepage and Language Country/Region:
+non-ASCII FAT label. See following mapping table between DOS codepage and
+Language Country/Region:
 .TS
 tab(:);
 c lx.
