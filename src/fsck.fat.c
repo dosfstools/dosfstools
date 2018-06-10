@@ -114,7 +114,7 @@ int main(int argc, char **argv)
     rw = interactive = 1;
     check_atari();
 
-    while ((c = getopt_long(argc, argv, "Aac:d:bflnprtu:vVwy",
+    while ((c = getopt_long(argc, argv, "Aac:d:bflnprStu:vVwy",
 				    long_options, NULL)) != -1)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
