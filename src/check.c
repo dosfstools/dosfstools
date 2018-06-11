@@ -277,6 +277,8 @@ static void auto_rename(DOS_FILE * file)
 	sprintf(num, "%07lu", (unsigned long)number);
 	memcpy(file->dir_ent.name, "FSCK", 4);
 	memcpy(file->dir_ent.name + 4, num, 7);
+        if (file->lfn)
+           lfn_remove(file->lfn_offset, file->offset);
 	for (walk = first; walk; walk = walk->next)
 	    if (walk != file
 		&& !strncmp((const char *)walk->dir_ent.name,
