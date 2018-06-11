@@ -266,8 +266,10 @@ static void auto_rename(DOS_FILE * file)
     DOS_FILE *first, *walk;
     uint32_t number;
 
-    if (!file->offset)
+    if (!file->offset) {
+	printf("Cannot rename FAT32 root dir\n");
 	return;			/* cannot rename FAT32 root dir */
+    }
     first = file->parent ? file->parent->first : root;
     number = 0;
     while (1) {
