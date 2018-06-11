@@ -155,6 +155,10 @@ static int bad_name(DOS_FILE * file)
     const unsigned char *name = file->dir_ent.name;
     const unsigned char *ext = name + 8;
 
+    /* do not check synthetic FAT32 root entry */
+    if (!file->offset)
+	return 0;
+
     /* check if we have neither a long filename nor a short name */
     if ((file->lfn == NULL) && (file->dir_ent.lcase & FAT_NO_83NAME)) {
 	return 1;
