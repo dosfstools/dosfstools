@@ -293,9 +293,10 @@ static void auto_rename(DOS_FILE * file)
 	    } else {
 		fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 	    }
-	    if (file->lfn)
-		lfn_fix_checksum(file->lfn_offset, file->offset,
-				 (const char *)file->dir_ent.name);
+	    if (file->lfn) {
+		lfn_remove(file->lfn_offset, file->offset);
+		file->lfn = NULL;
+	    }
 	    return;
 	}
 	number++;
@@ -334,9 +335,10 @@ static void rename_file(DOS_FILE * file)
 		} else {
 		    fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 		}
-		if (file->lfn)
-		    lfn_fix_checksum(file->lfn_offset, file->offset,
-				     (const char *)file->dir_ent.name);
+		if (file->lfn) {
+		    lfn_remove(file->lfn_offset, file->offset);
+		    file->lfn = NULL;
+		}
 		return;
 	    }
 	}
