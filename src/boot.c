@@ -457,7 +457,8 @@ static int try_boot_sector(off_t *byte_offset, unsigned offset,
 
 static int has_signature(const void *sector)
 {
-    return le16toh(((const uint16_t *)sector)[255]) == 0xaa55;
+    const uint8_t *sector_u8 = sector;
+    return sector_u8[510] == 0x55 && sector_u8[511] == 0xaa;
 }
 
 static int try_backup_boot_sector(off_t *byte_offset, unsigned offset,
