@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <getopt.h>
+#include <ctype.h>
 
 #include "common.h"
 #include "fsck.fat.h"
@@ -143,14 +144,14 @@ static void handle_volid(bool change, bool reset, const char *device, const char
 {
     DOS_FS fs = { 0 };
     char *tmp;
-    unsigned long long conversion;
+    long long conversion;
     uint32_t serial = 0;
 
     if (change) {
 	errno = 0;
-	conversion = strtoull(newserial, &tmp, 16);
+	conversion = strtoll(newserial, &tmp, 16);
 
-	if (!*newserial || *tmp) {
+	if (!*newserial || isspace(*newserial) || *tmp || conversion < 0) {
 	    fprintf(stderr, "fatlabel: volume ID must be a hexadecimal number\n");
 	    exit(1);
 	}
