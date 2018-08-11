@@ -602,13 +602,12 @@ static void establish_params(struct device_info *info)
 	 * fs size <=  16G:   8k clusters
 	 * fs size <=  32G:  16k clusters
 	 * fs size >   32G:  32k clusters
-	 *
-	 * This only works correctly for 512 byte sectors!
 	 */
-	uint32_t sz_mb = info->size / (1024 * 1024);
-	cluster_size =
-	    sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
-	    8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
+	unsigned long long int sectors = info->size / sector_size;
+        cluster_size = sectors > 32*1024*1024*2 ? 64 :
+                       sectors > 16*1024*1024*2 ? 32 :
+                       sectors >  8*1024*1024*2 ? 16 :
+                       sectors >     260*1024*2 ? 8 : 1;
     }
 
     if (!hidden_sectors_by_user && info->geom_start >= 0)
