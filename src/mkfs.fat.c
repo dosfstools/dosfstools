@@ -1392,11 +1392,13 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'b':		/* b : location of backup boot sector */
-	    backup_boot = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || backup_boot < 2 || backup_boot > 0xffff) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 2 || conversion > 0xffff) {
 		printf("Bad location for backup boot sector : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    backup_boot = conversion;
 	    break;
 
 	case 'c':		/* c : Check FS as we build it */
@@ -1409,37 +1411,45 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'D':		/* D : Choose Drive Number */
-	    drive_number_option = (int) strtol (optarg, &tmp, 0);
-	    if (*tmp || (drive_number_option != 0 && drive_number_option != 0x80)) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 0 && conversion != 0x80)) {
 		printf ("Drive number must be 0 or 0x80: %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    drive_number_option = conversion;
 	    drive_number_by_user=1;
 	    break;
 
 	case 'f':		/* f : Choose number of FATs */
-	    nr_fats = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || nr_fats < 1 || nr_fats > 4) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 1 || conversion > 4) {
 		printf("Bad number of FATs : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    nr_fats = conversion;
 	    break;
 
 	case 'F':		/* F : Choose FAT size */
-	    size_fat = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || (size_fat != 12 && size_fat != 16 && size_fat != 32)) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 12 && conversion != 16 && conversion != 32)) {
 		printf("Bad FAT type : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    size_fat = conversion;
 	    size_fat_by_user = 1;
 	    break;
 
 	case 'h':		/* h : number of hidden sectors */
-	    hidden_sectors = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || hidden_sectors < 0) {
+	    errno = 0;
+	    conversion = strtoll(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > UINT32_MAX) {
 		printf("Bad number of hidden sectors : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    hidden_sectors = conversion;
 	    hidden_sectors_by_user = 1;
 	    break;
 
@@ -1533,15 +1543,17 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'M':		/* M : FAT Media byte */
-	    fat_media_byte = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno) {
 		printf("Bad number for media descriptor : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
-	    if (fat_media_byte != 0xf0 && (fat_media_byte < 0xf8 || fat_media_byte > 0xff)) {
+	    if (conversion != 0xf0 && (conversion < 0xf8 || conversion > 0xff)) {
 		printf("FAT Media byte must either be between 0xF8 and 0xFF or be 0xF0 : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    fat_media_byte = conversion;
 	    break;
 
 	case 'n':		/* n : Volume name */
@@ -1553,44 +1565,48 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'r':		/* r : Root directory entries */
-	    root_dir_entries = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || root_dir_entries < 16 || root_dir_entries > 32768) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 16 || conversion > 32768) {
 		printf("Bad number of root directory entries : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    root_dir_entries = conversion;
 	    root_dir_entries_set = 1;
 	    break;
 
 	case 'R':		/* R : number of reserved sectors */
-	    reserved_sectors = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || reserved_sectors < 1 || reserved_sectors > 0xffff) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 1 || conversion > 0xffff) {
 		printf("Bad number of reserved sectors : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    reserved_sectors = conversion;
 	    break;
 
 	case 's':		/* s : Sectors per cluster */
-	    sectors_per_cluster = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || (sectors_per_cluster != 1 && sectors_per_cluster != 2
-			 && sectors_per_cluster != 4 && sectors_per_cluster != 8
-			 && sectors_per_cluster != 16
-			 && sectors_per_cluster != 32
-			 && sectors_per_cluster != 64
-			 && sectors_per_cluster != 128)) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 1 && conversion != 2
+	        && conversion != 4 && conversion != 8 && conversion != 16
+	        && conversion != 32 && conversion != 64 && conversion != 128)) {
 		printf("Bad number of sectors per cluster : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    sectors_per_cluster = conversion;
 	    break;
 
 	case 'S':		/* S : Sector size */
-	    sector_size = (int)strtol(optarg, &tmp, 0);
-	    if (*tmp || (sector_size != 512 && sector_size != 1024 &&
-			 sector_size != 2048 && sector_size != 4096 &&
-			 sector_size != 8192 && sector_size != 16384 &&
-			 sector_size != 32768)) {
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 512 && conversion != 1024 &&
+	        conversion != 2048 && conversion != 4096 && conversion != 8192 &&
+	        conversion != 16384 && conversion != 32768)) {
 		printf("Bad logical sector size : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
+	    sector_size = conversion;
 	    sector_size_set = 1;
 	    break;
 
@@ -1640,12 +1656,14 @@ int main(int argc, char **argv)
 
     if (optind != argc) {
 	blocks_specified = 1;
-	blocks = strtoull(argv[optind], &tmp, 0);
+	errno = 0;
+	conversion = strtoll(argv[optind], &tmp, 0);
 
-	if (*tmp) {
+	if (!*argv[optind] || isspace(*argv[optind]) || *tmp || errno || conversion < 0) {
 	    printf("Bad block count : %s\n", argv[optind]);
 	    usage(argv[0], 1);
 	}
+	blocks = conversion;
 
 	optind++;
     }
