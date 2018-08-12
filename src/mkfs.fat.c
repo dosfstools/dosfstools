@@ -1353,6 +1353,7 @@ int main(int argc, char **argv)
     uint64_t cblocks = 0;
     int blocks_specified = 0;
     struct timeval create_timeval;
+    long long conversion;
 
     enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE};
     const struct option long_options[] = {
@@ -1447,11 +1448,23 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'i':		/* i : specify volume ID */
-	    volume_id = strtoul(optarg, &tmp, 16);
-	    if (*tmp) {
+	    errno = 0;
+	    conversion = strtoll(optarg, &tmp, 16);
+
+	    if (!*optarg || isspace(*optarg) || *tmp || conversion < 0) {
 		printf("Volume ID must be a hexadecimal number\n");
 		usage(argv[0], 1);
 	    }
+	    if (conversion > UINT32_MAX) {
+		printf("Volume ID does not fit in 32 bit\n");
+		usage(argv[0], 1);
+	    }
+	    if (errno) {
+		printf("Parsing volume ID failed (%s)\n", strerror(errno));
+		usage(argv[0], 1);
+	    }
+
+	    volume_id = conversion;
 	    break;
 
 	case 'l':		/* l : Bad block filename */
