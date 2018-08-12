@@ -417,7 +417,7 @@ static void get_list_blocks(char *filename)
 {
     int i;
     FILE *listfile;
-    long blockno;
+    long long blockno;
     char *line = NULL;
     size_t linesize = 0;
     int lineno = 0;
@@ -439,9 +439,9 @@ static void get_list_blocks(char *filename)
 	}
 
 	errno = 0;
-	blockno = strtol(line, &end, 10);
+	blockno = strtoll(line, &end, 10);
 
-	if (errno) {
+	if (errno || blockno < 0) {
 	    fprintf(stderr,
 		    "While converting bad block number in line %d: %s\n",
 		    lineno, strerror(errno));
@@ -466,16 +466,16 @@ static void get_list_blocks(char *filename)
 
 	/* Mark all of the sectors in the block as bad */
 	for (i = 0; i < SECTORS_PER_BLOCK; i++) {
-	    unsigned long sector = blockno * SECTORS_PER_BLOCK + i;
+	    unsigned long long sector = blockno * SECTORS_PER_BLOCK + i;
 
 	    if (sector < start_data_sector) {
-		fprintf(stderr, "Block number %ld is before data area\n",
+		fprintf(stderr, "Block number %lld is before data area\n",
 			blockno);
 		die("Error in bad blocks file");
 	    }
 
 	    if (sector >= num_sectors) {
-		fprintf(stderr, "Block number %ld is behind end of filesystem\n",
+		fprintf(stderr, "Block number %lld is behind end of filesystem\n",
 			blockno);
 		die("Error in bad blocks file");
 	    }
