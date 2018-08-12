@@ -44,6 +44,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <ctype.h>
 
 #include "blkdev.h"
 #include "device_info.h"
@@ -109,7 +111,7 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
     char holders_path[PATH_MAX + 1];
     DIR *holders_dir;
     struct dirent *dir_entry;
-    unsigned long number;
+    long number;
     char *endptr;
 
     if (device_info_verbose >= 3)
@@ -227,8 +229,9 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
 	if (device_info_verbose >= 3)
 	    printf("attribute \"partition\" is \"%s\"\n", attr);
 
-	number = strtoul(attr, &endptr, 10);
-	if (!*endptr)
+	errno = 0;
+	number = strtol(attr, &endptr, 10);
+	if (*attr && !isspace(*attr) && !*endptr && !errno && number >= 0 && number <= INT_MAX)
 	    info->partition = number;
     } else {
 	printf("attribute \"partition\" not found\n");
