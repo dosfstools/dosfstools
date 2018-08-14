@@ -32,6 +32,7 @@
 #include <wctype.h>
 #include <termios.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include "common.h"
 
@@ -296,10 +297,14 @@ uint32_t generate_volume_id(void)
 {
     struct timeval now;
 
-    gettimeofday(&now, NULL);
+    if (gettimeofday(&now, NULL) != 0 || now.tv_sec == (time_t)-1 || now.tv_sec < 0) {
+        srand(getpid());
+        /* rand() returns int from [0,RAND_MAX], therefore only 31 bits */
+        return (((uint32_t)(rand() & 0xFFFF)) << 16) | ((uint32_t)(rand() & 0xFFFF));
+    }
 
     /* volume ID = current time, fudged for more uniqueness */
-    return (now.tv_sec << 20) | now.tv_usec;
+    return ((uint32_t)now.tv_sec << 20) | (uint32_t)now.tv_usec;
 }
 
 /*
