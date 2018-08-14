@@ -7,6 +7,7 @@
    Copyright (C) 1998-2005 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
    Copyright (C) 2015-2016 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2018 Pali Rohár <pali.rohar@gmail.com>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -106,14 +107,26 @@ static inline int cdiv(int a, int b)
 
 #define BOOT_SIGN 0xAA55	/* Boot sector magic number */
 
-#define MAX_CLUST_12	((1 << 12) - 16)
-#define MAX_CLUST_16	((1 << 16) - 16)
-#define MIN_CLUST_32    65529
+/* According to Microsoft FAT specification (fatgen103.doc) disk with
+ * 4085 clusters (or more) is FAT16, but Microsoft Windows FAT driver
+ * fastfat.sys detects disk with less then 4087 clusters as FAT12.
+ * Linux FAT drivers msdos.ko and vfat.ko detect disk with at least
+ * 4085 clusters as FAT16, therefore for compatibility reasons with
+ * both systems disallow formatting disks to 4085 or 4086 clusters. */
+#define MAX_CLUST_12	4084
+#define MIN_CLUST_16	4087
+
+/* According to Microsoft FAT specification (fatgen103.doc) disk with
+ * 65525 clusters (or more) is FAT32, but Microsoft Windows FAT driver
+ * fastfat.sys, Linux FAT drivers msdos.ko and vfat.ko detect disk as
+ * FAT32 when Sectors Per FAT (fat_length) is set to zero. And not by
+ * number of clusters. Still there is cluster upper limit for FAT16. */
+#define MAX_CLUST_16	65524
+#define MIN_CLUST_32	65525
+
 /* M$ says the high 4 bits of a FAT32 FAT entry are reserved and don't belong
  * to the cluster number. So the max. cluster# is based on 2^28 */
-#define MAX_CLUST_32	((1 << 28) - 16)
-
-#define FAT12_THRESHOLD	4085
+#define MAX_CLUST_32	268435446
 
 #define OLDGEMDOS_MAX_SECTORS	32765
 #define GEMDOS_MAX_SECTORS	65531
@@ -830,7 +843,7 @@ static void setup_tables(void)
 	    if (verbose >= 2)
 		printf("FAT12: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
 		       clust12, fatlength12, maxclust12, MAX_CLUST_12);
-	    if (clust12 > maxclust12 - 2) {
+	    if (clust12 > maxclust12) {
 		clust12 = 0;
 		if (verbose >= 2)
 		    printf("FAT12: too much clusters\n");
@@ -850,15 +863,14 @@ static void setup_tables(void)
 	    if (verbose >= 2)
 		printf("FAT16: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
 		       clust16, fatlength16, maxclust16, MAX_CLUST_16);
-	    if (clust16 > maxclust16 - 2) {
+	    if (clust16 > maxclust16) {
 		if (verbose >= 2)
 		    printf("FAT16: too much clusters\n");
 		clust16 = 0;
 	    }
-	    /* The < 4078 avoids that the filesystem will be misdetected as having a
+	    /* This avoids that the filesystem will be misdetected as having a
 	     * 12 bit FAT. */
-	    if (clust16 < FAT12_THRESHOLD
-		&& !(size_fat_by_user && size_fat == 16)) {
+	    if (clust16 && clust16 < MIN_CLUST_16) {
 		if (verbose >= 2)
 		    printf("FAT16: would be misdetected as FAT12\n");
 		clust16 = 0;
@@ -875,19 +887,20 @@ static void setup_tables(void)
 	    maxclust32 = (fatlength32 * sector_size) / 4;
 	    if (maxclust32 > MAX_CLUST_32)
 		maxclust32 = MAX_CLUST_32;
-	    if (clust32 && clust32 < MIN_CLUST_32
-		&& !(size_fat_by_user && size_fat == 32)) {
-		clust32 = 0;
-		if (verbose >= 2)
-		    printf("FAT32: not enough clusters (%d)\n", MIN_CLUST_32);
-	    }
 	    if (verbose >= 2)
 		printf("FAT32: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
 		       clust32, fatlength32, maxclust32, MAX_CLUST_32);
 	    if (clust32 > maxclust32) {
-		clust32 = 0;
 		if (verbose >= 2)
 		    printf("FAT32: too much clusters\n");
+		clust32 = 0;
+	    }
+	    /* When explicitely asked, allow to create FAT32 with less then MIN_CLUST_32 */
+	    if (clust32 && clust32 < MIN_CLUST_32
+		&& !(size_fat_by_user && size_fat == 32)) {
+		if (verbose >= 2)
+		    printf("FAT32: not enough clusters (%u)\n", MIN_CLUST_32);
+		clust32 = 0;
 	    }
 
 	    if ((clust12 && (size_fat == 0 || size_fat == 12)) ||
@@ -916,23 +929,6 @@ static void setup_tables(void)
 	    break;
 
 	case 16:
-	    if (clust16 < FAT12_THRESHOLD) {
-		if (size_fat_by_user) {
-		    fprintf(stderr, "WARNING: Not enough clusters for a "
-			    "16 bit FAT! The filesystem will be\n"
-			    "misinterpreted as having a 12 bit FAT without "
-			    "mount option \"fat=16\".\n");
-		} else {
-		    fprintf(stderr, "This filesystem has an unfortunate size. "
-			    "A 12 bit FAT cannot provide\n"
-			    "enough clusters, but a 16 bit FAT takes up a little "
-			    "bit more space so that\n"
-			    "the total number of clusters becomes less than the "
-			    "threshold value for\n"
-			    "distinction between 12 and 16 bit FATs.\n");
-		    die("Make the filesystem a bit smaller manually.");
-		}
-	    }
 	    cluster_count = clust16;
 	    fat_length = fatlength16;
 	    bs.fat_length = htole16(fatlength16);
