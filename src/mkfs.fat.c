@@ -220,7 +220,7 @@ static char *device_name = NULL;	/* Name of the device on which to create the fi
 static int check = FALSE;	/* Default to no readablity checking */
 static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
-static time_t create_time;	/* Creation time */
+static time_t create_time = -1;	/* Creation time */
 static char *volume_name = initial_volume_name;	/* Volume name */
 static uint64_t blocks;	/* Number of blocks in filesystem */
 static unsigned sector_size = 512;	/* Size of a logical sector */
@@ -1170,17 +1170,26 @@ static void setup_tables(void)
 	if (de->name[0] == 0xe5)
 	    de->name[0] = 0x05;
 	de->attr = ATTR_VOLUME;
-	if (!invariant)
+	if (create_time != (time_t)-1) {
+	    if (!invariant)
 		ctime = localtime(&create_time);
-	else
+	    else
 		ctime = gmtime(&create_time);
-	de->time = htole16((unsigned short)((ctime->tm_sec >> 1) +
-					    (ctime->tm_min << 5) +
-					    (ctime->tm_hour << 11)));
-	de->date =
-	    htole16((unsigned short)(ctime->tm_mday +
-				     ((ctime->tm_mon + 1) << 5) +
-				     ((ctime->tm_year - 80) << 9)));
+	} else {
+	    ctime = NULL;
+	}
+	if (ctime && ctime->tm_year >= 80 && ctime->tm_year <= 207) {
+	    de->time = htole16((unsigned short)((ctime->tm_sec >> 1) +
+						(ctime->tm_min << 5) +
+						(ctime->tm_hour << 11)));
+	    de->date = htole16((unsigned short)(ctime->tm_mday +
+						((ctime->tm_mon + 1) << 5) +
+						((ctime->tm_year - 80) << 9)));
+	} else {
+	    /* fallback to 1.1.1980 00:00:00 */
+	    de->time = htole16(0);
+	    de->date = htole16(1 + (1 << 5));
+	}
 	de->ctime_cs = 0;
 	de->ctime = de->time;
 	de->cdate = de->date;
@@ -1362,8 +1371,8 @@ int main(int argc, char **argv)
 	    program_name = p + 1;
     }
 
-    gettimeofday(&create_timeval, NULL);
-    create_time = create_timeval.tv_sec;
+    if (gettimeofday(&create_timeval, NULL) == 0 && create_timeval.tv_sec != (time_t)-1)
+        create_time = create_timeval.tv_sec;
     volume_id = generate_volume_id();
     check_atari();
 

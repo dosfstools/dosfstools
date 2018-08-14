@@ -688,8 +688,8 @@ off_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
 
 static void write_volume_label(DOS_FS * fs, char *label)
 {
-    time_t now = time(NULL);
-    struct tm *mtime = localtime(&now);
+    time_t now;
+    struct tm *mtime;
     off_t offset;
     int created;
     DIR_ENT de;
@@ -705,12 +705,20 @@ static void write_volume_label(DOS_FS * fs, char *label)
     if (de.name[0] == 0xe5)
 	de.name[0] = 0x05;
 
-    de.time = htole16((unsigned short)((mtime->tm_sec >> 1) +
-				       (mtime->tm_min << 5) +
-				       (mtime->tm_hour << 11)));
-    de.date = htole16((unsigned short)(mtime->tm_mday +
-				       ((mtime->tm_mon + 1) << 5) +
-				       ((mtime->tm_year - 80) << 9)));
+    now = time(NULL);
+    mtime = (now != (time_t)-1) ? localtime(&now) : NULL;
+    if (mtime && mtime->tm_year >= 80 && mtime->tm_year <= 207) {
+	de.time = htole16((unsigned short)((mtime->tm_sec >> 1) +
+					   (mtime->tm_min << 5) +
+					   (mtime->tm_hour << 11)));
+	de.date = htole16((unsigned short)(mtime->tm_mday +
+					 ((mtime->tm_mon + 1) << 5) +
+					 ((mtime->tm_year - 80) << 9)));
+    } else {
+	/* fallback to 1.1.1980 00:00:00 */
+	de.time = htole16(0);
+	de.date = htole16(1 + (1 << 5));
+    }
     if (created) {
 	de.attr = ATTR_VOLUME;
 	de.ctime_ms = 0;
