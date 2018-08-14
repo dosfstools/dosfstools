@@ -297,7 +297,7 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int l
 	/* there are any differences */
 	uint8_t *p, *q;
 	int i, pos, first = 1;
-	char buf[20];
+	char buf[32];
 
 	printf("There are differences between boot sector and its backup.\n");
 	printf("This is mostly harmless. Differences: (offset:original/backup)\n  ");

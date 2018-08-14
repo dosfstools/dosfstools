@@ -137,13 +137,14 @@ static char *file_stat(DOS_FILE * file)
 {
     static char temp[100];
     struct tm *tm;
-    char tmp[100];
+    char tmp[40];
     time_t date;
 
     date =
 	date_dos2unix(le16toh(file->dir_ent.time), le16toh(file->dir_ent.date));
     tm = localtime(&date);
-    strftime(tmp, 99, "%H:%M:%S %b %d %Y", tm);
+    if (!strftime(tmp, 40, "%H:%M:%S %b %d %Y", tm))
+	strcpy(tmp, "<internal format error>");
     sprintf(temp, "  Size %u bytes, date %s", le32toh(file->dir_ent.size), tmp);
     return temp;
 }
