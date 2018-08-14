@@ -108,44 +108,31 @@ static char *path_name(DOS_FILE * file)
     return path;
 }
 
-static const int day_n[] =
-    {   0,  31,  59,  90, 120, 151, 181, 212, 243, 273, 304, 334, 0, 0, 0, 0 };
-/*    Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec              */
-
-/* Convert a MS-DOS time/date pair to a UNIX date (seconds since 1 1 70). */
-
-static time_t date_dos2unix(unsigned short time, unsigned short date)
-{
-    int month, year;
-    time_t secs;
-
-    month = ((date >> 5) & 15) - 1;
-    if (month < 0) {
-	/* make sure that nothing bad happens if the month bits were zero */
-	month = 0;
-    }
-    year = date >> 9;
-    secs =
-	(time & 31) * 2 + 60 * ((time >> 5) & 63) + (time >> 11) * 3600 +
-	86400 * ((date & 31) - 1 + day_n[month] + (year / 4) + year * 365 -
-		 ((year & 3) == 0 && month < 2 ? 1 : 0) + 3653);
-    /* days since 1.1.70 plus 80's leap day */
-    return secs;
-}
+static const char *month_str[] =
+    { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
 static char *file_stat(DOS_FILE * file)
 {
     static char temp[100];
-    struct tm *tm;
-    char tmp[40];
-    time_t date;
+    unsigned int hours, minutes, secs, day, month, year;
+    unsigned short time, date;
 
-    date =
-	date_dos2unix(le16toh(file->dir_ent.time), le16toh(file->dir_ent.date));
-    tm = localtime(&date);
-    if (!strftime(tmp, 40, "%H:%M:%S %b %d %Y", tm))
-	strcpy(tmp, "<internal format error>");
-    sprintf(temp, "  Size %u bytes, date %s", le32toh(file->dir_ent.size), tmp);
+    time = le16toh(file->dir_ent.time);
+    date = le16toh(file->dir_ent.date);
+    year = 1980 + (date >> 9);
+    month = ((date >> 5) & 15);
+    if (month < 1) month = 1;
+    else if (month > 12) month = 12;
+    day = (date & 31);
+    if (day < 1) day = 1;
+    hours = (time >> 11);
+    if (hours > 23) hours = 23;
+    minutes = ((time >> 5) & 63);
+    if (minutes > 59) minutes = 59;
+    secs = (time & 31) * 2;
+    if (secs > 59) secs = 59;
+    sprintf(temp, "  Size %u bytes, date %02u:%02u:%02u %s %02u %4u",
+        le32toh(file->dir_ent.size), hours, minutes, secs, month_str[month-1], day, year);
     return temp;
 }
 
