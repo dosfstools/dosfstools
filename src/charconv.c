@@ -80,6 +80,20 @@ static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned i
     return 1;
 }
 
+static int cp850_string_to_wchar_string(wchar_t *out, const char *in, unsigned int out_size)
+{
+    unsigned i;
+    for (i = 0; i < out_size-1 && i < 11 && in[i]; ++i) {
+        out[i] = (in[i] & 0x80) ? cp850_table[in[i] & 0x7F] : in[i];
+    }
+    if (i < 11 && in[i]) {
+        fprintf(stderr, "Cannot convert input string to 'CP850': String is too long\n");
+        return 0;
+    }
+    out[i] = L'\0';
+    return 1;
+}
+
 static int cp850_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 {
     size_t ret;
@@ -128,26 +142,28 @@ static int local_string_to_cp850_string(char *out, const char *in, unsigned int 
 
 #ifdef HAVE_ICONV
 
-static int iconv_init_codepage(int codepage, iconv_t *to_local, iconv_t *from_local)
+static int iconv_init_codepage(int codepage, const char *local, iconv_t *to_local, iconv_t *from_local)
 {
     char codepage_name[32];
     snprintf(codepage_name, sizeof(codepage_name), "CP%d//TRANSLIT", codepage);
-    *to_local = iconv_open(nl_langinfo(CODESET), codepage_name);
+    *to_local = iconv_open(local, codepage_name);
     if (*to_local == (iconv_t) - 1) {
         snprintf(codepage_name, sizeof(codepage_name), "CP%d", codepage);
-        *to_local = iconv_open(nl_langinfo(CODESET), codepage_name);
+        *to_local = iconv_open(local, codepage_name);
     }
     if (*to_local == (iconv_t) - 1)
-        fprintf(stderr, "Cannot initialize conversion from codepage %d to %s: %s\n", codepage, nl_langinfo(CODESET), strerror(errno));
+        fprintf(stderr, "Cannot initialize conversion from codepage %d to %s: %s\n", codepage, local, strerror(errno));
     snprintf(codepage_name, sizeof(codepage_name), "CP%d", codepage);
-    *from_local = iconv_open(codepage_name, nl_langinfo(CODESET));
+    *from_local = iconv_open(codepage_name, local);
     if (*from_local == (iconv_t) - 1)
-        fprintf(stderr, "Cannot initialize conversion from %s to codepage %d: %s\n", nl_langinfo(CODESET), codepage, strerror(errno));
+        fprintf(stderr, "Cannot initialize conversion from %s to codepage %d: %s\n", local, codepage, strerror(errno));
     return (*to_local != (iconv_t)-1 && *from_local != (iconv_t)-1) ? 1 : 0;
 }
 
 static iconv_t dos_to_local;
 static iconv_t local_to_dos;
+static iconv_t dos_to_wchar;
+static iconv_t wchar_to_dos;
 static int used_codepage;
 static int internal_cp850;
 
@@ -164,7 +180,9 @@ static int init_conversion(int codepage)
 	if (codepage < 0)
 	    codepage = DEFAULT_DOS_CODEPAGE;
 	setlocale(LC_CTYPE, "");	/* initialize locale for CODESET */
-	if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos))
+	if (!iconv_init_codepage(codepage, nl_langinfo(CODESET), &dos_to_local, &local_to_dos))
+	    initialized = 0;
+	if (initialized && !iconv_init_codepage(codepage, "WCHAR_T", &dos_to_wchar, &wchar_to_dos))
 	    initialized = 0;
 	if (!initialized && codepage == 850) {
 	    fprintf(stderr, "Using internal CP850 conversion table\n");
@@ -228,6 +246,72 @@ int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
     return 1;
 }
 
+int dos_string_to_wchar_string(wchar_t *out, char *in, unsigned int out_size)
+{
+    ICONV_CONST char *pin = in;
+    char *pout = (char *)out;
+    size_t bytes_in = strnlen(in, 11);
+    size_t bytes_out = out_size-sizeof(wchar_t);
+    size_t ret;
+    if (!init_conversion(-1))
+        return 0;
+    if (internal_cp850)
+        return cp850_string_to_wchar_string(out, in, out_size);
+    ret = iconv(dos_to_wchar, &pin, &bytes_in, &pout, &bytes_out);
+    if (ret == (size_t)-1) {
+        if (errno == E2BIG)
+            fprintf(stderr, "Cannot convert input string from 'CP%d': String is too long\n",
+                    used_codepage);
+        else
+            fprintf(stderr, "Cannot convert input sequence '\\x%.02hhX' from 'CP%d': %s\n",
+                    *pin, used_codepage, strerror(errno));
+        iconv(dos_to_wchar, NULL, NULL, &pout, &bytes_out);
+        return 0;
+    } else {
+        ret = iconv(dos_to_wchar, NULL, NULL, &pout, &bytes_out);
+        if (ret == (size_t)-1) {
+            fprintf(stderr, "Cannot convert input string from 'CP%d': String is too long\n",
+                    used_codepage);
+            return 0;
+        }
+    }
+    out[(out_size-sizeof(wchar_t)-bytes_out)/sizeof(wchar_t)] = L'\0';
+    return 1;
+}
+
+int wchar_string_to_dos_string(char *out, wchar_t *in, unsigned int out_size)
+{
+    ICONV_CONST char *pin = (char *)in;
+    char *pout = out;
+    size_t bytes_in = wcslen(in)*sizeof(wchar_t);
+    size_t bytes_out = out_size-1;
+    size_t ret;
+    if (!init_conversion(-1))
+        return 0;
+    if (internal_cp850)
+        return wchar_string_to_cp850_string(out, in, out_size);
+    ret = iconv(wchar_to_dos, &pin, &bytes_in, &pout, &bytes_out);
+    if (ret == (size_t)-1) {
+        if (errno == E2BIG)
+            fprintf(stderr, "Cannot convert input string '%ls' to 'CP%d': String is too long\n",
+                    in, used_codepage);
+        else
+            fprintf(stderr, "Cannot convert input character '%lc' to 'CP%d': %s\n",
+                    (wint_t)*(wchar_t *)pin, used_codepage, strerror(errno));
+        iconv(wchar_to_dos, NULL, NULL, &pout, &bytes_out);
+        return 0;
+    } else {
+        ret = iconv(wchar_to_dos, NULL, NULL, &pout, &bytes_out);
+        if (ret == (size_t)-1) {
+            fprintf(stderr, "Cannot convert input string '%ls' to 'CP%d': String is too long\n",
+                    in, used_codepage);
+            return 0;
+        }
+    }
+    out[out_size-1-bytes_out] = 0;
+    return 1;
+}
+
 #else
 
 int set_dos_codepage(int codepage)
@@ -252,6 +336,16 @@ int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
 {
     return local_string_to_cp850_string(out, in, out_size);
+}
+
+int dos_string_to_wchar_string(wchar_t *out, char *in, unsigned int out_size)
+{
+    return cp850_string_to_wchar_string(out, in, out_size);
+}
+
+int wchar_string_to_dos_string(char *out, wchar_t *in, unsigned int out_size)
+{
+    return wchar_string_to_cp850_string(out, in, out_size);
 }
 
 #endif
