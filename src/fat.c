@@ -118,8 +118,8 @@ void read_fat(DOS_FS * fs)
     }
     if (second && memcmp(first, second, eff_size) != 0) {
 	FAT_ENTRY first_media, second_media;
-	get_fat(&first_media, first, 0, fs);
-	get_fat(&second_media, second, 0, fs);
+	get_fat(&first_media, first, 1, fs);
+	get_fat(&second_media, second, 1, fs);
 	first_ok = (first_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
 	second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
 	if (first_ok && !second_ok) {
