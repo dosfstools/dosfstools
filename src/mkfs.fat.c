@@ -1224,8 +1224,8 @@ static void setup_tables(void)
 	       (le16toh(bs.secs_track) != 1) ? "s" : "");
 	printf("hidden sectors 0x%04x;\n",  hidden_sectors);
 	printf("logical sector size is %d,\n", sector_size);
-	printf("using 0x%02x media descriptor, with %d sectors;\n",
-	       (int)(bs.media), num_sectors);
+	printf("using 0x%02x media descriptor, with %u sectors;\n",
+	       (int)(bs.media), (unsigned)num_sectors);
 	printf("drive number 0x%02x;\n", (int) (vi->drive_number));
 	printf("filesystem has %d %d-bit FAT%s and %d sector%s per cluster.\n",
 	       (int)(bs.fats), size_fat, (bs.fats != 1) ? "s" : "",
