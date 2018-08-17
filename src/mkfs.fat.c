@@ -841,12 +841,12 @@ static void setup_tables(void)
 	    if (maxclust12 > MAX_CLUST_12)
 		maxclust12 = MAX_CLUST_12;
 	    if (verbose >= 2)
-		printf("FAT12: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
+		printf("Trying FAT12: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
 		       clust12, fatlength12, maxclust12, MAX_CLUST_12);
 	    if (clust12 > maxclust12) {
 		clust12 = 0;
 		if (verbose >= 2)
-		    printf("FAT12: too much clusters\n");
+		    printf("Trying FAT12: too much clusters\n");
 	    }
 
 	    clust16 = ((long long)fatdata1216 * sector_size + nr_fats * 4) /
@@ -861,18 +861,18 @@ static void setup_tables(void)
 	    if (maxclust16 > MAX_CLUST_16)
 		maxclust16 = MAX_CLUST_16;
 	    if (verbose >= 2)
-		printf("FAT16: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
-		       clust16, fatlength16, maxclust16, MAX_CLUST_16);
+		printf("Trying FAT16: #clu=%u, fatlen=%u, maxclu=%u, limit=%u/%u\n",
+		       clust16, fatlength16, maxclust16, MIN_CLUST_16, MAX_CLUST_16);
 	    if (clust16 > maxclust16) {
 		if (verbose >= 2)
-		    printf("FAT16: too much clusters\n");
+		    printf("Trying FAT16: too much clusters\n");
 		clust16 = 0;
 	    }
 	    /* This avoids that the filesystem will be misdetected as having a
 	     * 12 bit FAT. */
 	    if (clust16 && clust16 < MIN_CLUST_16) {
 		if (verbose >= 2)
-		    printf("FAT16: would be misdetected as FAT12\n");
+		    printf("Trying FAT16: not enough clusters, would be misdetected as FAT12\n");
 		clust16 = 0;
 	    }
 
@@ -888,18 +888,18 @@ static void setup_tables(void)
 	    if (maxclust32 > MAX_CLUST_32)
 		maxclust32 = MAX_CLUST_32;
 	    if (verbose >= 2)
-		printf("FAT32: #clu=%u, fatlen=%u, maxclu=%u, limit=%u\n",
-		       clust32, fatlength32, maxclust32, MAX_CLUST_32);
+		printf("Trying FAT32: #clu=%u, fatlen=%u, maxclu=%u, limit=%u/%u\n",
+		       clust32, fatlength32, maxclust32, MIN_CLUST_32, MAX_CLUST_32);
 	    if (clust32 > maxclust32) {
 		if (verbose >= 2)
-		    printf("FAT32: too much clusters\n");
+		    printf("Trying FAT32: too much clusters\n");
 		clust32 = 0;
 	    }
 	    /* When explicitely asked, allow to create FAT32 with less then MIN_CLUST_32 */
 	    if (clust32 && clust32 < MIN_CLUST_32
 		&& !(size_fat_by_user && size_fat == 32)) {
 		if (verbose >= 2)
-		    printf("FAT32: not enough clusters (%u)\n", MIN_CLUST_32);
+		    printf("Trying FAT32: not enough clusters\n");
 		clust32 = 0;
 	    }
 
@@ -937,8 +937,7 @@ static void setup_tables(void)
 
 	case 32:
 	    if (clust32 < MIN_CLUST_32)
-		fprintf(stderr,
-			"WARNING: Not enough clusters for a 32 bit FAT!\n");
+		fprintf(stderr, "WARNING: Number of clusters for 32 bit FAT is less then suggested minimum.\n");
 	    cluster_count = clust32;
 	    fat_length = fatlength32;
 	    bs.fat_length = htole16(0);
@@ -1196,9 +1195,9 @@ static void setup_tables(void)
 
     if (!cluster_count) {
 	if (sectors_per_cluster)	/* If yes, die if we'd spec'd sectors per cluster */
-	    die("Too many clusters for filesystem - try more sectors per cluster");
+	    die("Not enough or too many clusters for filesystem - try less or more sectors per cluster");
 	else
-	    die("Attempting to create a too large filesystem");
+	    die("Attempting to create a too small or a too large filesystem");
     }
     fat_entries = cluster_count + 2;
 
