@@ -26,6 +26,7 @@
 
 #include <stdint.h>
 
+void check_dirty_bits(DOS_FS * fs);
 void read_boot(DOS_FS * fs);
 void write_label(DOS_FS * fs, char *label);
 void remove_label(DOS_FS *fs);

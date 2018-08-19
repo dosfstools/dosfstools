@@ -127,7 +127,7 @@ static inline int cdiv(int a, int b)
 
 struct msdos_volume_info {
     uint8_t drive_number;	/* BIOS drive number */
-    uint8_t RESERVED;		/* Unused */
+    uint8_t boot_flags;		/* bit 0: dirty, bit 1: need surface test */
     uint8_t ext_boot_sign;	/* 0x29 if fields below exist (DOS 3.3+) */
     uint8_t volume_id[4];	/* Volume ID number */
     uint8_t volume_label[11];	/* Volume label */

@@ -422,26 +422,55 @@ static char print_fat_dirty_state(void)
 		      2, "No action");
 }
 
-static void check_fat_state_bit(DOS_FS * fs, void *b)
+void check_dirty_bits(DOS_FS * fs)
 {
     if (fs->fat_bits == 32) {
-	struct boot_sector *b32 = b;
+	struct boot_sector b32;
+	FAT_ENTRY fat32_flags;
 
-	if (b32->reserved3 & FAT_STATE_DIRTY) {
-	    printf("0x41: ");
+	get_fat(&fat32_flags, fs->fat, 1, fs);
+	fs_read(0, sizeof(b32), &b32);
+
+	if ((b32.boot_flags & FAT_STATE_DIRTY) || !(fat32_flags.value & FAT32_FLAG_CLEAN_SHUTDOWN)) {
 	    if (print_fat_dirty_state() == 1) {
-		b32->reserved3 &= ~FAT_STATE_DIRTY;
-		fs_write(0, sizeof(*b32), b32);
+		if (b32.boot_flags & FAT_STATE_DIRTY) {
+		    b32.boot_flags &= ~FAT_STATE_DIRTY;
+		    fs_write(0, sizeof(b32), &b32);
+		}
+		if (!(fat32_flags.value & FAT32_FLAG_CLEAN_SHUTDOWN)) {
+		    uint32_t *new_flags_ptr = (uint32_t *)(fs->fat + 4);
+		    *new_flags_ptr = htole32(fat32_flags.value | FAT32_FLAG_CLEAN_SHUTDOWN | (fat32_flags.reserved << 28));
+		    fs_write(fs->fat_start + 4, 4, new_flags_ptr);
+		    if (fs->nfats > 1)
+			fs_write(fs->fat_start + 4 + fs->fat_size, 4, new_flags_ptr);
+		}
 	    }
 	}
     } else {
-	struct boot_sector_16 *b16 = b;
+	struct boot_sector_16 b16;
+	FAT_ENTRY fat16_flags;
+	int fat16_is_dirty = 0;
 
-	if (b16->reserved2 & FAT_STATE_DIRTY) {
-	    printf("0x25: ");
+	fs_read(0, sizeof(b16), &b16);
+
+	if (fs->fat_bits == 16) {
+	    get_fat(&fat16_flags, fs->fat, 1, fs);
+	    fat16_is_dirty = !(fat16_flags.value & FAT16_FLAG_CLEAN_SHUTDOWN);
+	}
+
+	if ((b16.boot_flags & FAT_STATE_DIRTY) || fat16_is_dirty) {
 	    if (print_fat_dirty_state() == 1) {
-		b16->reserved2 &= ~FAT_STATE_DIRTY;
-		fs_write(0, sizeof(*b16), b16);
+		if (b16.boot_flags & FAT_STATE_DIRTY) {
+		    b16.boot_flags &= ~FAT_STATE_DIRTY;
+		    fs_write(0, sizeof(b16), &b16);
+		}
+		if (fat16_is_dirty) {
+		    uint16_t *new_flags_ptr = (uint16_t *)(fs->fat + 2);
+		    *new_flags_ptr = htole16(fat16_flags.value | FAT16_FLAG_CLEAN_SHUTDOWN);
+		    fs_write(fs->fat_start + 2, 2, new_flags_ptr);
+		    if (fs->nfats > 1)
+			fs_write(fs->fat_start + 2 + fs->fat_size, 2, new_flags_ptr);
+		}
 	    }
 	}
     }
@@ -540,7 +569,6 @@ void read_boot(DOS_FS * fs)
 		   "  This may lead to problems on some systems.\n",
 		   (unsigned long)fs->data_clusters, FAT16_THRESHOLD);
 
-	check_fat_state_bit(fs, &b);
 	fs->backupboot_start = le16toh(b.backup_boot) * logical_sector_size;
 	check_backup_boot(fs, &b, logical_sector_size);
 
@@ -552,7 +580,6 @@ void read_boot(DOS_FS * fs)
 	if (fs->data_clusters >= FAT16_THRESHOLD)
 	    die("Too many clusters (%lu) for FAT16 filesystem.",
 		    (unsigned long)fs->data_clusters);
-	check_fat_state_bit(fs, &b);
     } else {
 	/* On Atari, things are more difficult: GEMDOS always uses 12bit FATs
 	 * on floppies, and always 16 bit on harddisks. */
