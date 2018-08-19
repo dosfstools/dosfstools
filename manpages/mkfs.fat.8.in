@@ -115,8 +115,8 @@ Sets the volume ID of the newly created filesystem; \fIVOLUME-ID\fR is a 32-bit
 hexadecimal number (for example, 2e24ec82).
 The default is a number which depends on the filesystem creation time.
 .IP "\fB\-I\fR" 4
-It is typical for fixed disk devices to be partitioned so, by default, you are
-not permitted to create a filesystem across the entire device.
+Ignore and disable safety checks. By default \fBmkfs.fat\fP refuses to create a
+filesystem on a device with partitions or virtual mapping.
 \fBmkfs.fat\fR will complain and tell you that it refuses to work.
 This is different when using MO disks.
 One doesn't always need partitions on MO disks.
@@ -135,6 +135,15 @@ If the filename is a hyphen (-), the text is taken from standard input.
 Specify the media type to be stored in the FAT boot sector.
 This value is usually 0xF8 for hard disks and is 0xF0 or a value from 0xF9 to
 0xFF for floppies or partitions to be used for floppy emulation.
+.IP "\fB\-\-mbr\fP[=\fIy\fP|\fIyes\fP|\fIn\fP|\fIno\fP|\fIa\fP|\fIauto\fP]" 4
+Fill (fake) MBR table with disk signature one partition which starts at sector
+0 (includes MBR itself) and spans whole disk device. It is needed only for
+non-removable disks used on Microsoft Windows systems and only when formatting
+whole unpartitioned disk. Location of the disk signature and partition table
+overlaps with the end of the first FAT sector (boot code location), therefore
+there is no additional space usage. Default is \fIauto\fP mode in which
+\fBmkfs.fat\fP put MBR table only for non-removable disks when formatting
+whole unpartitioned disk.
 .IP "\fB\-n\fR \fIVOLUME-NAME\fR" 4
 Sets the volume name (label) of the filesystem.
 The volume name can be up to 11 characters long.

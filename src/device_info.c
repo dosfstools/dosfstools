@@ -108,6 +108,8 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
     struct udev_device *dev, *parent;
     struct udev_enumerate *uenum;
     const char *attr;
+    char path[PATH_MAX + 1];
+    FILE *file;
     char holders_path[PATH_MAX + 1];
     DIR *holders_dir;
     struct dirent *dir_entry;
@@ -156,8 +158,21 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
 		while (entry) {
 		    if (device_info_verbose >= 2)
 			printf("child-or-self: %s\n", udev_list_entry_get_name(entry));
+		    number = 0;
+		    snprintf(path, sizeof(path), "%s/start", udev_list_entry_get_name(entry));
+		    file = fopen(path, "r");
+		    if (file) {
+			if (fscanf(file, "%ld", &number) != 1)
+			    number = 0;
+			fclose(file);
+		    }
+		    /*
+		     * skip children which start at zero offset,
+		     * they represent parent device itself
+		     */
+		    if (number > 0)
+			info->has_children++;
 		    entry = udev_list_entry_get_next(entry);
-		    info->has_children++;
 		}
 	    } else
 		info->has_children = 0;

@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	return 1;
     }
 
-    fd = open(argv[1], O_RDONLY);
+    fd = open(argv[1], O_RDONLY | O_NONBLOCK);
     if (fd < 0) {
 	perror("open device");
 	return 1;

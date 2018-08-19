@@ -234,7 +234,7 @@ static int size_fat = 0;	/* Size in bits of FAT entries */
 static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
 static int dev = -1;		/* FS block device file handle */
 static off_t part_sector = 0; /* partition offset in sector */
-static int ignore_full_disk = 0;	/* Ignore warning about 'full' disk devices */
+static int ignore_safety_checks = 0;	/* Ignore safety checks */
 static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
 static int start_data_sector;	/* Sector number for the start of the data area */
@@ -261,6 +261,7 @@ static int orphaned_sectors = 0;	/* Sectors that exist in the last block of file
 static int invariant = 0;		/* Whether to set normally randomized or
 					   current time based values to
 					   constants */
+static int fill_mbr_partition = -1;	/* Whether to fill MBR partition table or not */
 
 /* Function prototype definitions */
 
@@ -1028,6 +1029,100 @@ static void setup_tables(void)
 	}
     }
 
+    if (fill_mbr_partition) {
+        uint8_t *partition;
+        uint8_t *disk_sig_ptr;
+        uint32_t disk_sig;
+        uint8_t buf[512];
+        int fd;
+
+        if (verbose)
+            printf("Adding MBR table\n");
+
+        if (size_fat == 32)
+            disk_sig_ptr = bs.fat32.boot_code + BOOTCODE_FAT32_SIZE - 16*4 - 6;
+        else
+            disk_sig_ptr = bs.oldfat.boot_code + BOOTCODE_SIZE - 16*4 - 6;
+
+        if (*(disk_sig_ptr-1)) {
+            printf("Warning: message too long; truncated\n");
+            *(disk_sig_ptr-1) = 0;
+        }
+
+        disk_sig = 0;
+        memset(disk_sig_ptr, 0, 16*4 + 6);
+
+        /* Try to read existing 32 bit disk signature */
+        fd = open(device_name, O_RDONLY);
+        if (fd >= 0) {
+            if (read(fd, buf, sizeof(buf)) == sizeof(buf) && buf[510] == 0x55 && buf[511] == 0xAA)
+                disk_sig = (uint32_t)buf[440] | ((uint32_t)buf[441] << 8) | ((uint32_t)buf[442] << 16) | ((uint32_t)buf[443] << 24);
+            close(fd);
+        }
+
+        /* If is not available then generate random 32 bit disk signature */
+        if (invariant)
+            disk_sig = volume_id;
+        else if (!disk_sig)
+            disk_sig = generate_volume_id();
+
+        disk_sig_ptr[0] = (disk_sig >>  0) & 0xFF;
+        disk_sig_ptr[1] = (disk_sig >>  8) & 0xFF;
+        disk_sig_ptr[2] = (disk_sig >> 16) & 0xFF;
+        disk_sig_ptr[3] = (disk_sig >> 24) & 0xFF;
+
+        partition = disk_sig_ptr + 6;
+
+        /* Active flag */
+        partition[0] = 0x80;
+
+        /* CHS address of the first sector */
+        partition[1] = 0;
+        partition[2] = 1;
+        partition[3] = 0;
+
+        /* Partition type */
+        if (le16toh(bs.heads) > 254 || le16toh(bs.secs_track) > 63) { /* CHS values are out of range for MBR, use LBA */
+            if (size_fat != 32)
+                partition[4] = 0x0E; /* BIG FAT16 (LBA) */
+            else
+                partition[4] = 0x0C; /* FAT32 (LBA) */
+        } else if (size_fat == 12 && num_sectors < 65536)
+            partition[4] = 0x01; /* FAT12 (CHS) */
+        else if (size_fat == 16 && num_sectors < 65536)
+            partition[4] = 0x04; /* FAT16 (CHS) */
+        else if (size_fat != 32 && num_sectors < le16toh(bs.secs_track) * le16toh(bs.heads) * 1024)
+            partition[4] = 0x06; /* BIG FAT16 or FAT12 (CHS) */
+        else if (size_fat != 32)
+            partition[4] = 0x0E; /* BIG FAT16 (LBA) */
+        else
+            partition[4] = 0x0C; /* FAT32 (LBA) */
+
+        /* CHS address of the last sector */
+        if (le16toh(bs.heads) > 254 || le16toh(bs.secs_track) > 63 || num_sectors >= le16toh(bs.secs_track) * le16toh(bs.heads) * 1024) {
+            /* If CHS address is too large use tuple (1023, 254, 63) */
+            partition[5] = 254;
+            partition[6] = 255;
+            partition[7] = 255;
+        } else {
+            partition[5] = (num_sectors / le16toh(bs.secs_track)) % le16toh(bs.heads);
+            partition[6] = ((1 + num_sectors % le16toh(bs.secs_track)) & 63) | (((num_sectors / (le16toh(bs.heads) * le16toh(bs.secs_track))) >> 8) * 64);
+            partition[7] = (num_sectors / (le16toh(bs.heads) * le16toh(bs.secs_track))) & 255;
+        }
+
+        /* LBA of the first sector */
+        partition[ 8] = 0;
+        partition[ 9] = 0;
+        partition[10] = 0;
+        partition[11] = 0;
+
+        /* Number of sectors */
+        partition[12] = (num_sectors >>  0) & 0xFF;
+        partition[13] = (num_sectors >>  8) & 0xFF;
+        partition[14] = (num_sectors >> 16) & 0xFF;
+        partition[15] = (num_sectors >> 24) & 0xFF;
+    }
+
     bs.sector_size[0] = (char)(sector_size & 0x00ff);
     bs.sector_size[1] = (char)((sector_size & 0xff00) >> 8);
 
@@ -1322,10 +1417,11 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  -F SIZE         Select FAT size SIZE (12, 16 or 32)\n");
     fprintf(stderr, "  -h COUNT        Reserve COUNT hidden sectors\n");
     fprintf(stderr, "  -i VOLID        Set volume ID to VOLID (a 32 bit hexadecimal number)\n");
-    fprintf(stderr, "  -I              Disable safety checks\n");
+    fprintf(stderr, "  -I              Ignore and disable safety checks\n");
     fprintf(stderr, "  -l FILENAME     Read bad blocks list from FILENAME\n");
     fprintf(stderr, "  -m FILENAME     Replace default error message in boot block with contents of FILENAME\n");
     fprintf(stderr, "  -M TYPE         Set media type in boot sector to TYPE\n");
+    fprintf(stderr, "  --mbr[=y|n|a]   Fill (fake) MBR table with one partition which spans whole disk\n");
     fprintf(stderr, "  -n LABEL        Set volume name to LABEL (up to 11 characters long)\n");
     fprintf(stderr, "  --codepage=N    use DOS codepage N to encode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -r COUNT        Make room for COUNT entries in the root directory\n");
@@ -1358,10 +1454,11 @@ int main(int argc, char **argv)
     struct timeval create_timeval;
     long long conversion;
 
-    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET};
+    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_MBR, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET};
     const struct option long_options[] = {
 	    {"codepage",  required_argument, NULL, OPT_CODEPAGE},
 	    {"invariant", no_argument,       NULL, OPT_INVARIANT},
+	    {"mbr",       optional_argument, NULL, OPT_MBR},
 	    {"variant",   required_argument, NULL, OPT_VARIANT},
 	    {"offset",    required_argument, NULL, OPT_OFFSET},
 	    {"help",      no_argument,       NULL, OPT_HELP},
@@ -1458,7 +1555,7 @@ int main(int argc, char **argv)
 	    break;
 
 	case 'I':
-	    ignore_full_disk = 1;
+	    ignore_safety_checks = 1;
 	    break;
 
 	case 'i':		/* i : specify volume ID */
@@ -1635,6 +1732,19 @@ int main(int argc, char **argv)
 	    create_time = 1426325213;
 	    break;
 
+	case OPT_MBR:
+	    if (!optarg || !strcasecmp(optarg, "y") || !strcasecmp(optarg, "yes"))
+	        fill_mbr_partition = 1;
+	    else if (!strcasecmp(optarg, "n") || !strcasecmp(optarg, "no"))
+	        fill_mbr_partition = 0;
+	    else if (!strcasecmp(optarg, "a") || !strcasecmp(optarg, "auto"))
+	        fill_mbr_partition = -1;
+	    else {
+	        printf("Unknown option for --mbr: '%s'\n", optarg);
+	        usage(argv[0], 1);
+	    }
+	    break;
+
 	case OPT_VARIANT:
 	    if (!strcasecmp(optarg, "standard")) {
 		    atari_format = 0;
@@ -1774,14 +1884,20 @@ int main(int argc, char **argv)
     /*
      * Ignore any 'full' fixed disk devices, if -I is not given.
      */
-    if (!ignore_full_disk && devinfo.type == TYPE_FIXED &&
-	    devinfo.partition == 0)
-	die("Device partition expected, not making filesystem on entire device '%s' (use -I to override)",
-	    device_name);
-
-    if (!ignore_full_disk && devinfo.has_children > 0)
+    if (!ignore_safety_checks && devinfo.has_children > 0)
 	die("Partitions or virtual mappings on device '%s', not making filesystem (use -I to override)",
 	    device_name);
+
+    /*
+     * On non-removable fixed disk devices we need to create (fake) MBR partition
+     * table so disk would be correctly recognized on MS Windows systems.
+     */
+    if (fill_mbr_partition == -1) {
+        if (devinfo.type == TYPE_FIXED && devinfo.partition == 0)
+            fill_mbr_partition = 1;
+        else
+            fill_mbr_partition = 0;
+    }
 
     establish_params(&devinfo);
     /* Establish the media parameters */
