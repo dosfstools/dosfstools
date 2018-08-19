@@ -90,7 +90,7 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	ret = validate_volume_label(wlabel, (unsigned char *)label);
 	if (ret & 0x1) {
 	    fprintf(stderr,
-		    "fatlabel: warning - lowercase labels might not work properly with DOS or Windows\n");
+		    "fatlabel: warning - lowercase labels might not work properly on some systems\n");
 	}
 	if (ret & 0x2) {
 	    fprintf(stderr,

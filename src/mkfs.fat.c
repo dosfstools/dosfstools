@@ -724,7 +724,7 @@ static void setup_tables(void)
     ret = validate_volume_label(wlabel, (unsigned char *)label);
     if (ret & 0x1)
 	fprintf(stderr,
-		"mkfs.fat: Warning: lowercase labels might not work properly with DOS or Windows\n");
+		"mkfs.fat: Warning: lowercase labels might not work properly on some systems\n");
     if (ret & 0x2)
 	die("Labels with characters below 0x20 are not allowed\n");
     if (ret & 0x4)
