@@ -1343,6 +1343,9 @@ int main(int argc, char **argv)
     int create = 0;
     uint64_t cblocks = 0;
     int blocks_specified = 0;
+    int new_dev;
+    char proc_path[30];
+    struct stat stat;
     struct timeval create_timeval;
 
     enum {OPT_HELP=1000, OPT_INVARIANT, OPT_VARIANT, OPT_CODEPAGE};
@@ -1641,11 +1644,24 @@ int main(int argc, char **argv)
 
     if (!create) {
 	check_mount(device_name);	/* Is the device already mounted? */
-	dev = open(device_name, O_EXCL | O_RDWR);	/* Is it a suitable device to build the FS on? */
+	dev = open(device_name, O_RDWR);	/* Is it a suitable device to build the FS on? */
 	if (dev < 0) {
 	    fprintf(stderr, "%s: unable to open %s: %s\n", program_name,
 		    device_name, strerror(errno));
 	    exit(1);		/* The error exit code is 1! */
+	}
+	if (fstat(dev, &stat) == 0 && S_ISBLK(stat.st_mode)) {
+	    sprintf(proc_path, "/proc/self/fd/%d", dev);
+	    new_dev = open(proc_path, O_EXCL | O_RDWR);	/* Reopen block device with O_EXCL flag, it fails when device is already mounted */
+	    if (new_dev < 0 && errno == ENOENT)
+		new_dev = open(device_name, O_EXCL | O_RDWR);	/* ENOENT is returned when /proc is not mounted, fallback to original path */
+	    if (new_dev < 0) {
+		fprintf(stderr, "%s: unable to open %s: %s\n", program_name,
+			device_name, (errno != EBUSY) ? strerror(errno) : "Device is busy, maybe mounted?");
+		exit(1);		/* The error exit code is 1! */
+	    }
+	    close(dev);
+	    dev = new_dev;
 	}
     } else {
 	/* create the file */
