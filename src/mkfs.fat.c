@@ -593,7 +593,7 @@ static void establish_params(struct device_info *info)
     }
 
     if (!hidden_sectors_by_user && info->geom_start >= 0)
-	hidden_sectors = htole32(info->geom_start);
+	hidden_sectors = info->geom_start;
 
     if (!root_dir_entries)
 	root_dir_entries = def_root_dir_entries;
