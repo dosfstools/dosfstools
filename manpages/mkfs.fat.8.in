@@ -32,7 +32,10 @@ mkfs.fat \- create an MS\-DOS FAT filesystem
 file.
 \fIDEVICE\fR is the special file corresponding to the device (e.g. /dev/sdXX) or
 the image file (which does not need to exist when the option \fB-C\fR is given).
-\fIBLOCK-COUNT\fR is the number of blocks on the device.
+\fIBLOCK-COUNT\fR is the number of blocks on the device and size of one block is
+always 1024 bytes, independently of the sector size or the cluster size.
+Therefore \fIBLOCK-COUNT\fR specifies size of filesystem in KiB unit and not in
+the number of sectors (like for all other \fBmkfs.fat\fR options).
 If omitted, \fBmkfs.fat\fR automatically chooses a filesystem size to fill the
 available space.
 .PP
