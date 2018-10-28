@@ -443,7 +443,7 @@ static void get_list_blocks(char *filename)
 
     listfile = fopen(filename, "r");
     if (listfile == (FILE *) NULL)
-	die("Can't open file of bad blocks");
+	pdie("Can't open file of bad blocks");
 
     while (1) {
 	lineno++;
@@ -452,27 +452,20 @@ static void get_list_blocks(char *filename)
 	    if (feof(listfile))
 		break;
 
-	    perror("getline");
-	    die("Error while reading bad blocks file");
+	    pdie("Error while reading bad blocks file");
 	}
 
 	errno = 0;
 	blockno = strtoll(line, &end, 10);
 
 	if (errno || blockno < 0) {
-	    fprintf(stderr,
-		    "While converting bad block number in line %d: %s\n",
-		    lineno, strerror(errno));
-	    die("Error in bad blocks file");
+	    die("Error in bad blocks file at line %d: Badly formed number", lineno);
 	}
 
 	check = end;
 	while (*check) {
 	    if (!isspace((unsigned char)*check)) {
-		fprintf(stderr,
-			"Badly formed number in bad blocks file line %d\n",
-			lineno);
-		die("Error in bad blocks file");
+		die("Error in bad blocks file at line %d: Badly formed number", lineno);
 	    }
 
 	    check++;
@@ -487,15 +480,11 @@ static void get_list_blocks(char *filename)
 	    unsigned long long sector = blockno * SECTORS_PER_BLOCK + i;
 
 	    if (sector < start_data_sector) {
-		fprintf(stderr, "Block number %lld is before data area\n",
-			blockno);
-		die("Error in bad blocks file");
+		die("Error in bad blocks file at line %d: Block number %lld is before data area", lineno, blockno);
 	    }
 
 	    if (sector >= num_sectors) {
-		fprintf(stderr, "Block number %lld is behind end of filesystem\n",
-			blockno);
-		die("Error in bad blocks file");
+		die("Error in bad blocks file at line %d: Block number %lld is behind end of filesystem", lineno, blockno);
 	    }
 
 	    mark_sector_bad(sector);
@@ -1821,12 +1810,11 @@ int main(int argc, char **argv)
 
 	case '?':
 	    usage(argv[0], 1);
-	    exit(1);
+	    break;
 
 	default:
-	    fprintf(stderr,
-		    "Internal error: getopt_long() returned unexpected value %d\n", c);
-	    exit(2);
+	    die("Internal error: getopt_long() returned unexpected value %d\n", c);
+	    break;
 	}
 
     if (!set_dos_codepage(codepage))
@@ -1868,9 +1856,7 @@ int main(int argc, char **argv)
 	check_mount(device_name);	/* Is the device already mounted? */
 	dev = open(device_name, O_EXCL | O_RDWR);	/* Is it a suitable device to build the FS on? */
 	if (dev < 0) {
-	    fprintf(stderr, "%s: unable to open %s: %s\n", program_name,
-		    device_name, strerror(errno));
-	    exit(1);		/* The error exit code is 1! */
+	    pdie("unable to open %s", device_name);
 	}
     } else {
 	/* create the file */
@@ -1879,11 +1865,11 @@ int main(int argc, char **argv)
 	    if (errno == EEXIST)
 		die("file %s already exists", device_name);
 	    else
-		die("unable to create %s", device_name);
+		pdie("unable to create %s", device_name);
 	}
 	/* expand to desired size */
 	if (ftruncate(dev, part_sector * sector_size + blocks * BLOCK_SIZE)) /* TODO: check overflow */
-	    die("unable to resize %s", device_name);
+	    pdie("unable to resize %s", device_name);
     }
 
     if (get_device_info(dev, &devinfo) < 0)

@@ -75,7 +75,7 @@ void pdie(const char *msg, ...)
     va_start(args, msg);
     vfprintf(stderr, msg, args);
     va_end(args);
-    fprintf(stderr, ":%s\n", strerror(errno));
+    fprintf(stderr, ": %s\n", strerror(errno));
     exit(1);
 }
 
