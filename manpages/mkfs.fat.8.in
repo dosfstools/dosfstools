@@ -105,6 +105,14 @@ The default is 2.
 Specifies the type of file allocation tables used (12, 16 or 32 bit).
 If nothing is specified, \fBmkfs.fat\fP will automatically select between 12, 16
 and 32 bit, whatever fits better for the filesystem size.
+.IP "\fB\-g\fP \fIHEADS\fP/\fISECTORS-PER-TRACK\fP" 4
+Specify \fIHEADS\fP and \fISECTORS-PER-TRACK\fP numbers which represents
+disk geometry of \fIDEVICE\fP. Both numbers are stored into the FAT boot sector.
+Number \fISECTORS-PER-TRACK\fP is used also for aligning the total count of FAT
+sectors. By default disk geometry is read from \fIDEVICE\fP itself. If it is not
+available then \fILBA-Assist Translation\fP and translation table from the
+\fISD Card Part 2 File System Specification\fP based on total number of disk
+sectors is used.
 .IP "\fB\-h\fP \fINUMBER-OF-HIDDEN-SECTORS\fP" 4
 Specify the number of so-called \fIhidden sectors\fP, as stored in the FAT boot
 sector: this number represents the beginning sector of the partition containing

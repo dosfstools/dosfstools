@@ -629,8 +629,10 @@ static void establish_params(struct device_info *info)
     if (!root_dir_entries)
 	root_dir_entries = def_root_dir_entries;
 
-    bs.secs_track = htole16(sec_per_track);
-    bs.heads = htole16(heads);
+    if (!bs.secs_track)
+        bs.secs_track = htole16(sec_per_track);
+    if (!bs.heads)
+        bs.heads = htole16(heads);
     bs.media = media;
     bs.cluster_size = cluster_size;
 }
@@ -1438,6 +1440,7 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  -D NUMBER       Write BIOS drive number NUMBER to boot sector\n");
     fprintf(stderr, "  -f COUNT        Create COUNT file allocation tables\n");
     fprintf(stderr, "  -F SIZE         Select FAT size SIZE (12, 16 or 32)\n");
+    fprintf(stderr, "  -g GEOM         Select disk geometry: heads/sectors_per_track\n");
     fprintf(stderr, "  -h NUMBER       Write hidden sectors NUMBER to boot sector\n");
     fprintf(stderr, "  -i VOLID        Set volume ID to VOLID (a 32 bit hexadecimal number)\n");
     fprintf(stderr, "  -I              Ignore and disable safety checks\n");
@@ -1503,7 +1506,7 @@ int main(int argc, char **argv)
 
     printf("mkfs.fat " VERSION " (" VERSION_DATE ")\n");
 
-    while ((c = getopt_long(argc, argv, "aAb:cCf:D:F:Ii:l:m:M:n:r:R:s:S:h:v",
+    while ((c = getopt_long(argc, argv, "aAb:cCf:D:F:g:Ii:l:m:M:n:r:R:s:S:h:v",
 				    long_options, NULL)) != -1)
 	/* Scan the command line for options */
 	switch (c) {
@@ -1565,6 +1568,22 @@ int main(int argc, char **argv)
 	    }
 	    size_fat = conversion;
 	    size_fat_by_user = 1;
+	    break;
+
+	case 'g':		/* g : geometry: heads and sectors per track */
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 0);
+	    if (!*optarg || isspace(*optarg) || tmp[0] != '/' || !tmp[1] || isspace(tmp[1]) || errno || conversion <= 0 || conversion > UINT16_MAX) {
+		printf("Bad format of geometry : %s\n", optarg);
+		usage(argv[0], 1);
+	    }
+	    bs.heads = htole16(conversion);
+	    conversion = strtol(tmp+1, &tmp, 0);
+	    if (*tmp || errno || conversion <= 0 || conversion > UINT16_MAX) {
+		printf("Bad format of geometry : %s\n", optarg);
+		usage(argv[0], 1);
+	    }
+	    bs.secs_track = htole16(conversion);
 	    break;
 
 	case 'h':		/* h : number of hidden sectors */
