@@ -19,15 +19,15 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FSCK.FAT 8 2017\-06\-28 "dosfstools @PACKAGE_VERSION@"
+.TH FSCK.FAT 8 2017-06-28 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-fsck.fat \- check and repair MS\-DOS FAT filesystems
+fsck.fat \- check and repair MS-DOS FAT filesystems
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfsck.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR
 .\" ----------------------------------------------------------------------------
 .SH DESCRIPTION
-\fBfsck.fat\fR verifies the consistency of MS\-DOS filesystems and optionally
+\fBfsck.fat\fR verifies the consistency of MS-DOS filesystems and optionally
 tries to repair them.
 .PP
 The following filesystem problems can be corrected (in this order):
@@ -45,7 +45,7 @@ This check is optional.
 Directories with a large number of bad entries (probably corrupt).
 The directory can be deleted.
 .IP "*" 4
-Files . and .. are non\-directories.
+Files . and .. are non-directories.
 They can be deleted or renamed.
 .IP "*" 4
 Directories . and .. in root directory.
@@ -57,7 +57,7 @@ They can be renamed.
 Duplicate directory entries.
 They can be deleted or renamed.
 .IP "*" 4
-Directories with non\-zero size field.
+Directories with non-zero size field.
 Size is set to zero.
 .IP "*" 4
 Directory . does not point to parent directory.
@@ -90,7 +90,7 @@ Additionally, the following problems are detected, but not repaired:
 .IP "*" 4
 Invalid parameters in boot sector
 .IP "*" 4
-Absence of . and .. entries in non\-root directories
+Absence of . and .. entries in non-root directories
 .PP
 When \fBfsck.fat\fR checks a filesystem, it accumulates all changes in memory
 and performs them only after all checks are complete.
@@ -103,10 +103,10 @@ The other is the legacy Atari variant used on Atari ST.
 .PP
 There are some minor differences in Atari format:
 Some boot sector fields are interpreted slightly different, and the special FAT
-entries for end\-of\-file and bad cluster can be different.
-Under MS\-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but
-both systems recognize all values from 0xfff8...0xffff as end\-of\-file.
-MS\-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0...0xfff7
+entries for end-of-file and bad cluster can be different.
+Under MS-DOS 0xfff8 is used for EOF and Atari employs 0xffff by default, but
+both systems recognize all values from 0xfff8\(en0xffff as end-of-file.
+MS-DOS uses only 0xfff7 for bad clusters, where on Atari values 0xfff0\(en0xfff7
 are for this purpose (but the standard value is still 0xfff7).
 .\" ----------------------------------------------------------------------------
 .SH OPTIONS
@@ -135,7 +135,7 @@ By default, unused clusters are added to the free disk space except in auto mode
 .IP "\fB\-l\fR" 4
 List path names of files being processed.
 .IP "\fB\-n\fR" 4
-No\-operation mode: non\-interactively check for errors, but don't write
+No-operation mode: non-interactively check for errors, but don't write
 anything to the filesystem.
 .IP "\fB\-p\fR" 4
 Same as \fB\-a\fR, for compatibility with other *fsck.

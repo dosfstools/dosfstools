@@ -20,9 +20,9 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH MKFS.FAT 8 2017\-10\-01 "dosfstools @PACKAGE_VERSION@"
+.TH MKFS.FAT 8 2017-10-01 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-mkfs.fat \- create an MS\-DOS FAT filesystem
+mkfs.fat \- create an MS-DOS FAT filesystem
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBmkfs.fat\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fIBLOCK-COUNT\fR]

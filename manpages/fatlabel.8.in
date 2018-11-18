@@ -20,16 +20,16 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FATLABEL 8 2017\-10\-01 "dosfstools @PACKAGE_VERSION@"
+.TH FATLABEL 8 2017-10-01 "dosfstools @PACKAGE_VERSION@"
 .SH NAME
-fatlabel \- set or get MS\-DOS filesystem label or volume ID
+fatlabel \- set or get MS-DOS filesystem label or volume ID
 .\" ----------------------------------------------------------------------------
 .SH SYNOPSIS
 \fBfatlabel\fR [\fIOPTIONS\fR] \fIDEVICE\fR [\fINEW\fR]
 .\" ----------------------------------------------------------------------------
 .SH DESCRIPTION
 \fBfatlabel\fR will display or change the volume label or volume ID on the
-MS\-DOS filesystem located on \fIDEVICE\fR.
+MS-DOS filesystem located on \fIDEVICE\fR.
 By default it works in label mode.
 It can be switched to volume ID mode with the option \fB\-i\fR or
 \fB\-\-volume\-id\fR.
@@ -64,14 +64,14 @@ directory is interpreted as empty or none label, even if boot sector contains
 some valid label.
 
 When Windows XP or Windows 10 system changes a FAT label it stores it only in
-the root directory -- letting boot sector unchanged. Which leads to problems
+the root directory \(em letting boot sector unchanged. Which leads to problems
 when a label is removed on Windows. Old label is still stored in the boot sector
 but removed from the root directory.
 
 \fBdosfslabel\fR prior to the version 3.0.7 operated only with FAT labels stored
 in the boot sector, completely ignoring a volume label in the root directory.
 
-\fBdosfslabel\fR in versions 3.0.7 - 3.0.15 reads FAT labels from the root
+\fBdosfslabel\fR in versions 3.0.7\(en3.0.15 reads FAT labels from the root
 directory and in case of absence, it fallbacks to a label stored in the boot
 sector. Change operation resulted in updating a label in the boot sector and
 \fIsometimes\fR also in the root directory due to the bug. That bug was fixed in
