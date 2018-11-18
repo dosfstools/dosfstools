@@ -76,6 +76,16 @@ void get_fat(FAT_ENTRY * entry, void *fat, uint32_t cluster, DOS_FS * fs)
     }
 }
 
+void release_fat(DOS_FS * fs)
+{
+    if (fs->fat)
+	free(fs->fat);
+    if (fs->cluster_owner)
+	free(fs->cluster_owner);
+    fs->fat = NULL;
+    fs->cluster_owner = NULL;
+}
+
 /**
  * Build a bookkeeping structure from the partition's FAT table.
  * If the partition has multiple FATs and they don't agree, try to pick a winner,
@@ -93,12 +103,7 @@ void read_fat(DOS_FS * fs)
     uint32_t total_num_clusters;
 
     /* Clean up from previous pass */
-    if (fs->fat)
-	free(fs->fat);
-    if (fs->cluster_owner)
-	free(fs->cluster_owner);
-    fs->fat = NULL;
-    fs->cluster_owner = NULL;
+    release_fat(fs);
 
     total_num_clusters = fs->data_clusters + 2;
     eff_size = (total_num_clusters * fs->fat_bits + 7) / 8ULL;

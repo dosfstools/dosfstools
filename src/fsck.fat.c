@@ -227,6 +227,7 @@ int main(int argc, char **argv)
 	reclaim_free(&fs);
 	qfree(&mem_queue);
     }
+    release_fat(&fs);
 
 exit:
     if (!write_immed && fs_changed()) {

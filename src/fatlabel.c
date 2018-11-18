@@ -123,6 +123,9 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	    printf("%s\n", pretty_label((char *)de.name));
 	}
 
+	if (fs.fat_bits == 32)
+	    release_fat(&fs);
+
 	exit(0);
     }
 
@@ -130,6 +133,9 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	write_label(&fs, label);
     else
 	remove_label(&fs);
+
+    if (fs.fat_bits == 32)
+	release_fat(&fs);
 }
 
 
