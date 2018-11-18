@@ -124,7 +124,7 @@ filesystem on a device with partitions or virtual mapping.
 This is different when using MO disks.
 One doesn't always need partitions on MO disks.
 The filesystem can go directly to the whole disk.
-Under other OSes this is known as the 'superfloppy' format.
+Under other OSes this is known as the \fIsuperfloppy\fR format.
 This switch will force \fBmkfs.fat\fR to work properly.
 .IP "\fB\-l\fR \fIFILENAME\fR" 4
 Read the bad blocks list from \fIFILENAME\fR.
@@ -181,8 +181,8 @@ This is useful for creating a filesystem in a partitioned disk image without
 having to set up a loop device.
 .IP "\fB\-\-variant\fR \fITYPE\fR" 4
 Create a filesystem of variant \fITYPE\fR.
-Acceptable values are 'standard' and 'atari' (in any combination of upper/lower
-case).
+Acceptable values are \fIstandard\fR and \fIatari\fR (in any combination of
+upper/lower case).
 See above under DESCRIPTION for the differences.
 .IP "\fB\-\-help\fR" 4
 Display option summary and exit.
