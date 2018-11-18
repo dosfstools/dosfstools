@@ -31,65 +31,65 @@ fsck.fat \- check and repair MS-DOS FAT filesystems
 tries to repair them.
 .PP
 The following filesystem problems can be corrected (in this order):
-.IP "*" 4
+.IP "\(bu" 4
 FAT contains invalid cluster numbers.
 Cluster is changed to EOF.
-.IP "*" 4
+.IP "\(bu" 4
 File's cluster chain contains a loop.
 The loop is broken.
-.IP "*" 4
+.IP "\(bu" 4
 Bad clusters (read errors).
 The clusters are marked bad and they are removed from files owning them.
 This check is optional.
-.IP "*" 4
+.IP "\(bu" 4
 Directories with a large number of bad entries (probably corrupt).
 The directory can be deleted.
-.IP "*" 4
+.IP "\(bu" 4
 Files . and .. are non-directories.
 They can be deleted or renamed.
-.IP "*" 4
+.IP "\(bu" 4
 Directories . and .. in root directory.
 They are deleted.
-.IP "*" 4
+.IP "\(bu" 4
 Bad filenames.
 They can be renamed.
-.IP "*" 4
+.IP "\(bu" 4
 Duplicate directory entries.
 They can be deleted or renamed.
-.IP "*" 4
+.IP "\(bu" 4
 Directories with non-zero size field.
 Size is set to zero.
-.IP "*" 4
+.IP "\(bu" 4
 Directory . does not point to parent directory.
 The start pointer is adjusted.
-.IP "*" 4
+.IP "\(bu" 4
 Directory .. does not point to parent of parent directory.
 The start pointer is adjusted.
-.IP "*" 4
+.IP "\(bu" 4
 Start cluster number of a file is invalid.
 The file is truncated.
-.IP "*" 4
+.IP "\(bu" 4
 File contains bad or free clusters.
 The file is truncated.
-.IP "*" 4
+.IP "\(bu" 4
 File's cluster chain is longer than indicated by the size fields.
 The file is truncated.
-.IP "*" 4
+.IP "\(bu" 4
 Two or more files share the same cluster(s).
 All but one of the files are truncated.
 If the file being truncated is a directory file that has already been read, the
 filesystem check is restarted after truncation.
-.IP "*" 4
+.IP "\(bu" 4
 File's cluster chain is shorter than indicated by the size fields.
 The file is truncated.
-.IP "*" 4
+.IP "\(bu" 4
 Clusters are marked as used but are not owned by a file.
 They are marked as free.
 .PP
 Additionally, the following problems are detected, but not repaired:
-.IP "*" 4
+.IP "\(bu" 4
 Invalid parameters in boot sector
-.IP "*" 4
+.IP "\(bu" 4
 Absence of . and .. entries in non-root directories
 .PP
 When \fBfsck.fat\fR checks a filesystem, it accumulates all changes in memory
@@ -205,9 +205,13 @@ When recovering from a corrupted filesystem, \fBfsck.fat\fR dumps recovered data
 into files named \fIfsckNNNN.rec\fR in the top level directory of the filesystem.
 .\" ----------------------------------------------------------------------------
 .SH BUGS
+.IP "\(bu" 4
 Does not create . and .. files where necessary.
+.IP "\(bu" 4
 Does not remove entirely empty directories.
+.IP "\(bu" 4
 Should give more diagnostic messages.
+.IP "\(bu" 4
 Undeleting files should use a more sophisticated algorithm.
 .\" ----------------------------------------------------------------------------
 .SH SEE ALSO
