@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     get_device_info(fd, &info);
     close(fd);
 
-    printf("\nfound information:\n");
+    printf("found information:\n");
 
     printf("device type: ");
     switch (info.type) {

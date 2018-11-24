@@ -54,6 +54,7 @@ AC_CHECK_HEADERS([\
 		  linux/fd.h \
 		  linux/hdreg.h \
 		  linux/version.h \
+		  linux/loop.h \
 		  sys/disk.h \
 		  sys/disklabel.h \
 		  sys/ioccom.h \
@@ -67,13 +68,6 @@ AC_CHECK_FUNCS([vasprintf])
 
 AC_CHECK_DECLS([getmntent], [], [], [[#include <mntent.h>]])
 AC_CHECK_DECLS([getmntinfo], [], [], [[#include <sys/mount.h>]])
-
-AC_ARG_WITH([udev], AS_HELP_STRING([--without-udev], [build without libudev support]))
-if test "x$with_udev" != "xno"; then
-  PKG_CHECK_MODULES([UDEV], [libudev],
-		  [AC_DEFINE([HAVE_UDEV], [1])],
-		  [true])
-fi
 
 # optional iconv support
 AC_ARG_WITH([iconv], AS_HELP_STRING([--without-iconv], [build without iconv support]))

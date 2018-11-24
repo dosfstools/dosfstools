@@ -39,13 +39,12 @@ devinfo_common_sources = device_info.c device_info.h \
 mkfs_fat_SOURCES  = mkfs.fat.c msdos_fs.h common.c common.h endian_compat.h \
 		    $(charconv_common_sources) $(devinfo_common_sources)
 mkfs_fat_CPPFLAGS = -I$(srcdir)/blkdev
-mkfs_fat_CFLAGS   = $(AM_CFLAGS) $(UDEV_CFLAGS)
-mkfs_fat_LDADD    = $(UDEV_LIBS) $(charconv_common_ldadd)
+mkfs_fat_CFLAGS   = $(AM_CFLAGS)
+mkfs_fat_LDADD    = $(charconv_common_ldadd)
 
 testdevinfo_SOURCES  = testdevinfo.c $(devinfo_common_sources)
 testdevinfo_CPPFLAGS = -I$(srcdir)/blkdev
-testdevinfo_CFLAGS   = $(AM_CFLAGS) $(UDEV_CFLAGS)
-testdevinfo_LDADD    = $(UDEV_LIBS)
+testdevinfo_CFLAGS   = $(AM_CFLAGS)
 
 
 if COMPAT_SYMLINKS

@@ -5,10 +5,6 @@ under the GNU GPL version 3 or later. See the file COPYING for details.
 
 ### Build Requirements
 
-dosfstools recommends libudev. It is used in mkfs.fat to collect additional
-information about the device to format in order to refuse potentially unsafe
-operations without additional confirmation.
-
 The test suite requires the tool xxd (available as part of the vim
 distribution).
 
