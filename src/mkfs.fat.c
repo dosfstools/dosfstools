@@ -1455,7 +1455,6 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  -v              Verbose execution\n");
     fprintf(stderr, "  --variant=TYPE  Select variant TYPE of filesystem (standard or Atari)\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "  --invariant     Use constants for randomly generated or time based values\n");
     fprintf(stderr, "  --offset=SECTOR Write the filesystem at a specific sector into the device file.\n");
     fprintf(stderr, "  --help          Show this help message and exit\n");
     exit(exitval);
