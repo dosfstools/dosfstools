@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <ctype.h>
 #include <wctype.h>
 #include <termios.h>
 #include <sys/time.h>
@@ -298,8 +299,21 @@ void check_atari(void)
 uint32_t generate_volume_id(void)
 {
     struct timeval now;
+    char *source_date_epoch = NULL;
 
-    if (gettimeofday(&now, NULL) != 0 || now.tv_sec == (time_t)-1 || now.tv_sec < 0) {
+    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
+    if (source_date_epoch) {
+        char *tmp = NULL;
+        long long conversion = 0;
+        errno = 0;
+        conversion = strtoll(source_date_epoch, &tmp, 10);
+        if (!isdigit((unsigned char)*source_date_epoch) || *tmp != '\0'
+                || errno != 0) {
+            die("SOURCE_DATE_EPOCH is too big or contains non-digits: \"%s\"",
+                source_date_epoch);
+        }
+        return (uint32_t)conversion;
+    } else if (gettimeofday(&now, NULL) != 0 || now.tv_sec == (time_t)-1 || now.tv_sec < 0) {
         srand(getpid());
         /* rand() returns int from [0,RAND_MAX], therefore only 31 bits */
         return (((uint32_t)(rand() & 0xFFFF)) << 16) | ((uint32_t)(rand() & 0xFFFF));
