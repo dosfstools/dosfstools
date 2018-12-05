@@ -52,7 +52,7 @@ echo "Test $testname"
 rm -f "${testname}.out" "${testname}.refimg"
 
 xxd -r "${srcdir}/${testname}.xxd" "${testname}.refimg" || exit 99
-run_mkfs -C -v --invariant $ARGS "${testname}.out" $SIZE || exit 99
+(export SOURCE_DATE_EPOCH=1426325213; run_mkfs -C -v -i 0x1234abcd $ARGS "${testname}.out" $SIZE) || exit 99
 
 echo
 echo "Comparing..."
