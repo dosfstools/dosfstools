@@ -507,6 +507,7 @@ static void establish_params(struct device_info *info)
     unsigned int heads = 255;
     unsigned int media = 0xf8;
     unsigned int cluster_size = 4;  /* starting point for FAT12 and FAT16 */
+    unsigned int sector_size_mult = 1; /* x 512 == sector_size */
     int def_root_dir_entries = 512;
 
     if (info->size < 512 * 1024 * 1024) {
@@ -580,11 +581,15 @@ static void establish_params(struct device_info *info)
 	 * fs size >   32G:  32k clusters
 	 *
 	 * This only works correctly for 512 byte sectors!
+	 * For other sector sizes it tries to approximate.
 	 */
 	uint32_t sz_mb = info->size / (1024 * 1024);
+	if (info->sector_size > 0)
+	    sector_size_mult = info->sector_size / 512;
 	cluster_size =
-	    sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
-	    8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
+	    sz_mb > 32 * 1024 * sector_size_mult ? 64 : sz_mb >
+	    16 * 1024 * sector_size_mult ? 32 : sz_mb >
+	    8 * 1024 * sector_size_mult ? 16 : sz_mb > 260 * sector_size_mult ? 8 : 1;
     }
 
     if (info->geom_heads > 0) {
