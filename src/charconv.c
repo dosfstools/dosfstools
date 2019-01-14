@@ -67,12 +67,12 @@ int dos_char_to_printable(char **p, unsigned char c)
     return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != -1;
 }
 
-int local_string_to_dos_string(char *out, char *in, unsigned int len)
+int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
 {
     char *pin = in;
     char *pout = out;
     size_t bytes_in = strlen(in);
-    size_t bytes_out = len-1;
+    size_t bytes_out = out_size-1;
     size_t ret;
     if (!init_conversion(-1))
         return 0;
@@ -87,6 +87,6 @@ int local_string_to_dos_string(char *out, char *in, unsigned int len)
                 in, used_codepage);
         return 0;
     }
-    out[len-1-bytes_out] = 0;
+    out[out_size-1-bytes_out] = 0;
     return 1;
 }
