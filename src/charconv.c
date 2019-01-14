@@ -87,6 +87,6 @@ int local_string_to_dos_string(char *out, char *in, unsigned int len)
                 in, used_codepage);
         return 0;
     }
-    out[len-bytes_out] = 0;
+    out[len-1-bytes_out] = 0;
     return 1;
 }
