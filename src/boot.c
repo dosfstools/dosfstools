@@ -478,8 +478,9 @@ void read_boot(DOS_FS * fs)
     if (verbose)
 	printf("Checking we can access the last sector of the filesystem\n");
     /* Can't access last odd sector anyway, so round down */
-    fs_test((off_t)((total_sectors & ~1) - 1) * logical_sector_size,
-	    logical_sector_size);
+    if (!fs_test((off_t)((total_sectors & ~1) - 1) * logical_sector_size,
+	    logical_sector_size))
+	die("Failed to read sector %u.", (total_sectors & ~1) - 1);
 
     fat_length = le16toh(b.fat_length) ?
 	le16toh(b.fat_length) : le32toh(b.fat32_length);
