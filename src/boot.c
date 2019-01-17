@@ -466,7 +466,7 @@ void read_boot(DOS_FS * fs)
     /* if the platform needs special handling of unaligned multibyte accesses */
     /* but such handling isn't being provided. See GET_UNALIGNED_W() above. */
     if (logical_sector_size & (SECTOR_SIZE - 1))
-	die("Logical sector size (%d bytes) is not a multiple of the physical "
+	die("Logical sector size (%u bytes) is not a multiple of the physical "
 	    "sector size.", logical_sector_size);
 
     fs->cluster_size = b.cluster_size * logical_sector_size;
