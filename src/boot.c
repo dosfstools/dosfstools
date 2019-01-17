@@ -25,6 +25,7 @@
 /* FAT32, VFAT, Atari format support, and various fixes additions May 1998
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -451,9 +452,10 @@ void read_boot(DOS_FS * fs)
     struct boot_sector b;
     unsigned total_sectors;
     unsigned int logical_sector_size, sectors;
-    off_t fat_length;
+    int64_t fat_length;
     unsigned total_fat_entries;
     off_t data_size;
+    int64_t position;
 
     fs_read(0, sizeof(b), &b);
     logical_sector_size = GET_UNALIGNED_W(b.sector_size);
@@ -478,8 +480,10 @@ void read_boot(DOS_FS * fs)
     if (verbose)
 	printf("Checking we can access the last sector of the filesystem\n");
     /* Can't access last odd sector anyway, so round down */
-    if (!fs_test((off_t)((total_sectors & ~1) - 1) * logical_sector_size,
-	    logical_sector_size))
+    position = (int64_t)((total_sectors & ~1) - 1) * logical_sector_size;
+    if (position != (off_t)position)
+	die("Filesystem is too large.");
+    if (!fs_test(position, logical_sector_size))
 	die("Failed to read sector %u.", (total_sectors & ~1) - 1);
 
     fat_length = le16toh(b.fat_length) ?
@@ -488,14 +492,22 @@ void read_boot(DOS_FS * fs)
 	die("FAT size is zero.");
 
     fs->fat_start = (off_t)le16toh(b.reserved) * logical_sector_size;
-    fs->root_start = ((off_t)le16toh(b.reserved) + b.fats * fat_length) *
+    position = (le16toh(b.reserved) + b.fats * fat_length) *
 	logical_sector_size;
+    if (position != (off_t)position)
+	die("Filesystem is too large.");
+    fs->root_start = position;
     fs->root_entries = GET_UNALIGNED_W(b.dir_entries);
-    fs->data_start = fs->root_start + ROUND_TO_MULTIPLE(fs->root_entries <<
-							MSDOS_DIR_BITS,
-							logical_sector_size);
-
-    data_size = (off_t)total_sectors * logical_sector_size - fs->data_start;
+    position = (int64_t)fs->root_start + ROUND_TO_MULTIPLE(fs->root_entries <<
+							   MSDOS_DIR_BITS,
+							   logical_sector_size);
+    if (position != (off_t)position)
+	die("Filesystem is too large.");
+    fs->data_start = position;
+    position = (int64_t)total_sectors * logical_sector_size - fs->data_start;
+    if (position != (off_t)position)
+	die("Filesystem is too large.");
+    data_size = position;
     if (data_size < fs->cluster_size)
 	die("Filesystem has no space for any data clusters");
 
@@ -555,7 +567,10 @@ void read_boot(DOS_FS * fs)
     }
     /* On FAT32, the high 4 bits of a FAT entry are reserved */
     fs->eff_fat_bits = (fs->fat_bits == 32) ? 28 : fs->fat_bits;
-    fs->fat_size = fat_length * logical_sector_size;
+    position = fat_length * logical_sector_size;
+    if (position != (off_t)position)
+	die("Filesystem is too large.");
+    fs->fat_size = position;
 
     fs->label[0] = 0;
     if (fs->fat_bits == 12 || fs->fat_bits == 16) {
@@ -571,7 +586,10 @@ void read_boot(DOS_FS * fs)
 	}
     }
 
-    total_fat_entries = (uint64_t)fs->fat_size * 8 / fs->fat_bits;
+    position = (int64_t)fs->fat_size * 8 / fs->fat_bits;
+    if (position > UINT_MAX)
+	die("FAT has space for too many entries (%lld).", (long long)position);
+    total_fat_entries = position;
     if (fs->data_clusters > total_fat_entries - 2)
 	die("Filesystem has %u clusters but only space for %u FAT entries.",
 	    fs->data_clusters, total_fat_entries - 2);
