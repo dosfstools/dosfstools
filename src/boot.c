@@ -452,10 +452,10 @@ void read_boot(DOS_FS * fs)
     struct boot_sector b;
     unsigned total_sectors;
     unsigned int logical_sector_size, sectors;
-    int64_t fat_length;
+    long long fat_length;
     unsigned total_fat_entries;
     off_t data_size;
-    int64_t position;
+    long long position;
 
     fs_read(0, sizeof(b), &b);
     logical_sector_size = GET_UNALIGNED_W(b.sector_size);
@@ -480,7 +480,7 @@ void read_boot(DOS_FS * fs)
     if (verbose)
 	printf("Checking we can access the last sector of the filesystem\n");
     /* Can't access last odd sector anyway, so round down */
-    position = (int64_t)((total_sectors & ~1) - 1) * logical_sector_size;
+    position = (long long)((total_sectors & ~1) - 1) * logical_sector_size;
     if (position != (off_t)position)
 	die("Filesystem is too large.");
     if (!fs_test(position, logical_sector_size))
@@ -498,13 +498,13 @@ void read_boot(DOS_FS * fs)
 	die("Filesystem is too large.");
     fs->root_start = position;
     fs->root_entries = GET_UNALIGNED_W(b.dir_entries);
-    position = (int64_t)fs->root_start + ROUND_TO_MULTIPLE(fs->root_entries <<
-							   MSDOS_DIR_BITS,
-							   logical_sector_size);
+    position = (long long)fs->root_start +
+			  ROUND_TO_MULTIPLE(fs->root_entries << MSDOS_DIR_BITS,
+					    logical_sector_size);
     if (position != (off_t)position)
 	die("Filesystem is too large.");
     fs->data_start = position;
-    position = (int64_t)total_sectors * logical_sector_size - fs->data_start;
+    position = (long long)total_sectors * logical_sector_size - fs->data_start;
     if (position != (off_t)position)
 	die("Filesystem is too large.");
     data_size = position;
@@ -586,7 +586,7 @@ void read_boot(DOS_FS * fs)
 	}
     }
 
-    position = (int64_t)fs->fat_size * 8 / fs->fat_bits;
+    position = (long long)fs->fat_size * 8 / fs->fat_bits;
     if (position > UINT_MAX)
 	die("FAT has space for too many entries (%lld).", (long long)position);
     total_fat_entries = position;
