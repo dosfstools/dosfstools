@@ -24,7 +24,7 @@
 
 
 run_fsck () {
-	"../src/fsck.fat" "$@"
+	$RUN "../src/fsck.fat" "$@"
 }
 
 

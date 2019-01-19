@@ -21,7 +21,7 @@
 
 
 run_label () {
-	"../src/fatlabel" "$@"
+	$RUN "../src/fatlabel" "$@"
 }
 
 
