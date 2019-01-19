@@ -545,8 +545,11 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		 next_cluster(fs, walk))
 		if (walk == curr)
 		    break;
-		else
+		else {
+		    if ((unsigned long long)clusters2 * fs->cluster_size >= UINT32_MAX)
+		        die("Internal error: File size is larger than 2^32-1");
 		    clusters2++;
+		}
 	    restart = file->dir_ent.attr & ATTR_DIR;
 	    if (!owner->offset) {
 		printf("  Truncating second to %llu bytes because first "
@@ -606,6 +609,8 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 			this = curr;
 			break;
 		    }
+		    if ((unsigned long long)clusters * fs->cluster_size >= UINT32_MAX)
+		        die("Internal error: File size is larger than 2^32-1");
 		    clusters++;
 		    prev = this;
 		}
@@ -621,6 +626,8 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    }
 	}
 	set_owner(fs, curr, file);
+	if ((unsigned long long)clusters * fs->cluster_size >= UINT32_MAX)
+	    die("Internal error: File size is larger than 2^32-1");
 	clusters++;
 	prev = curr;
     }
