@@ -1,4 +1,66 @@
 language: c
 
-before_script: autoreconf -i
-script: ./configure && make all check
+compiler:
+  - gcc
+  - clang
+
+env:
+  - CFLAGS="-W -Wall"
+  - CFLAGS="-W -Wall -O2 -g -fwrapv -fsanitize=address"
+  - CFLAGS="-m32 -W -Wall"
+  - CFLAGS="-m32 -W -Wall -O2 -g -fwrapv -fsanitize=address"
+
+addons:
+  apt:
+    packages:
+      - libc6-dev-i386
+      - gcc-multilib
+
+matrix:
+  exclude:
+    - compiler: clang
+      env: CFLAGS="-m32 -W -Wall -O2 -g -fwrapv -fsanitize=address"
+  include:
+    - compiler: gcc
+      env: CFLAGS="-mx32 -W -Wall -O2 -g -fwrapv" LDFLAGS="--static"
+      addons:
+        apt:
+          packages:
+            - libc6-dev-x32
+            - gcc-multilib
+    - compiler: powerpc-linux-gnu-gcc
+      env: CFLAGS="-W -Wall -O2 -g -fwrapv" CONFIGURE_FLAGS="--host=powerpc-linux-gnu" RUN="qemu-ppc /usr/powerpc-linux-gnu/lib/ld.so.1 --library-path /usr/powerpc-linux-gnu/lib"
+      addons:
+        apt:
+          packages:
+            - gcc-powerpc-linux-gnu
+            - libc6-dev-powerpc-cross
+            - libc6-powerpc-cross
+            - qemu-user
+      before_script:
+        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6_2.19-0ubuntu6.14_powerpc.deb -O /tmp/libc6_powerpc.deb
+        - dpkg -x /tmp/libc6_powerpc.deb /tmp/libc6_powerpc
+        - export GCONV_PATH=/tmp/libc6_powerpc/usr/lib/powerpc-linux-gnu/gconv
+    - compiler: arm-linux-gnueabi-gcc
+      env: CFLAGS="-W -Wall -O2 -g -fwrapv" CONFIGURE_FLAGS="--host=arm-linux-gnueabi" RUN="qemu-arm /usr/arm-linux-gnueabi/lib/ld-linux.so.3 --library-path /usr/arm-linux-gnueabi/lib"
+      addons:
+        apt:
+          packages:
+            - gcc-arm-linux-gnueabi
+            - libc6-dev-armel-cross
+            - libc6-armel-cross
+            - qemu-user
+      before_script:
+        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6-armel_2.19-0ubuntu6.14_armhf.deb -O /tmp/libc6-armel_armhf.deb
+        - dpkg -x /tmp/libc6-armel_armhf.deb /tmp/libc6-armel_armhf
+        - export GCONV_PATH=/tmp/libc6-armel_armhf/usr/lib/arm-linux-gnueabi/gconv
+
+script:
+  - autoreconf -i
+  - ./configure $CONFIGURE_FLAGS
+  - make
+  - make check
+
+after_failure:
+  - cat config.log
+  - cat tests/test-suite.log
