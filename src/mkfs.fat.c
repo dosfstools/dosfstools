@@ -236,7 +236,7 @@ static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
 static time_t create_time = -1;	/* Creation time */
 static char *volume_name = initial_volume_name;	/* Volume name */
-static uint64_t blocks;	/* Number of blocks in filesystem */
+static unsigned long long blocks;	/* Number of blocks in filesystem */
 static unsigned sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
 static int backup_boot = 0;	/* Sector# of backup boot sector */
@@ -781,7 +781,7 @@ static void setup_tables(void)
 	    UINT32_MAX) {
 	printf("Warning: target too large, space at end will be left unused\n");
 	num_sectors = UINT32_MAX;
-	blocks = (uint64_t)UINT32_MAX * sector_size / BLOCK_SIZE;
+	blocks = (unsigned long long)UINT32_MAX * sector_size / BLOCK_SIZE;
     } else {
 	num_sectors =
 	    (long long)(blocks * BLOCK_SIZE / sector_size) + orphaned_sectors;
@@ -1473,7 +1473,7 @@ int main(int argc, char **argv)
     struct device_info devinfo;
     int i = 0, pos, ch;
     int create = 0;
-    uint64_t cblocks = 0;
+    unsigned long long cblocks = 0;
     int blocks_specified = 0;
     struct timeval create_timeval;
     long long conversion;
@@ -1916,7 +1916,7 @@ int main(int argc, char **argv)
 	if (blocks != cblocks) {
 	    fprintf(stderr, "Warning: block count mismatch: ");
 	    fprintf(stderr, "found %llu but assuming %llu.\n",
-		    (unsigned long long)cblocks, (unsigned long long)blocks);
+		    cblocks, blocks);
 	}
     } else {
 	blocks = cblocks;
