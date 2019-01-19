@@ -526,12 +526,12 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    break;
 	}
 	if (!(file->dir_ent.attr & ATTR_DIR) && le32toh(file->dir_ent.size) <=
-	    (uint64_t)clusters * fs->cluster_size) {
+	    clusters * fs->cluster_size) {
 	    printf
-		("%s\n  File size is %u bytes, cluster chain length is > %llu "
+		("%s\n  File size is %u bytes, cluster chain length is > %u "
 		 "bytes.\n  Truncating file to %u bytes.\n", path_name(file),
 		 le32toh(file->dir_ent.size),
-		 (unsigned long long)clusters * fs->cluster_size,
+		 (unsigned)clusters * fs->cluster_size,
 		 le32toh(file->dir_ent.size));
 	    truncate_file(fs, file, clusters);
 	    break;
@@ -552,14 +552,14 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		}
 	    restart = file->dir_ent.attr & ATTR_DIR;
 	    if (!owner->offset) {
-		printf("  Truncating second to %llu bytes because first "
+		printf("  Truncating second to %u bytes because first "
 		       "is FAT32 root dir.\n",
-		       (unsigned long long)clusters * fs->cluster_size);
+		       (unsigned)clusters * fs->cluster_size);
 		do_trunc = 2;
 	    } else if (!file->offset) {
-		printf("  Truncating first to %llu bytes because second "
+		printf("  Truncating first to %u bytes because second "
 		       "is FAT32 root dir.\n",
-		       (unsigned long long)clusters2 * fs->cluster_size);
+		       (unsigned)clusters2 * fs->cluster_size);
 		do_trunc = 1;
 	    } else {
 		char *trunc_first_string;
@@ -567,15 +567,15 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		char *noninteractive_string;
 
 		xasprintf(&trunc_first_string,
-			 "Truncate first to %llu bytes%s",
-			 (unsigned long long)clusters2 * fs->cluster_size,
+			 "Truncate first to %u bytes%s",
+			 (unsigned)clusters2 * fs->cluster_size,
 			 restart ? " and restart" : "");
 		xasprintf(&trunc_second_string,
-			  "Truncate second to %llu bytes",
-			  (unsigned long long)clusters * fs->cluster_size);
+			  "Truncate second to %u bytes",
+			  (unsigned)clusters * fs->cluster_size);
 		xasprintf(&noninteractive_string,
-			  "  Truncating second to %llu bytes.",
-			  (unsigned long long)clusters * fs->cluster_size);
+			  "  Truncating second to %u bytes.",
+			  (unsigned)clusters * fs->cluster_size);
 
 		do_trunc = get_choice(2, noninteractive_string,
 				      2,
@@ -597,9 +597,7 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 			    set_fat(fs, prev, -1);
 			else
 			    MODIFY_START(owner, 0, fs);
-			MODIFY(owner, size,
-			       htole32((uint64_t)clusters *
-				       fs->cluster_size));
+			MODIFY(owner, size, htole32(clusters * fs->cluster_size));
 			if (restart)
 			    return 1;
 			while (this > 0 && this != -1) {
@@ -632,15 +630,15 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	prev = curr;
     }
     if (!(file->dir_ent.attr & ATTR_DIR) && le32toh(file->dir_ent.size) >
-	(uint64_t)clusters * fs->cluster_size) {
+	clusters * fs->cluster_size) {
 	printf
-	    ("%s\n  File size is %u bytes, cluster chain length is %llu bytes."
-	     "\n  Truncating file to %llu bytes.\n", path_name(file),
+	    ("%s\n  File size is %u bytes, cluster chain length is %u bytes."
+	     "\n  Truncating file to %u bytes.\n", path_name(file),
 	     le32toh(file->dir_ent.size),
-	     (unsigned long long)clusters * fs->cluster_size,
-	     (unsigned long long)clusters * fs->cluster_size);
+	     (unsigned)clusters * fs->cluster_size,
+	     (unsigned)clusters * fs->cluster_size);
 	MODIFY(file, size,
-	       htole32((uint64_t)clusters * fs->cluster_size));
+	       htole32(clusters * fs->cluster_size));
     }
     return 0;
 }
