@@ -231,8 +231,8 @@ static void dump_boot(DOS_FS * fs, struct boot_sector *b, unsigned lss)
 	   (unsigned long long)fs->fat_start,
 	   (unsigned long long)fs->fat_start / lss);
     printf("%10d FATs, %d bit entries\n", b->fats, fs->fat_bits);
-    printf("%10lld bytes per FAT (= %llu sectors)\n", (long long)fs->fat_size,
-	   (long long)fs->fat_size / lss);
+    printf("%10u bytes per FAT (= %u sectors)\n", fs->fat_size,
+	   fs->fat_size / lss);
     if (!fs->root_cluster) {
 	printf("Root directory starts at byte %llu (sector %llu)\n",
 	       (unsigned long long)fs->root_start,
