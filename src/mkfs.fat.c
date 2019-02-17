@@ -242,7 +242,7 @@ static int start_data_block;	/* Block number for the start of the data area */
 static unsigned char *fat;	/* File allocation table */
 static unsigned alloced_fat_length;	/* # of FAT sectors we can keep in memory */
 static unsigned fat_entries;		/* total entries in FAT table (including reserved) */
-static unsigned char *info_sector;	/* FAT32 info sector */
+static unsigned char *info_sector_buffer;	/* FAT32 info sector */
 static struct msdos_dir_entry *root_dir;	/* Root directory */
 static int size_root_dir;	/* Size of the root directory in bytes */
 static uint32_t num_sectors;		/* Total number of sectors in device */
@@ -1314,17 +1314,17 @@ static void setup_tables(void)
 	/* For FAT32, create an info sector */
 	struct fat32_fsinfo *info;
 
-	if (!(info_sector = malloc(sector_size)))
+	if (!(info_sector_buffer = malloc(sector_size)))
 	    die("Out of memory");
-	memset(info_sector, 0, sector_size);
+	memset(info_sector_buffer, 0, sector_size);
 	/* fsinfo structure is at offset 0x1e0 in info sector by observation */
-	info = (struct fat32_fsinfo *)(info_sector + 0x1e0);
+	info = (struct fat32_fsinfo *)(info_sector_buffer + 0x1e0);
 
 	/* Info sector magic */
-	info_sector[0] = 'R';
-	info_sector[1] = 'R';
-	info_sector[2] = 'a';
-	info_sector[3] = 'A';
+	info_sector_buffer[0] = 'R';
+	info_sector_buffer[1] = 'R';
+	info_sector_buffer[2] = 'a';
+	info_sector_buffer[3] = 'A';
 
 	/* Magic for fsinfo structure */
 	info->signature = htole32(0x61417272);
@@ -1333,7 +1333,7 @@ static void setup_tables(void)
 	info->next_cluster = htole32(2);
 
 	/* Info sector also must have boot sign */
-	*(uint16_t *) (info_sector + 0x1fe) = htole16(BOOT_SIGN);
+	*(uint16_t *) (info_sector_buffer + 0x1fe) = htole16(BOOT_SIGN);
     }
 
     if (!(blank_sector = malloc(sector_size)))
@@ -1346,7 +1346,7 @@ static void setup_tables(void)
 #define error(str)				\
   do {						\
     free (fat);					\
-    if (info_sector) free (info_sector);	\
+    free (info_sector_buffer);			\
     free (root_dir);				\
     die (str);					\
   } while(0)
@@ -1383,7 +1383,7 @@ static void write_tables(void)
     /* on FAT32, write the info sector and backup boot sector */
     if (size_fat == 32) {
 	seekto(le16toh(bs.fat32.info_sector) * sector_size, "info sector");
-	writebuf(info_sector, 512, "info sector");
+	writebuf(info_sector_buffer, 512, "info sector");
 	if (backup_boot != 0) {
 	    seekto(backup_boot * sector_size, "backup boot sector");
 	    writebuf((char *)&bs, sizeof(struct msdos_boot_sector),
@@ -1405,8 +1405,7 @@ static void write_tables(void)
 
     if (blank_sector)
 	free(blank_sector);
-    if (info_sector)
-	free(info_sector);
+    free(info_sector_buffer);
     free(root_dir);		/* Free up the root directory space from setup_tables */
     free(fat);			/* Free up the fat table space reserved during setup_tables */
 }
