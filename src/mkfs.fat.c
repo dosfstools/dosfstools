@@ -1155,8 +1155,12 @@ static void setup_tables(void)
 	    info_sector = 1;
 	bs.fat32.info_sector = htole16(info_sector);
 	if (!backup_boot_set)
-	    backup_boot = (reserved_sectors >= 7) ? 6 :
-		(reserved_sectors >= 3) ? reserved_sectors - 1 : 0;
+	    backup_boot = (reserved_sectors >= 7 && info_sector != 6) ? 6 :
+		(reserved_sectors >= 3 + info_sector &&
+		 info_sector != reserved_sectors - 2 &&
+		 info_sector != reserved_sectors - 1) ? reserved_sectors - 2 :
+		(reserved_sectors >= 3 && info_sector != reserved_sectors - 1) ?
+		reserved_sectors - 1 : 0;
 	if (backup_boot) {
 	    if (backup_boot == info_sector)
 		die("Backup boot sector must not be same as info sector (%d)", info_sector);
@@ -1392,6 +1396,11 @@ static void write_tables(void)
 	    seekto(backup_boot * sector_size, "backup boot sector");
 	    writebuf((char *)&bs, sizeof(struct msdos_boot_sector),
 		     "backup boot sector");
+	    if (backup_boot + le16toh(bs.fat32.info_sector) != le16toh(bs.fat32.info_sector) &&
+		backup_boot + le16toh(bs.fat32.info_sector) < reserved_sectors) {
+		seekto((backup_boot + le16toh(bs.fat32.info_sector)) * sector_size, "backup info sector");
+		writebuf(info_sector_buffer, 512, "backup info sector");
+	    }
 	}
     }
     /* seek to start of FATS and write them all */
