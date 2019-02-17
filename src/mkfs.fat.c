@@ -227,6 +227,7 @@ static uint64_t blocks;	/* Number of blocks in filesystem */
 static unsigned sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
 static int backup_boot = 0;	/* Sector# of backup boot sector */
+static int backup_boot_set = 0;	/* User selected backup boot sector */
 static int info_sector = 0;	/* Sector# of FAT32 info sector */
 static int reserved_sectors = 0;	/* Number of reserved sectors */
 static int badblocks = 0;	/* Number of bad blocks in the filesystem */
@@ -1153,9 +1154,9 @@ static void setup_tables(void)
 	if (!info_sector)
 	    info_sector = 1;
 	bs.fat32.info_sector = htole16(info_sector);
-	if (!backup_boot)
+	if (!backup_boot_set)
 	    backup_boot = (reserved_sectors >= 7) ? 6 :
-		(reserved_sectors >= 2) ? reserved_sectors - 1 : 0;
+		(reserved_sectors >= 3) ? reserved_sectors - 1 : 0;
 	if (backup_boot) {
 	    if (backup_boot == info_sector)
 		die("Backup boot sector must not be same as info sector (%d)", info_sector);
@@ -1511,11 +1512,12 @@ int main(int argc, char **argv)
 	case 'b':		/* b : location of backup boot sector */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 2 || conversion > 0xffff) {
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > 0xffff) {
 		printf("Bad location for backup boot sector : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
 	    backup_boot = conversion;
+	    backup_boot_set = 1;
 	    break;
 
 	case 'c':		/* c : Check FS as we build it */
