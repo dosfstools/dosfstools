@@ -227,6 +227,7 @@ static uint64_t blocks;	/* Number of blocks in filesystem */
 static unsigned sector_size = 512;	/* Size of a logical sector */
 static int sector_size_set = 0;	/* User selected sector size */
 static int backup_boot = 0;	/* Sector# of backup boot sector */
+static int info_sector = 0;	/* Sector# of FAT32 info sector */
 static int reserved_sectors = 0;	/* Number of reserved sectors */
 static int badblocks = 0;	/* Number of bad blocks in the filesystem */
 static int nr_fats = 2;		/* Default number of FATs to produce */
@@ -1149,13 +1150,15 @@ static void setup_tables(void)
 	bs.fat32.version[0] = 0;
 	bs.fat32.version[1] = 0;
 	bs.fat32.root_cluster = htole32(2);
-	bs.fat32.info_sector = htole16(1);
+	if (!info_sector)
+	    info_sector = 1;
+	bs.fat32.info_sector = htole16(info_sector);
 	if (!backup_boot)
 	    backup_boot = (reserved_sectors >= 7) ? 6 :
 		(reserved_sectors >= 2) ? reserved_sectors - 1 : 0;
-	else {
-	    if (backup_boot == 1)
-		die("Backup boot sector must be after sector 1");
+	if (backup_boot) {
+	    if (backup_boot == info_sector)
+		die("Backup boot sector must not be same as info sector (%d)", info_sector);
 	    else if (backup_boot >= reserved_sectors)
 		die("Backup boot sector must be a reserved sector");
 	}
