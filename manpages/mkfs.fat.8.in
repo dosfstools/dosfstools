@@ -72,7 +72,10 @@ This is selected by default if \fBmkfs.fat\fP is run on 68k Atari Linux.
 .IP "\fB\-b\fP \fISECTOR-OF-BACKUP\fP" 4
 Selects the location of the backup boot sector for FAT32.
 Default depends on number of reserved sectors, but usually is sector 6.
+If there is a free space available after the backup boot sector then backup of
+the FAT32 info sector is put after the backup boot sector, usually at sector 7.
 The backup must be within the range of reserved sectors.
+Value 0 completely disables creating of backup boot and info FAT32 sectors.
 .IP "\fB\-c" 4
 Check the device for bad blocks before creating the filesystem.
 .IP "\fB\-C\fP" 4
