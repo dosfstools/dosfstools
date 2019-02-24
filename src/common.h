@@ -23,7 +23,14 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
+#include <sys/types.h>
+
+#include <limits.h>
 #include <stdint.h>
+
+#ifndef OFF_MAX
+	#define OFF_MAX (off_t)((1ULL << (sizeof(off_t) * CHAR_BIT - 1)) - 1)
+#endif
 
 extern int interactive;
 extern int write_immed;

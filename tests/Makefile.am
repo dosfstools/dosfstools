@@ -14,6 +14,7 @@ TESTS = referenceFAT12.mkfs              \
 	check-circular_chain.fsck        \
 	check-duplicate_names.fsck       \
 	check-dot_entries.fsck           \
+	check-huge.fsck                  \
 	label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 	label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
 	label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.label        \
@@ -34,7 +35,8 @@ TESTS = referenceFAT12.mkfs              \
 	label-fat32_xp_none.label
 
 
-XFAIL_TESTS = check-dot_entries.fsck
+XFAIL_TESTS = check-dot_entries.fsck \
+	      check-huge.fsck
 
 TEST_EXTENSIONS = .mkfs .fsck .label
 MKFS_LOG_COMPILER = $(srcdir)/test-mkfs
@@ -55,6 +57,7 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  check-circular_chain.fsck        \
 		  check-duplicate_names.fsck       \
 		  check-dot_entries.fsck           \
+		  check-huge.fsck                  \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.xxd            \
 		  label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
