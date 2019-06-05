@@ -38,7 +38,7 @@ matrix:
             - libc6-powerpc-cross
             - qemu-user
       before_script:
-        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6_2.19-0ubuntu6.14_powerpc.deb -O /tmp/libc6_powerpc.deb
+        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6_2.19-0ubuntu6_powerpc.deb -O /tmp/libc6_powerpc.deb
         - dpkg -x /tmp/libc6_powerpc.deb /tmp/libc6_powerpc
         - export GCONV_PATH=/tmp/libc6_powerpc/usr/lib/powerpc-linux-gnu/gconv
     - compiler: arm-linux-gnueabi-gcc
@@ -51,7 +51,7 @@ matrix:
             - libc6-armel-cross
             - qemu-user
       before_script:
-        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6-armel_2.19-0ubuntu6.14_armhf.deb -O /tmp/libc6-armel_armhf.deb
+        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6-armel_2.19-0ubuntu6_armhf.deb -O /tmp/libc6-armel_armhf.deb
         - dpkg -x /tmp/libc6-armel_armhf.deb /tmp/libc6-armel_armhf
         - export GCONV_PATH=/tmp/libc6-armel_armhf/usr/lib/arm-linux-gnueabi/gconv
 
