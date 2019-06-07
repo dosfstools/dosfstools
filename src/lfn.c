@@ -150,9 +150,9 @@ static void copy_lfn_part(unsigned char *dst, LFN_ENT * lfn)
 /* Convert name part in 'lfn' from unicode to ASCII */
 static inline char *cnv_this_part(LFN_ENT *lfn)
 {
-	unsigned char part_uni[CHARS_PER_LFN*2];
-	copy_lfn_part( part_uni, lfn );
-	return cnv_unicode( part_uni, CHARS_PER_LFN, 0 );
+	unsigned char part_uni[CHARS_PER_LFN * 2];
+	copy_lfn_part(part_uni, lfn);
+	return cnv_unicode(part_uni, CHARS_PER_LFN, 0);
 }
 
 static void clear_lfn_slots(int start, int end)
