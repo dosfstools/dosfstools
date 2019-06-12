@@ -1042,7 +1042,7 @@ static void setup_tables(void)
 	bs.fat32.info_sector = htole16(1);
 	if (!backup_boot)
 	    backup_boot = (reserved_sectors >= 7) ? 6 :
-		(reserved_sectors >= 2) ? reserved_sectors - 1 : 0;
+		(reserved_sectors > 2) ? reserved_sectors - 1 : 0;
 	else {
 	    if (backup_boot == 1)
 		die("Backup boot sector must be after sector 1");
