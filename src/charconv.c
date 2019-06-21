@@ -96,7 +96,7 @@ static int iconv_init_codepage(int codepage, iconv_t *to_local, iconv_t *from_lo
     *from_local = iconv_open(codepage_name, nl_langinfo(CODESET));
     if (*from_local == (iconv_t) - 1)
 	perror(codepage_name);
-    return (*to_local && *from_local) ? 1 : 0;
+    return (*to_local != (iconv_t)-1 && *from_local != (iconv_t)-1) ? 1 : 0;
 }
 
 static iconv_t dos_to_local;
