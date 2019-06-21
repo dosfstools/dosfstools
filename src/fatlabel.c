@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <ctype.h>
@@ -218,6 +219,8 @@ int main(int argc, char *argv[])
     bool volid_mode = false;
     char *device = NULL;
     char *new = NULL;
+    char *tmp;
+    long codepage;
     int c;
 
     check_atari();
@@ -233,7 +236,14 @@ int main(int argc, char *argv[])
 		break;
 
 	    case 'c':
-		set_dos_codepage(atoi(optarg));
+		errno = 0;
+		codepage = strtol(optarg, &tmp, 10);
+		if (!*optarg || isspace(*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
+		    fprintf(stderr, "Invalid codepage : %s\n", optarg);
+		    usage(1, 0);
+		}
+		if (!set_dos_codepage(codepage))
+		    usage(1, 0);
 		break;
 
 	    case 'V':
@@ -256,7 +266,8 @@ int main(int argc, char *argv[])
 	}
     }
 
-    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
+    if (!set_dos_codepage(-1))	/* set default codepage if none was given in command line */
+        exit(1);
 
     if (optind == argc - 2) {
 	change = true;

@@ -30,6 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <ctype.h>
+#include <limits.h>
 #include <unistd.h>
 #include <termios.h>
 #include <getopt.h>
@@ -94,6 +97,8 @@ int main(int argc, char **argv)
     int salvage_files, verify, c;
     uint32_t free_clusters = 0;
     struct termios tio;
+    char *tmp;
+    long codepage;
 
     enum {OPT_HELP=1000, OPT_VARIANT};
     const struct option long_options[] = {
@@ -133,7 +138,14 @@ int main(int argc, char **argv)
 	    boot_only = 1;
 	    break;
 	case 'c':
-	    set_dos_codepage(atoi(optarg));
+	    errno = 0;
+	    codepage = strtol(optarg, &tmp, 10);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
+		fprintf(stderr, "Invalid codepage : %s\n", optarg);
+		usage(argv[0], 2);
+	    }
+	    if (!set_dos_codepage(codepage))
+		usage(argv[0], 2);
 	    break;
 	case 'd':
 	    file_add(optarg, fdt_drop);
@@ -191,7 +203,8 @@ int main(int argc, char **argv)
 		    "Internal error: getopt_long() returned unexpected value %d\n", c);
 	    exit(3);
 	}
-    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
+    if (!set_dos_codepage(-1))	/* set default codepage if none was given in command line */
+        exit(2);
     if ((test || write_immed) && !rw) {
 	fprintf(stderr, "-t and -w can not be used in read only mode\n");
 	exit(2);

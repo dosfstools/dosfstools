@@ -52,6 +52,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -1564,7 +1565,14 @@ int main(int argc, char **argv)
 	    break;
 
 	case OPT_CODEPAGE:	/* --codepage : Code page */
-	    set_dos_codepage(atoi(optarg));
+	    errno = 0;
+	    conversion = strtol(optarg, &tmp, 10);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > INT_MAX) {
+		fprintf(stderr, "Invalid codepage : %s\n", optarg);
+		usage(argv[0], 1);
+	    }
+	    if (!set_dos_codepage(conversion))
+		usage(argv[0], 1);
 	    break;
 
 	case 'r':		/* r : Root directory entries */
@@ -1664,7 +1672,8 @@ int main(int argc, char **argv)
 	    exit(2);
 	}
 
-    set_dos_codepage(-1);	/* set default codepage if none was given in command line */
+    if (!set_dos_codepage(-1))	/* set default codepage if none was given in command line */
+        exit(1);
 
     if (optind == argc || !argv[optind]) {
 	printf("No device specified.\n");

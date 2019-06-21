@@ -96,11 +96,11 @@ static int iconv_init_codepage(int codepage, iconv_t *to_local, iconv_t *from_lo
     snprintf(codepage_name, sizeof(codepage_name), "CP%d//TRANSLIT", codepage);
     *to_local = iconv_open(nl_langinfo(CODESET), codepage_name);
     if (*to_local == (iconv_t) - 1)
-	perror(codepage_name);
+        fprintf(stderr, "Cannot initialize conversion from codepage %d to %s: %s\n", codepage, nl_langinfo(CODESET), strerror(errno));
     snprintf(codepage_name, sizeof(codepage_name), "CP%d", codepage);
     *from_local = iconv_open(codepage_name, nl_langinfo(CODESET));
     if (*from_local == (iconv_t) - 1)
-	perror(codepage_name);
+        fprintf(stderr, "Cannot initialize conversion from %s to codepage %d: %s\n", nl_langinfo(CODESET), codepage, strerror(errno));
     return (*to_local != (iconv_t)-1 && *from_local != (iconv_t)-1) ? 1 : 0;
 }
 
@@ -122,16 +122,8 @@ static int init_conversion(int codepage)
 	if (codepage < 0)
 	    codepage = DEFAULT_DOS_CODEPAGE;
 	setlocale(LC_CTYPE, "");	/* initialize locale for CODESET */
-	if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos)) {
-	    if (codepage != DEFAULT_DOS_CODEPAGE) {
-		codepage = DEFAULT_DOS_CODEPAGE;
-		printf("Trying to set fallback DOS codepage %d\n", codepage);
-		if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos))
-		    initialized = 0;	/* no conversion available */
-	    } else {
-		initialized = 0;	/* no conversion available */
-	    }
-	}
+	if (!iconv_init_codepage(codepage, &dos_to_local, &local_to_dos))
+	    initialized = 0;
 	if (!initialized && codepage == 850) {
 	    fprintf(stderr, "Using internal CP850 conversion table\n");
 	    internal_cp850 = 1;	/* use internal CP850 conversion table */
