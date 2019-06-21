@@ -75,7 +75,11 @@ if test "x$with_udev" != "xno"; then
 		  [true])
 fi
 
-AC_SEARCH_LIBS(iconv_open, iconv)
+# optional iconv support
+AC_ARG_WITH([iconv], AS_HELP_STRING([--without-iconv], [build without iconv support]))
+if test "x$with_iconv" != "xno"; then
+	AM_ICONV
+fi
 
 # xxd (distributed with vim) is used in the testsuite
 AC_CHECK_PROG([XXD_FOUND], [xxd], [yes])

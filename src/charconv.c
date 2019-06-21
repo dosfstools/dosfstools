@@ -1,5 +1,4 @@
 #include "charconv.h"
-#include <iconv.h>
 #include <langinfo.h>
 #include <locale.h>
 #include <stdio.h>
@@ -7,6 +6,10 @@
 #include <string.h>
 #include <errno.h>
 #include <wchar.h>
+
+#ifdef HAVE_ICONV
+#include <iconv.h>
+#endif
 
 /* CP850 table for 0x80-0xFF range from:
  * http://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/PC/CP850.TXT
@@ -84,6 +87,8 @@ static int local_string_to_cp850_string(char *out, char *in, unsigned int out_si
     free(wcs);
     return ret;
 }
+
+#ifdef HAVE_ICONV
 
 static int iconv_init_codepage(int codepage, iconv_t *to_local, iconv_t *from_local)
 {
@@ -181,3 +186,31 @@ int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
     out[out_size-1-bytes_out] = 0;
     return 1;
 }
+
+#else
+
+int set_dos_codepage(int codepage)
+{
+    static int initialized = -1;
+    if (initialized < 0) {
+        setlocale(LC_CTYPE, ""); /* initialize locale for wide character functions */
+        if (codepage < 0)
+            codepage = DEFAULT_DOS_CODEPAGE;
+        initialized = (codepage == 850) ? 1 : 0;
+        if (!initialized)
+            fprintf(stderr, "Cannot initialize unsupported codepage %d, only codepage 850 is supported\n", codepage);
+    }
+    return initialized;
+}
+
+int dos_char_to_printable(char **p, unsigned char c)
+{
+    return cp850_char_to_printable(p, c);
+}
+
+int local_string_to_dos_string(char *out, char *in, unsigned int len)
+{
+    return local_string_to_cp850_string(out, in, len);
+}
+
+#endif
