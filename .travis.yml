@@ -6,8 +6,12 @@ compiler:
 
 env:
   - CFLAGS="-W -Wall"
+  - CFLAGS="-W -Wall -O2" LDFLAGS="--static"
+  - CFLAGS="-W -Wall -O2" CONFIGURE_FLAGS="--without-iconv"
   - CFLAGS="-W -Wall -O2 -g -fwrapv -fsanitize=address"
   - CFLAGS="-m32 -W -Wall"
+  - CFLAGS="-m32 -W -Wall -O2" LDFLAGS="--static"
+  - CFLAGS="-m32 -W -Wall -O2" CONFIGURE_FLAGS="--without-iconv"
   - CFLAGS="-m32 -W -Wall -O2 -g -fwrapv -fsanitize=address"
 
 addons:
@@ -29,6 +33,14 @@ matrix:
             - libc6-dev-x32
             - gcc-multilib
     - compiler: powerpc-linux-gnu-gcc
+      env: CFLAGS="-W -Wall -O2 -g -fwrapv" LDFLAGS="--static" CONFIGURE_FLAGS="--host=powerpc-linux-gnu" RUN="qemu-ppc"
+      addons:
+        apt:
+          packages:
+            - gcc-powerpc-linux-gnu
+            - libc6-dev-powerpc-cross
+            - qemu-user
+    - compiler: powerpc-linux-gnu-gcc
       env: CFLAGS="-W -Wall -O2 -g -fwrapv" CONFIGURE_FLAGS="--host=powerpc-linux-gnu" RUN="qemu-ppc /usr/powerpc-linux-gnu/lib/ld.so.1 --library-path /usr/powerpc-linux-gnu/lib"
       addons:
         apt:
@@ -41,6 +53,14 @@ matrix:
         - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6_2.19-0ubuntu6_powerpc.deb -O /tmp/libc6_powerpc.deb
         - dpkg -x /tmp/libc6_powerpc.deb /tmp/libc6_powerpc
         - export GCONV_PATH=/tmp/libc6_powerpc/usr/lib/powerpc-linux-gnu/gconv
+    - compiler: arm-linux-gnueabi-gcc
+      env: CFLAGS="-W -Wall -O2 -g -fwrapv" LDFLAGS="--static" CONFIGURE_FLAGS="--host=arm-linux-gnueabi" RUN="qemu-arm"
+      addons:
+        apt:
+          packages:
+            - gcc-arm-linux-gnueabi
+            - libc6-dev-armel-cross
+            - qemu-user
     - compiler: arm-linux-gnueabi-gcc
       env: CFLAGS="-W -Wall -O2 -g -fwrapv" CONFIGURE_FLAGS="--host=arm-linux-gnueabi" RUN="qemu-arm /usr/arm-linux-gnueabi/lib/ld-linux.so.3 --library-path /usr/arm-linux-gnueabi/lib"
       addons:
@@ -56,7 +76,7 @@ matrix:
         - export GCONV_PATH=/tmp/libc6-armel_armhf/usr/lib/arm-linux-gnueabi/gconv
 
 script:
-  - autoreconf -i
+  - ./autogen.sh
   - ./configure $CONFIGURE_FLAGS
   - make
   - make check
