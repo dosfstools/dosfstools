@@ -138,12 +138,12 @@ struct msdos_boot_sector {
     uint8_t boot_jump[3];	/* Boot strap short or near jump */
     uint8_t system_id[8];	/* Name - can be used to special case
 				   partition manager volumes */
-    uint8_t sector_size[2];	/* bytes per logical sector */
+    uint16_t sector_size;	/* bytes per logical sector */
     uint8_t cluster_size;	/* sectors/cluster */
     uint16_t reserved;		/* reserved sectors */
     uint8_t fats;		/* number of FATs */
-    uint8_t dir_entries[2];	/* root directory entries */
-    uint8_t sectors[2];		/* number of sectors */
+    uint16_t dir_entries;	/* root directory entries */
+    uint16_t sectors;		/* number of sectors */
     uint8_t media;		/* media code (unused) */
     uint16_t fat_length;	/* sectors/FAT */
     uint16_t secs_track;	/* sectors per track */
@@ -1028,11 +1028,8 @@ static void setup_tables(void)
 	}
     }
 
-    bs.sector_size[0] = (char)(sector_size & 0x00ff);
-    bs.sector_size[1] = (char)((sector_size & 0xff00) >> 8);
-
-    bs.dir_entries[0] = (char)(root_dir_entries & 0x00ff);
-    bs.dir_entries[1] = (char)((root_dir_entries & 0xff00) >> 8);
+    bs.sector_size = htole16(sector_size);
+    bs.dir_entries = htole16(root_dir_entries);
 
     if (size_fat == 32) {
 	/* set up additional FAT32 fields */
@@ -1066,12 +1063,10 @@ static void setup_tables(void)
 		   "or higher.\n");
     }
     if (num_sectors >= 65536) {
-	bs.sectors[0] = (char)0;
-	bs.sectors[1] = (char)0;
+	bs.sectors = htole16(0);
 	bs.total_sect = htole32(num_sectors);
     } else {
-	bs.sectors[0] = (char)(num_sectors & 0x00ff);
-	bs.sectors[1] = (char)((num_sectors & 0xff00) >> 8);
+	bs.sectors = htole16(num_sectors)
 	if (!atari_format)
 	    bs.total_sect = htole32(0);
     }
@@ -1118,8 +1113,7 @@ static void setup_tables(void)
 	       reserved_sectors, (reserved_sectors != 1) ? "s" : "");
 
 	if (size_fat != 32) {
-	    unsigned root_dir_entries =
-		bs.dir_entries[0] + ((bs.dir_entries[1]) * 256);
+	    unsigned root_dir_entries = bs.dir_entries;
 	    unsigned root_dir_sectors =
 		cdiv(root_dir_entries * 32, sector_size);
 	    printf("Root directory contains %u slots and uses %u sectors.\n",
