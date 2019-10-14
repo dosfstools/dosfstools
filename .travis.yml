@@ -50,7 +50,10 @@ matrix:
             - libc6-powerpc-cross
             - qemu-user
       before_script:
-        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6_2.19-0ubuntu6_powerpc.deb -O /tmp/libc6_powerpc.deb
+        - VERSION=`dpkg-query -W -f='${Version}\n' libc6-powerpc-cross | head -1 | sed 's/\(ubuntu[0-9]*\).*/\1/'`
+        - SOURCE=`dpkg-query -W -f='${Source}\n' libc6 | head -1`
+        - PREFIX=`echo "$SOURCE" | sed 's/^\(.\).*/\1/'`
+        - wget "http://ports.ubuntu.com/pool/main/$PREFIX/$SOURCE/libc6_${VERSION}_powerpc.deb" -O /tmp/libc6_powerpc.deb
         - dpkg -x /tmp/libc6_powerpc.deb /tmp/libc6_powerpc
         - export GCONV_PATH=/tmp/libc6_powerpc/usr/lib/powerpc-linux-gnu/gconv
     - compiler: arm-linux-gnueabi-gcc
@@ -71,7 +74,10 @@ matrix:
             - libc6-armel-cross
             - qemu-user
       before_script:
-        - wget http://ports.ubuntu.com/pool/main/e/eglibc/libc6-armel_2.19-0ubuntu6_armhf.deb -O /tmp/libc6-armel_armhf.deb
+        - VERSION=`dpkg-query -W -f='${Version}\n' libc6-armel-cross | head -1 | sed 's/\(ubuntu[0-9]*\).*/\1/'`
+        - SOURCE=`dpkg-query -W -f='${Source}\n' libc6 | head -1`
+        - PREFIX=`echo "$SOURCE" | sed 's/^\(.\).*/\1/'`
+        - wget "http://ports.ubuntu.com/pool/main/$PREFIX/$SOURCE/libc6-armel_${VERSION}_armhf.deb" -O /tmp/libc6-armel_armhf.deb
         - dpkg -x /tmp/libc6-armel_armhf.deb /tmp/libc6-armel_armhf
         - export GCONV_PATH=/tmp/libc6-armel_armhf/usr/lib/arm-linux-gnueabi/gconv
 
