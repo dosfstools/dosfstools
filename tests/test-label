@@ -44,7 +44,7 @@ echo "Test $testname"
 rm -f "${testname}.img" "${testname}.out"
 
 xxd -r "${srcdir}/${testname}.xxd" "${testname}.img" || exit 99
-run_label "${testname}.img" > "${testname}.out" || exit 99
+run_label "${testname}.img" 1> "${testname}.out" 2>&1 || exit 99
 
 
 echo "Comparing..."
