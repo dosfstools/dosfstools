@@ -76,7 +76,7 @@ matrix:
         - export GCONV_PATH=/tmp/libc6-armel_armhf/usr/lib/arm-linux-gnueabi/gconv
 
 script:
-  - test "$LDFLAGS" != "--static" && export CHECK_ERRORS=1
+  - if test "$LDFLAGS" != "--static"; then export CHECK_ERRORS=1; fi
   - ./autogen.sh
   - ./configure $CONFIGURE_FLAGS
   - make
