@@ -44,7 +44,7 @@ echo "Test $testname"
 rm -f "${testname}.img" "${testname}.out"
 
 xxd -r "${srcdir}/${testname}.xxd" "${testname}.img" || exit 99
-run_label "${testname}.img" 1> "${testname}.out" 2>&1 || exit 99
+run_label "${testname}.img" 1> "${testname}.out" 2> "${testname}.err" || exit 99
 
 
 echo "Comparing..."
@@ -52,5 +52,12 @@ diff "${testname}.out" "${srcdir}/${testname}.label"
 success=$?
 
 
-rm -f "${testname}.img" "${testname}.out"
+echo "Error output:"
+cat "${testname}.err"
+if [ "$CHECK_ERRORS" = "1" ] && [ -s "${testname}.err" ]; then
+	success=2
+fi
+
+
+rm -f "${testname}.img" "${testname}.out" "${testname}.err"
 exit $success
