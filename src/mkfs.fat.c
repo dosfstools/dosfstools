@@ -182,7 +182,7 @@ struct fat32_fsinfo {
 };
 
 /* The "boot code" we put into the filesystem... it writes a message and
-   tells the user to try again */
+   tells the user to try again. This "boot code" is in the public domain. */
 
 unsigned char dummy_boot_jump[3] = { 0xeb, 0x3c, 0x90 };
 
