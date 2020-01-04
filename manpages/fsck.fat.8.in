@@ -156,8 +156,8 @@ accessible to these programs.
 Short file names which \fIstart\fP with a space are considered invalid
 regardless of this option's setting.
 .IP "" 4
-Previous versions of this program exceptionally treated \fIEA DATA . SF\fP and
-\fIWP ROOT . SF\fP as valid short names; using this option does not preserve
+Previous versions of this program exceptionally treated \fIEA DATA. SF\fP and
+\fIWP ROOT. SF\fP as valid short names; using this option does not preserve
 that exception.
 .IP "\fB\-t\fP" 4
 Mark unreadable clusters as bad.
