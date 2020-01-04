@@ -58,6 +58,7 @@ static const struct device_info device_info_clueless = {
     .geom_heads   = -1,
     .geom_sectors = -1,
     .geom_start   = -1,
+    .geom_size    = -1,
     .sector_size  = -1,
     .size         = -1,
 };
@@ -114,6 +115,7 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
     DIR *holders_dir;
     struct dirent *dir_entry;
     long number;
+    long long llnumber;
     char *endptr;
 
     if (device_info_verbose >= 3)
@@ -248,6 +250,22 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
 	number = strtol(attr, &endptr, 10);
 	if (*attr && !isspace(*attr) && !*endptr && !errno && number >= 0 && number <= INT_MAX)
 	    info->partition = number;
+
+        if (info->type != TYPE_VIRTUAL && parent) {
+            attr = udev_device_get_sysattr_value(parent, "partition");
+            if (!attr) {
+                attr = udev_device_get_subsystem(parent);
+                if (attr && !strcmp(attr, "block")) {
+                    attr = udev_device_get_sysattr_value(parent, "size");
+                    if (attr) {
+                        errno = 0;
+                        llnumber = strtoll(attr, &endptr, 10);
+                        if (*attr && !isspace(*attr) && !*endptr && !errno && llnumber >= 0)
+                            info->geom_size = llnumber;
+                    }
+                }
+            }
+        }
     } else {
 	printf("attribute \"partition\" not found\n");
 	if (info->type != TYPE_VIRTUAL && parent) {
@@ -260,8 +278,11 @@ static int udev_fill_info(struct device_info *info, struct stat *stat)
 		if (!strcmp(attr, "block"))
 		    /* we don't know the partition number, use 1 */
 		    info->partition = 1;
-		else
+		else {
 		    info->partition = 0;
+		    if (info->sector_size > 0)
+		        info->geom_size = info->size / info->sector_size;
+		}
 	    }
 	}
     }

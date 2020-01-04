@@ -109,6 +109,12 @@ int main(int argc, char **argv)
     else
 	printf("%ld\n", info.geom_start);
 
+    printf("total disk sectors: ");
+    if (info.geom_size < 0)
+	printf("unknown\n");
+    else
+	printf("%lld\n", info.geom_size);
+
     printf("sector size: ");
     if (info.sector_size < 0)
 	printf("unknown\n");
