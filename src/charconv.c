@@ -143,7 +143,7 @@ static int internal_cp850;
 /*
  * Initialize conversion from codepage.
  * codepage = -1 means default codepage.
- * Returns 0 on success, non-zero on failure
+ * Returns non-zero on success, 0 on failure
  */
 static int init_conversion(int codepage)
 {
