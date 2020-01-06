@@ -33,6 +33,26 @@ static const wchar_t cp850_table[128] = {
     0x00b0, 0x00a8, 0x00b7, 0x00b9, 0x00b3, 0x00b2, 0x25a0, 0x00a0,
 };
 
+/* CP850 translit table to 7bit ASCII for 0x80-0xFF range */
+static const char *const cp850_translit_table[128] = {
+    "C",   "u",   "e",  "a",     "a",     "a", "a",   "c",
+    "e",   "e",   "e",  "i",     "i",     "i", "A",   "A",
+    "E",   "ae",  "AE", "o",     "o",     "o", "u",   "u",
+    "y",   "O",   "U",  "o",     "GBP",   "O", "x",   "f",
+    "a",   "i",   "o",  "u",     "n",     "N", "a",   "o",
+    "?",   "(R)", "!",  " 1/2 ", " 1/4 ", "!", "<<",  ">>",
+    "?",   "?",   "?",  "|",     "+",     "A", "A",   "A",
+    "(C)", "?",   "?",  "?",     "?",     "c", "JPY", "+",
+    "+",   "+",   "+",  "+",     "-",     "+", "a",   "A",
+    "?",   "?",   "?",  "?",     "?",     "?", "?",   "?",
+    "d",   "D",   "E",  "E",     "E",     "i", "I",   "I",
+    "I",   "+",   "+",  "?",     "?",     "|", "I",   "?",
+    "O",   "ss",  "O",  "O",     "o",     "O", "u",   "th",
+    "TH",  "U",   "U",  "U",     "y",     "Y", "?",   "'",
+    "-",   "+-",  "?",  " 3/4 ", "?",     "?", "/",   ",",
+    "?",   "?",   ".",  "1",     "3",     "2", "?",   " ",
+};
+
 static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned int out_size)
 {
     unsigned i, j;
@@ -62,7 +82,14 @@ static int cp850_char_to_printable(char **p, unsigned char c)
     int ret = wctomb(*p, wc);
     if (ret != -1)
         *p += ret;
-    return ret != -1;
+    else if (!(c & 0x80))
+        *(*p++) = c;
+    else {
+        ret = strlen(cp850_translit_table[c & 0x7F]);
+        memcpy(*p, cp850_translit_table[c & 0x7F], ret);
+        *p += ret;
+    }
+    return 1;
 }
 
 static int local_string_to_cp850_string(char *out, const char *in, unsigned int out_size)
