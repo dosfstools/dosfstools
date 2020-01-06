@@ -200,9 +200,9 @@ int dos_char_to_printable(char **p, unsigned char c)
     return cp850_char_to_printable(p, c);
 }
 
-int local_string_to_dos_string(char *out, char *in, unsigned int len)
+int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
 {
-    return local_string_to_cp850_string(out, in, len);
+    return local_string_to_cp850_string(out, in, out_size);
 }
 
 #endif
