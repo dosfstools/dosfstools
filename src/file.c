@@ -41,7 +41,7 @@ static void put_char(char **p, unsigned char c)
 {
     if (dos_char_to_printable(p, c))
 	return;
-    if ((c >= ' ' && c < 0x7f) || c >= 0xa0)
+    if (c >= ' ' && c < 0x7f)
 	*(*p)++ = c;
     else {
 	*(*p)++ = '\\';
