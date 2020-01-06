@@ -33,7 +33,7 @@ static const wchar_t cp850_table[128] = {
     0x00b0, 0x00a8, 0x00b7, 0x00b9, 0x00b3, 0x00b2, 0x25a0, 0x00a0,
 };
 
-static int wchar_string_to_cp850_string(char *out, wchar_t *in, unsigned int out_size)
+static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned int out_size)
 {
     unsigned i, j;
     for (i = 0; i < out_size-1 && in[i]; ++i) {
@@ -65,7 +65,7 @@ static int cp850_char_to_printable(char **p, unsigned char c)
     return ret != -1;
 }
 
-static int local_string_to_cp850_string(char *out, char *in, unsigned int out_size)
+static int local_string_to_cp850_string(char *out, const char *in, unsigned int out_size)
 {
     int ret;
     wchar_t *wcs;
