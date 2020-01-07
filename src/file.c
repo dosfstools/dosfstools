@@ -61,7 +61,7 @@ static void put_char(char **p, unsigned char c, unsigned int out_size)
  */
 char *file_name(unsigned char *fixed)
 {
-    static char path[MSDOS_NAME * 4 + 2];
+    static char path[256];
     char *p;
     int i, j;
 

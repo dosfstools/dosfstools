@@ -783,7 +783,7 @@ void remove_label(DOS_FS *fs)
 
 const char *pretty_label(const char *label)
 {
-    static char buffer[11*4+1];
+    static char buffer[256];
     char *p;
     int i;
     int last;
