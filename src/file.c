@@ -37,13 +37,13 @@
 
 FDSC *fp_root = NULL;
 
-static void put_char(char **p, unsigned char c)
+static void put_char(char **p, unsigned char c, unsigned int out_size)
 {
-    if (dos_char_to_printable(p, c))
+    if (dos_char_to_printable(p, c, out_size))
 	return;
-    if (c >= ' ' && c < 0x7f)
+    if (out_size >= 1 && c >= ' ' && c < 0x7f)
 	*(*p)++ = c;
-    else {
+    else if (out_size >= 4) {
 	*(*p)++ = '\\';
 	*(*p)++ = '0' + (c >> 6);
 	*(*p)++ = '0' + ((c >> 3) & 7);
@@ -68,7 +68,7 @@ char *file_name(unsigned char *fixed)
     p = path;
     i = j = 0;
     if (fixed[0] == 0x05) {
-        put_char(&p, 0xe5);
+        put_char(&p, 0xe5, path + sizeof(path) - 1 - p);
         ++i;
         ++j;
     }
@@ -76,7 +76,7 @@ char *file_name(unsigned char *fixed)
 	if (fixed[i] != ' ') {
 	    while (j++ < i)
 		*p++ = ' ';
-	    put_char(&p, fixed[i]);
+	    put_char(&p, fixed[i], path + sizeof(path) - 1 - p);
 	}
     if (strncmp((const char *)(fixed + 8), "   ", 3)) {
 	*p++ = '.';
@@ -84,7 +84,7 @@ char *file_name(unsigned char *fixed)
 	    if (fixed[i + 8] != ' ') {
 		while (j++ < i)
 		    *p++ = ' ';
-		put_char(&p, fixed[i + 8]);
+		put_char(&p, fixed[i + 8], path + sizeof(path) - 1 - p);
 	    }
     }
     *p = 0;

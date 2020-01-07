@@ -794,8 +794,8 @@ const char *pretty_label(const char *label)
     }
 
     p = buffer;
-    for (i = 0; i <= last && label[i]; ++i) {
-        if (!dos_char_to_printable(&p, label[i]))
+    for (i = 0; i <= last && label[i] && p < buffer + sizeof(buffer) - 1; ++i) {
+        if (!dos_char_to_printable(&p, label[i], buffer + sizeof(buffer) - 1 - p))
             *p++ = '_';
     }
     *p = 0;

@@ -76,16 +76,23 @@ static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned i
     return 1;
 }
 
-static int cp850_char_to_printable(char **p, unsigned char c)
+static int cp850_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 {
-    wchar_t wc = (c & 0x80) ? cp850_table[c & 0x7F] : c;
-    int ret = wctomb(*p, wc);
-    if (ret != -1)
+    size_t ret;
+    wchar_t wcs[2];
+    wcs[0] = (c & 0x80) ? cp850_table[c & 0x7F] : c;
+    wcs[1] = 0;
+    ret = wcstombs(*p, wcs, out_size);
+    if (ret == 0)
+        return 0;
+    if (ret != (size_t)-1)
         *p += ret;
     else if (!(c & 0x80))
         *(*p++) = c;
     else {
         ret = strlen(cp850_translit_table[c & 0x7F]);
+        if (ret > out_size)
+            return 0;
         memcpy(*p, cp850_translit_table[c & 0x7F], ret);
         *p += ret;
     }
@@ -171,16 +178,16 @@ int set_dos_codepage(int codepage)
     return init_conversion(codepage);
 }
 
-int dos_char_to_printable(char **p, unsigned char c)
+int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 {
     char in[1] = { c };
     char *pin = in;
     size_t bytes_in = 1;
-    size_t bytes_out = 4;
+    size_t bytes_out = out_size;
     if (!init_conversion(-1))
 	return 0;
     if (internal_cp850)
-        return cp850_char_to_printable(p, c);
+        return cp850_char_to_printable(p, c, out_size);
     return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != -1;
 }
 
@@ -226,9 +233,9 @@ int set_dos_codepage(int codepage)
     return initialized;
 }
 
-int dos_char_to_printable(char **p, unsigned char c)
+int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 {
-    return cp850_char_to_printable(p, c);
+    return cp850_char_to_printable(p, c, out_size);
 }
 
 int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
