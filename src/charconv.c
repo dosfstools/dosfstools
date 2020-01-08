@@ -188,7 +188,7 @@ int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 	return 0;
     if (internal_cp850)
         return cp850_char_to_printable(p, c, out_size);
-    return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != -1;
+    return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != (size_t)-1;
 }
 
 int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
