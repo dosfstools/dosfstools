@@ -181,7 +181,7 @@ int set_dos_codepage(int codepage)
 int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 {
     char in[1] = { c };
-    char *pin = in;
+    ICONV_CONST char *pin = in;
     size_t bytes_in = 1;
     size_t bytes_out = out_size;
     if (!init_conversion(-1))
@@ -193,7 +193,7 @@ int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
 
 int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
 {
-    char *pin = in;
+    ICONV_CONST char *pin = in;
     char *pout = out;
     size_t bytes_in = strlen(in);
     size_t bytes_out = out_size-1;
