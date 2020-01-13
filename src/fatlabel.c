@@ -59,7 +59,6 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
     DIR_ENT de;
 
     char label[12] = { 0 };
-    wchar_t wlabel[12] = { 0 };
     size_t len;
     int ret;
     int i;
@@ -69,11 +68,6 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	if (len != (size_t)-1 && len > 11) {
 	    fprintf(stderr,
 		    "fatlabel: labels can be no longer than 11 characters\n");
-	    exit(1);
-	}
-
-	if (mbstowcs(wlabel, newlabel, 12) == (size_t)-1) {
-	    perror("fatlabel: error when processing label");
 	    exit(1);
 	}
 
@@ -87,7 +81,7 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	    label[i] = ' ';
 	label[11] = 0;
 
-	ret = validate_volume_label(wlabel, (unsigned char *)label);
+	ret = validate_volume_label(label);
 	if (ret & 0x1) {
 	    fprintf(stderr,
 		    "fatlabel: warning - lowercase labels might not work properly on some systems\n");

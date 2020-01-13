@@ -35,6 +35,7 @@
 #include <unistd.h>
 
 #include "common.h"
+#include "charconv.h"
 
 
 int interactive;
@@ -310,41 +311,30 @@ uint32_t generate_volume_id(void)
 /*
  * Validate volume label
  *
- * @param[in]   wlabel     Label stored in locale-independent wide string
  * @param[in]   doslabel   Label stored according to current DOS codepage
  *
  * @return   bitmask of errors
  *           0x01 - lowercase character
  *           0x02 - character below 0x20
  *           0x04 - character in disallowed set
- *           0x08 - empty or space only label
+ *           0x08 - empty or space-only label
  *           0x10 - space at beginning
  */
-int validate_volume_label(wchar_t *wlabel, unsigned char *doslabel)
+int validate_volume_label(char *doslabel)
 {
     int i;
     int ret = 0;
+    wchar_t wlabel[12];
 
-    if (wlabel) {
-        for (i = 0; i < 11; i++) {
+    if (dos_string_to_wchar_string(wlabel, doslabel, sizeof(wlabel))) {
+        for (i = 0; wlabel[i]; i++) {
             /* FAT specification: Lower case characters are not allowed in DIR_Name
                                   (what these characters are is country specific)
-               Therefore it is needed to check original characters which are visible
-               to users before conversion into DOS OEM code page. And because orignal
-               label is stored according to current LC_CTYPE locale, conversion to
-               locale independent wchar_t* string is needed.
+               Original label is stored in DOS OEM code page, so islower() function
+               cannot be used. Therefore convert original label to locale independent
+               wchar_t* and then use iswlower() function for it.
             */
             if (iswlower(wlabel[i])) {
-                ret |= 0x01;
-                break;
-            }
-        }
-    } else {
-        for (i = 0; i < 11; i++) {
-            /* In case we do not have locale independent wchar_t* string, check only
-               locale independent 7bit ASCII portion of characters.
-             */
-            if (doslabel[i] >= 'a' && doslabel[i] <= 'z') {
                 ret |= 0x01;
                 break;
             }

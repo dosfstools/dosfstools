@@ -658,7 +658,6 @@ static void setup_tables(void)
     struct msdos_volume_info *vi =
 	(size_fat == 32 ? &bs.fat32.vi : &bs.oldfat.vi);
     char label[12] = { 0 };
-    wchar_t wlabel[12] = { 0 };
     size_t len;
     int ret;
     int i;
@@ -708,9 +707,6 @@ static void setup_tables(void)
     if (len != (size_t)-1 && len > 11)
 	die("Label can be no longer than 11 characters");
 
-    if (mbstowcs(wlabel, volume_name, 12) == (size_t)-1)
-	pdie("Error when processing label");
-
     if (!local_string_to_dos_string(label, volume_name, 12))
 	die("Error when processing label");
 
@@ -721,7 +717,7 @@ static void setup_tables(void)
     if (memcmp(label, "           ", MSDOS_NAME) == 0)
 	memcpy(label, NO_NAME, MSDOS_NAME);
 
-    ret = validate_volume_label(wlabel, (unsigned char *)label);
+    ret = validate_volume_label(label);
     if (ret & 0x1)
 	fprintf(stderr,
 		"mkfs.fat: Warning: lowercase labels might not work properly on some systems\n");
