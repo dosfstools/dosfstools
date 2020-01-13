@@ -214,7 +214,15 @@ int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
         else
             fprintf(stderr, "Cannot convert input sequence '\\x%.02hhX' from codeset '%s' to 'CP%d': %s\n",
                     *pin, nl_langinfo(CODESET), used_codepage, strerror(errno));
+        iconv(local_to_dos, NULL, NULL, &pout, &bytes_out);
         return 0;
+    } else {
+        ret = iconv(local_to_dos, NULL, NULL, &pout, &bytes_out);
+        if (ret == (size_t)-1) {
+            fprintf(stderr, "Cannot convert input string '%s' to 'CP%d': String is too long\n",
+                    in, used_codepage);
+            return 0;
+        }
     }
     out[out_size-1-bytes_out] = 0;
     return 1;
