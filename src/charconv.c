@@ -72,6 +72,10 @@ static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned i
             return 0;
         }
     }
+    if (in[i]) {
+        fprintf(stderr, "Cannot convert input string to 'CP850': String is too long\n");
+        return 0;
+    }
     out[i] = 0;
     return 1;
 }
@@ -204,13 +208,12 @@ int local_string_to_dos_string(char *out, char *in, unsigned int out_size)
         return local_string_to_cp850_string(out, in, out_size);
     ret = iconv(local_to_dos, &pin, &bytes_in, &pout, &bytes_out);
     if (ret == (size_t)-1) {
-        fprintf(stderr, "Cannot convert input sequence '\\x%.02hhX' from codeset '%s' to 'CP%d': %s\n",
-                *pin, nl_langinfo(CODESET), used_codepage, strerror(errno));
-        return 0;
-    }
-    if (bytes_in != 0) {
-        fprintf(stderr, "Cannot convert input string '%s' to 'CP%d': String is too long\n",
-                in, used_codepage);
+        if (errno == E2BIG)
+            fprintf(stderr, "Cannot convert input string '%s' to 'CP%d': String is too long\n",
+                    in, used_codepage);
+        else
+            fprintf(stderr, "Cannot convert input sequence '\\x%.02hhX' from codeset '%s' to 'CP%d': %s\n",
+                    *pin, nl_langinfo(CODESET), used_codepage, strerror(errno));
         return 0;
     }
     out[out_size-1-bytes_out] = 0;
