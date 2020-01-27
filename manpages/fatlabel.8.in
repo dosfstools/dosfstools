@@ -87,20 +87,23 @@ to specified DOS codepage and were added checks if a new label is valid.
 It is strongly suggested to not use \fBdosfslabel\fR prior to version 3.0.16.
 .\" ----------------------------------------------------------------------------
 .SH DOS CODEPAGES
-MS-DOS and Windows systems uses DOS (OEM) codepage according to global Language
-Country/Region system settings. DOS codepage is needed for encoding/decoding
-non-ASCII FAT label. Default DOS codepage is 850. See following mapping table
-between DOS codepage and Language Country/Region:
+MS-DOS and Windows systems use DOS (OEM) codepage for encoding and decoding FAT
+label. In Windows systems DOS codepage is global for all running applications
+and cannot be configured explicitly. It is set implicitly by option \fILanguage
+for non-Unicode programs\fP available in \fIRegional and Language Options\fP via
+\fIControl Panel\fP. Default DOS codepage for fatlabel is 850. See following
+mapping table between DOS codepage and Language for non-Unicode programs:
 .TS
 tab(:);
 c lx.
-\fBCodepage\fR:\fBLanguage Country/Region\fR
+\fBCodepage\fR:\fBLanguage\fR
 437:T{
 English (India), English (Malaysia), English (Republic of the Philippines),
 English (Singapore), English (South Africa), English (United States),
 English (Zimbabwe), Filipino, Hausa, Igbo, Inuktitut, Kinyarwanda, Kiswahili,
 Yoruba
 T}
+720:Arabic, Dari, Persian, Urdu, Uyghur
 737:Greek
 775:Estonian, Latvian, Lithuanian
 850:T{
@@ -120,7 +123,7 @@ Serbian (Latin), Slovak, Slovenian, Turkmen
 T}
 855:Bosnian (Cyrillic), Serbian (Cyrillic)
 857:Azeri (Latin), Turkish, Uzbek (Latin)
-862:Hebrew (Israel)
+862:Hebrew
 866:T{
 Azeri (Cyrillic), Bashkir, Belarusian, Bulgarian, Kyrgyz, Macedonian, Mongolian,
 Russian, Tajik, Tatar, Ukrainian, Uzbek (Cyrillic), Yakut
@@ -128,8 +131,9 @@ T}
 874:Thai
 932:Japanese
 936:Chinese (Simplified)
-949:Korean (Korea)
+949:Korean
 950:Chinese (Traditional)
+1258:Vietnamese
 .TE
 .\" ----------------------------------------------------------------------------
 .SH SEE ALSO
