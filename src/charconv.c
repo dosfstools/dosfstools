@@ -68,7 +68,7 @@ static int wchar_string_to_cp850_string(char *out, const wchar_t *in, unsigned i
             }
         }
         if (j == 0x80) {
-            fprintf(stderr, "Cannot convert input character '%lc' to 'CP850': %s\n", (wint_t)in[i], strerror(EILSEQ));
+            fprintf(stderr, "Cannot convert input character 0x%04x to 'CP850': %s\n", (unsigned int)in[i], strerror(EILSEQ));
             return 0;
         }
     }
