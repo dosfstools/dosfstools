@@ -179,7 +179,7 @@ struct fat32_fsinfo {
     uint32_t next_cluster;	/* Most recently allocated cluster.
 				 * Unused under Linux. */
     uint32_t reserved2[4];
-};
+} __attribute__ ((packed));
 
 /* The "boot code" we put into the filesystem... it writes a message and
    tells the user to try again */
