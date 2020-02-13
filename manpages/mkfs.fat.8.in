@@ -98,9 +98,18 @@ Specifies the type of file allocation tables used (12, 16 or 32 bit).
 If nothing is specified, \fBmkfs.fat\fR will automatically select between 12, 16
 and 32 bit, whatever fits better for the filesystem size.
 .IP "\fB\-h\fR \fINUMBER-OF-HIDDEN-SECTORS\fR" 4
-Select the number of hidden sectors in the volume.
-Apparently some digital cameras get indigestion if you feed them a CF card
-without such hidden sectors, this option allows you to satisfy them.
+Specify the number of so-called \fIhidden sectors\fP, as stored in the FAT boot
+sector: this number represents the beginning sector of the partition containing
+the file system. Normally this is an offset (in sectors) relative to the start
+of the disk, although for MBR logical volumes contained in an extended partition
+of type 0x05 (a non-LBA extended partition), a quirk in the MS-DOS implementation
+of FAT requires it to be relative to the partition's immediate containing
+Extended Boot Record. Boot code and other software handling FAT volumes may also
+rely on this field being set up correctly; most modern FAT implementations will
+ignore it.
+By default, if the \fIDEVICE\fP is a partition block device, \fBmkfs.fat\fP uses
+the partition offset relative to disk start. Otherwise, \fBmkfs.fat\fP assumes
+zero. Use this option to override this behaviour.
 .IP "\fB\-i\fR \fIVOLUME-ID\fR" 4
 Sets the volume ID of the newly created filesystem; \fIVOLUME-ID\fR is a 32-bit
 hexadecimal number (for example, 2e24ec82).
