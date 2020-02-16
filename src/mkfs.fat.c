@@ -1541,8 +1541,8 @@ int main(int argc, char **argv)
 	case 'D':		/* D : Choose Drive Number */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 0 && conversion != 0x80)) {
-		printf ("Drive number must be 0 or 0x80: %s\n", optarg);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0x00 || conversion > 0xFF) {
+		printf ("Bad drive number: %s\n", optarg);
 		usage(argv[0], 1);
 	    }
 	    drive_number_option = conversion;

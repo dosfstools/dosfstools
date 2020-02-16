@@ -94,8 +94,10 @@ The resulting file can be copied later to a floppy disk or other device, or
 mounted through a loop device.
 .IP "\fB\-D\fP \fIDRIVE-NUMBER\fP" 4
 Specify the BIOS drive number to be stored in the FAT boot sector.
-This value is usually 0x80 for hard disks and 0x00 for floppy devices or
-partitions to be used for floppy emulation.
+For hard disks and removable medias it is usually 0x80\(en0xFF (0x80 is first
+hard disk C:, 0x81 is second hard disk D:, ...), for floppy devices or
+partitions to be used for floppy emulation it is 0x00\(en0x7F (0x00 is first
+floppy A:, 0x01 is second floppy B:).
 .IP "\fB\-f\fP \fINUMBER-OF-FATS\fP" 4
 Specify the number of file allocation tables in the filesystem.
 The default is 2.
