@@ -1441,7 +1441,7 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  -D NUMBER       Write BIOS drive number NUMBER to boot sector\n");
     fprintf(stderr, "  -f COUNT        Create COUNT file allocation tables\n");
     fprintf(stderr, "  -F SIZE         Select FAT size SIZE (12, 16 or 32)\n");
-    fprintf(stderr, "  -h COUNT        Reserve COUNT hidden sectors\n");
+    fprintf(stderr, "  -h NUMBER       Write hidden sectors NUMBER to boot sector\n");
     fprintf(stderr, "  -i VOLID        Set volume ID to VOLID (a 32 bit hexadecimal number)\n");
     fprintf(stderr, "  -I              Ignore and disable safety checks\n");
     fprintf(stderr, "  -l FILENAME     Read bad blocks list from FILENAME\n");
