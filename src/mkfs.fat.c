@@ -1795,5 +1795,10 @@ int main(int argc, char **argv)
 
     write_tables();		/* Write the filesystem tables away! */
 
+    /* Let's make sure to sync the block device. Otherwise, if we operate on a loop device and people issue
+     * "losetup -d" right after this command finishes our in-flight writes might never hit the disk */
+    if (fsync(dev) < 0)
+        pdie("unable to synchronize %s", device_name);
+
     exit(0);			/* Terminate with no errors! */
 }
