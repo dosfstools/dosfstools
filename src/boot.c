@@ -334,9 +334,8 @@ static void check_backup_boot(DOS_FS * fs, struct boot_sector *b, unsigned int l
     }
 }
 
-static void init_fsinfo(struct info_sector *i)
+static void init_fsinfo_except_reserved(struct info_sector *i)
 {
-    memset(i, 0, sizeof (struct info_sector));
     i->magic = htole32(0x41615252);
     i->signature = htole32(0x61417272);
     i->free_clusters = htole32(-1);
@@ -361,7 +360,8 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 		if (s != le16toh(b->backup_boot))
 		    break;
 	    if (s > 0 && s < le16toh(b->reserved)) {
-		init_fsinfo(&i);
+		memset(&i, 0, sizeof (struct info_sector));
+		init_fsinfo_except_reserved(&i);
 		fs_write((off_t)s * lss, sizeof(i), &i);
 		b->info_sector = htole16(s);
 		fs_write(offsetof(struct boot_sector, info_sector),
@@ -401,7 +401,7 @@ static void read_fsinfo(DOS_FS * fs, struct boot_sector *b, unsigned int lss)
 		       2,
 		       1, "Correct",
 		       2, "Don't correct (FSINFO invalid then)") == 1) {
-	    init_fsinfo(&i);
+	    init_fsinfo_except_reserved(&i);
 	    fs_write(fs->fsinfo_start, sizeof(i), &i);
 	} else
 	    fs->fsinfo_start = 0;
