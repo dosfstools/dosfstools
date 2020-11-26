@@ -587,6 +587,10 @@ static void establish_params(struct device_info *info)
 	cluster_size =
 	    sz_mb > 32 * 1024 ? 64 : sz_mb > 16 * 1024 ? 32 : sz_mb >
 	    8 * 1024 ? 16 : sz_mb > 260 ? 8 : 1;
+	if (info->sector_size % HARD_SECTOR_SIZE == 0 &&
+	    cluster_size % (info->sector_size / HARD_SECTOR_SIZE) == 0) {
+	    cluster_size = cluster_size / (info->sector_size / HARD_SECTOR_SIZE);
+	}
     }
 
     if (info->geom_heads > 0) {
