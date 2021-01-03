@@ -28,6 +28,8 @@
 
 void read_boot(DOS_FS * fs);
 void write_label(DOS_FS * fs, char *label);
+void write_boot_label(DOS_FS * fs, const char *label);
+void write_volume_label(DOS_FS * fs, char *label);
 void remove_label(DOS_FS *fs);
 void write_serial(DOS_FS * fs, uint32_t serial);
 off_t find_volume_de(DOS_FS * fs, DIR_ENT * de);

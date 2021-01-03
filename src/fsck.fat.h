@@ -177,6 +177,7 @@ typedef struct {
 
 extern int rw, list, verbose, test, no_spaces_in_sfns;
 extern long fat_table;
+extern int only_uppercase_label;
 extern unsigned n_files;
 extern void *mem_queue;
 

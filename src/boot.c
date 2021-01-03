@@ -615,7 +615,7 @@ static void write_boot_label_or_serial(int label_mode, DOS_FS * fs,
     }
 }
 
-static void write_boot_label(DOS_FS * fs, const char *label)
+void write_boot_label(DOS_FS * fs, const char *label)
 {
     write_boot_label_or_serial(1, fs, label, 0);
 }
@@ -667,7 +667,7 @@ off_t find_volume_de(DOS_FS * fs, DIR_ENT * de)
     return 0;
 }
 
-static void write_volume_label(DOS_FS * fs, char *label)
+void write_volume_label(DOS_FS * fs, char *label)
 {
     time_t now;
     struct tm *mtime;

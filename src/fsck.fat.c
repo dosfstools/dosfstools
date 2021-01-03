@@ -49,6 +49,7 @@
 int rw = 0, list = 0, test = 0, verbose = 0;
 long fat_table = 0;
 int no_spaces_in_sfns = 0;
+int only_uppercase_label = 0;
 int boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
@@ -84,6 +85,7 @@ static void usage(char *name, int exitval)
     fprintf(stderr, "  -t              test for bad clusters\n");
     fprintf(stderr, "  -u PATH         try to undelete (non-directory) file that was named PATH (can be\n");
     fprintf(stderr, "                    given multiple times)\n");
+    fprintf(stderr, "  -U              allow only uppercase characters in volume and boot label\n");
     fprintf(stderr, "  -v              verbose mode\n");
     fprintf(stderr, "  -V              perform a verification pass\n");
     fprintf(stderr, "  --variant=TYPE  handle variant TYPE of the filesystem\n");
@@ -121,7 +123,7 @@ int main(int argc, char **argv)
     rw = interactive = 1;
     check_atari();
 
-    while ((c = getopt_long(argc, argv, "Aac:d:bfF:lnprStu:vVwy",
+    while ((c = getopt_long(argc, argv, "Aac:d:bfF:lnprStu:UvVwy",
 				    long_options, NULL)) != -1)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
@@ -183,6 +185,9 @@ int main(int argc, char **argv)
 	case 'u':
 	    file_add(optarg, fdt_undelete);
 	    break;
+	case 'U':
+	    only_uppercase_label = 1;
+	    break;
 	case 'v':
 	    verbose = 1;
 	    break;
@@ -233,6 +238,7 @@ int main(int argc, char **argv)
 	printf("Starting check/repair pass.\n");
     while (read_fat(&fs, 2), scan_root(&fs))
 	qfree(&mem_queue);
+    check_label(&fs);
     if (test)
 	fix_bad(&fs);
     if (salvage_files)
@@ -249,6 +255,7 @@ int main(int argc, char **argv)
 	printf("Starting verification pass.\n");
 	read_fat(&fs, 2);
 	scan_root(&fs);
+	check_label(&fs);
 	reclaim_free(&fs);
 	if (!atari_format)
 	    check_dirty_bits(&fs);

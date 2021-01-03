@@ -86,6 +86,12 @@ filesystem check is restarted after truncation.
 File's cluster chain is shorter than indicated by the size fields.
 The file is truncated.
 .IP "\(bu" 4
+Volume label in root directory or label in boot sector is invalid.
+Invalid labels are removed.
+.IP "\(bu" 4
+Volume label in root directory and label in boot sector are different.
+Volume label from root directory is copied to boot sector.
+.IP "\(bu" 4
 Clusters are marked as used but are not owned by a file.
 They are marked as free.
 .PP
@@ -182,6 +188,14 @@ Try to undelete the specified file.
 \fBfsck.fat\fP tries to allocate a chain of contiguous unallocated clusters
 beginning with the start cluster of the undeleted file.
 This option can be given more than once.
+.IP "\fB\-U\fP" 4
+Consider lowercase volume and boot label as invalid and allow only uppercase
+characters.
+Such labels are forbidden by the FAT specification, but they are widely used
+by Linux tools.
+Moreover MS-DOS and Windows systems do not have problems to read them.
+Therefore volume and boot labels with lowercase characters are by default
+permitted.
 .IP "\fB\-v\fP" 4
 Verbose mode.
 Generates slightly more output.

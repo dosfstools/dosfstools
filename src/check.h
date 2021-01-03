@@ -31,4 +31,10 @@ int scan_root(DOS_FS * fs);
    for all the details. Returns a non-zero integer if the filesystem has to
    be checked again. */
 
+
+void check_label(DOS_FS * fs);
+
+/* Checks the volume label from the root directory entry that is valid and
+ * matches the label stored in boot sector. */
+
 #endif

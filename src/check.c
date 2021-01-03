@@ -4,6 +4,7 @@
    Copyright (C) 1998 Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de>
    Copyright (C) 2008-2014 Daniel Baumann <mail@daniel-baumann.ch>
    Copyright (C) 2015 Andreas Bombe <aeb@debian.org>
+   Copyright (C) 2017-2021 Pali Rohár <pali.rohar@gmail.com>
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
+#include <ctype.h>
+#include <wctype.h>
 
 #include "common.h"
 #include "fsck.fat.h"
@@ -37,6 +41,8 @@
 #include "file.h"
 #include "lfn.h"
 #include "check.h"
+#include "boot.h"
+#include "charconv.h"
 
 
 /* the longest path on the filesystem that can be handled by path_name() */
@@ -1102,5 +1108,230 @@ void check_dirty_bits(DOS_FS * fs)
 		}
 	    }
 	}
+    }
+}
+
+static void get_new_label(char doslabel[12])
+{
+    char newlabel[256];
+    size_t len;
+    char *p;
+    int ret;
+    int i;
+
+    while (1) {
+        if (get_line("New label", newlabel, sizeof(newlabel))) {
+            if ((p = strchr(newlabel, '\n')))
+                *p = 0;
+
+            len = mbstowcs(NULL, newlabel, 0);
+            if (len != (size_t)-1 && len > 11) {
+                printf("Label can be no longer than 11 characters\n");
+                continue;
+            }
+
+            if (!local_string_to_dos_string(doslabel, newlabel, 12)) {
+                printf("Error when processing label\n");
+                continue;
+            }
+
+            for (i = strlen(doslabel); i < 11; ++i)
+                doslabel[i] = ' ';
+            doslabel[11] = 0;
+
+            ret = validate_volume_label(doslabel);
+            if ((ret && only_uppercase_label) || (ret & ~0x1)) {
+                printf("New label is invalid\n");
+                continue;
+            } else if (ret & 0x1) {
+                printf("Warning: lowercase labels might not work properly on some systems\n");
+            }
+
+            break;
+        }
+    }
+}
+
+static int check_boot_label(DOS_FS *fs)
+{
+    char doslabel[12];
+    wchar_t wlabel[12];
+    int ret;
+    int i;
+
+    ret = validate_volume_label(fs->label);
+    if (ret & ~0x1) {
+        printf("Label '%s' stored in boot sector is not valid.\n", pretty_label(fs->label));
+        switch (get_choice(1, "  Auto-removing label from boot sector.",
+                           2,
+                           1, "Remove invalid label from boot sector",
+                           2, "Enter new label")) {
+        case 1:
+            write_boot_label(fs, "NO NAME    ");
+            memcpy(fs->label, "NO NAME    ", 11);
+            return 1;
+        case 2:
+            get_new_label(doslabel);
+            write_boot_label(fs, doslabel);
+            memcpy(fs->label, doslabel, 11);
+            return 1;
+        }
+    } else if ((ret & 0x1) && only_uppercase_label) {
+        printf("Label '%s' stored in boot sector contains lowercase characters.\n", pretty_label(fs->label));
+        switch (get_choice(1, "  Auto-changing lowercase characters to uppercase",
+                           3,
+                           1, "Change lowercase characters to uppercase",
+                           2, "Remove invalid label",
+                           2, "Set new label")) {
+        case 1:
+            if (!dos_string_to_wchar_string(wlabel, fs->label, sizeof(wlabel)))
+                die("Cannot change lowercase characters to uppercase.");
+            for (i = 0; i < 11; ++i)
+                wlabel[i] = towupper(wlabel[i]);
+            if (!wchar_string_to_dos_string(doslabel, wlabel, sizeof(doslabel)))
+                die("Cannot change lowercase characters to uppercase.");
+            write_boot_label(fs, doslabel);
+            memcpy(fs->label, doslabel, 11);
+            return 1;
+        case 2:
+            write_boot_label(fs, "NO NAME    ");
+            memcpy(fs->label, "NO NAME    ", 11);
+            return 1;
+        case 3:
+            get_new_label(doslabel);
+            write_boot_label(fs, doslabel);
+            memcpy(fs->label, doslabel, 11);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+void check_label(DOS_FS *fs)
+{
+    DIR_ENT de;
+    off_t offset;
+    char buffer[256];
+    char doslabel[12];
+    wchar_t wlabel[12];
+    int ret;
+    int i;
+
+    offset = find_volume_de(fs, &de);
+
+    if (offset == 0 && memcmp(fs->label, "NO NAME    ", 11) != 0)
+        check_boot_label(fs);
+
+    if (offset == 0 && memcmp(fs->label, "NO NAME    ", 11) != 0) {
+        printf("Label in boot sector is '%s', but there is no volume label in root directory.\n", pretty_label(fs->label));
+        switch (get_choice(1, "  Auto-removing label from boot sector.",
+                           2,
+                           1, "Remove label from boot sector",
+                           2, "Copy label from boot sector to root directory")) {
+        case 1:
+            write_boot_label(fs, "NO NAME    ");
+            memcpy(fs->label, "NO NAME    ", 11);
+            break;
+        case 2:
+            write_volume_label(fs, fs->label);
+            offset = find_volume_de(fs, &de);
+            break;
+        }
+    }
+
+    if (offset != 0) {
+        memcpy(doslabel, de.name, 11);
+        if (doslabel[0] == 0x05)
+            doslabel[0] = 0xe5;
+        ret = validate_volume_label(doslabel);
+        if (ret & ~0x1) {
+            printf("Volume label '%s' stored in root directory is not valid.\n", pretty_label(doslabel));
+            switch (get_choice(1, "  Auto-removing label.",
+                               2,
+                               1, "Remove invalid label",
+                               2, "Set new label")) {
+            case 1:
+                remove_label(fs);
+                memcpy(fs->label, "NO NAME    ", 11);
+                offset = 0;
+                break;
+            case 2:
+                get_new_label(doslabel);
+                write_label(fs, doslabel);
+                memcpy(fs->label, doslabel, 11);
+                break;
+            }
+        } else if ((ret & 0x1) && only_uppercase_label) {
+            printf("Volume label '%s' stored in root directory contains lowercase characters.\n", pretty_label(doslabel));
+            switch (get_choice(1, "  Auto-changing lowercase characters to uppercase",
+                               3,
+                               1, "Change lowercase characters to uppercase",
+                               2, "Remove invalid label",
+                               2, "Set new label")) {
+            case 1:
+                if (!dos_string_to_wchar_string(wlabel, doslabel, sizeof(wlabel)))
+                    die("Cannot change lowercase characters to uppercase.");
+                for (i = 0; i < 11; ++i)
+                    wlabel[i] = towupper(wlabel[i]);
+                if (!wchar_string_to_dos_string(doslabel, wlabel, sizeof(doslabel)))
+                    die("Cannot change lowercase characters to uppercase.");
+                write_label(fs, doslabel);
+                memcpy(fs->label, doslabel, 11);
+                break;
+            case 2:
+                remove_label(fs);
+                memcpy(fs->label, "NO NAME    ", 11);
+                offset = 0;
+                break;
+            case 3:
+                get_new_label(doslabel);
+                write_label(fs, doslabel);
+                memcpy(fs->label, doslabel, 11);
+                break;
+            }
+        }
+    }
+
+again:
+
+    if (offset != 0 && memcmp(fs->label, "NO NAME    ", 11) == 0 && memcmp(doslabel, "NO NAME    ", 11) != 0) {
+        printf("There is no label in boot sector, but there is volume label '%s' stored in root directory\n", pretty_label(doslabel));
+        switch (get_choice(1, "  Auto-copying volume label from root directory to boot sector.",
+                           2,
+                           1, "Copy volume label from root directory to boot sector",
+                           2, "Remove volume label from root directory")) {
+        case 1:
+            write_boot_label(fs, doslabel);
+            memcpy(fs->label, doslabel, 11);
+            break;
+        case 2:
+            remove_label(fs);
+            offset = 0;
+            break;
+        }
+    }
+
+    if (offset != 0 && memcmp(fs->label, "NO NAME    ", 11) != 0 && memcmp(fs->label, doslabel, 11) != 0) {
+        strncpy(buffer, pretty_label(doslabel), sizeof(buffer)-1);
+        buffer[sizeof(buffer)-1] = 0;
+        printf("Volume label '%s' stored in root directory and label '%s' stored in boot sector and different.\n", buffer, pretty_label(fs->label));
+        switch (get_choice(1, "  Auto-copying volume label from root directory to boot sector.",
+                           2,
+                           1, "Copy volume label from root directory to boot sector",
+                           2, "Copy label from boot sector to root directory")) {
+        case 1:
+            write_boot_label(fs, doslabel);
+            memcpy(fs->label, doslabel, 11);
+            break;
+        case 2:
+            ret = check_boot_label(fs);
+            if (ret)
+                goto again;
+            write_volume_label(fs, fs->label);
+            offset = find_volume_de(fs, &de);
+            /* NOTE: doslabel is not updated */
+            break;
+        }
     }
 }
