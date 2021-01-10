@@ -498,7 +498,7 @@ void read_boot(DOS_FS * fs)
 	    unsigned sector = 1;
 	    for (;;) {
 		if (sector == 32)
-		    die ("Backup boot sector not found.");
+		    die("Backup boot sector not found.");
 		if (sector != 6 &&
 		    sector != 12 &&
 		    sector != 24 &&
@@ -523,10 +523,15 @@ void read_boot(DOS_FS * fs)
 	unsigned i;
 	for (i = 0; i != 3; ++i) {
 	    off_t offset = i * logical_sector_size;
-	    /* Don't read backup sectors from the FAT. */
-	    if (offset + logical_sector_size >
-	        le16toh(b.reserved) * logical_sector_size)
+	    /* Don't read backup sectors from the FAT.
+	     * And don't write backup sectors on top of other backup sectors. */
+	    if (boot_sector_offset + offset + logical_sector_size >
+	            le16toh(b.reserved) * logical_sector_size ||
+	        offset + logical_sector_size > boot_sector_offset) {
+		if (i == 0)
+		    die("Can't restore backup boot sector from invalid location.");
 		break;
+	    }
 	    fs_read(boot_sector_offset + offset, logical_sector_size, bdata);
 	    if (!has_signature(bdata))
 		break;
