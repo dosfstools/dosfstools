@@ -51,6 +51,8 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  referenceFAT16.xxd               \
 		  referenceFAT32.mkfs              \
 		  referenceFAT32.xxd               \
+		  referenceFAT32mbr.mkfs           \
+		  referenceFAT32mbr.xxd            \
 		  mkfs-fat32_2_res_sects.mkfs      \
 		  mkfs-fat32_2_res_sects.xxd       \
 		  check-bad_names.fsck             \
