@@ -86,6 +86,21 @@ void release_fat(DOS_FS * fs)
     fs->cluster_owner = NULL;
 }
 
+static void fix_first_cluster(DOS_FS * fs, void * first_cluster)
+{
+    struct boot_sector b;
+
+    fs_read(0, sizeof(b), &b);
+
+    printf("Fixing first cluster in FAT.\n");
+    if (fs->fat_bits == 12)
+        *(uint16_t *)first_cluster = htole16((le16toh(*(uint16_t *)first_cluster) & 0xf000) | FAT_EXTD(fs) | b.media);
+    else if (fs->fat_bits == 16)
+        *(uint16_t *)first_cluster = htole16(FAT_EXTD(fs) | b.media);
+    else
+        *(uint32_t *)first_cluster = htole32(FAT_EXTD(fs) | b.media);
+}
+
 /**
  * Build a bookkeeping structure from the partition's FAT table.
  * If the partition has multiple FATs and they don't agree, try to pick a winner,
@@ -99,8 +114,14 @@ void read_fat(DOS_FS * fs)
     int eff_size, alloc_size;
     uint32_t i;
     void *first, *second = NULL;
-    int first_ok, second_ok;
+    int first_ok, second_ok = 0;
+    FAT_ENTRY first_media, second_media;
     uint32_t total_num_clusters;
+
+    if (fat_table > fs->nfats)
+        die("Requested FAT table %ld does not exist.", fat_table);
+    if (fat_table > 2)
+        die("Reading FAT table greather than 2 is implemented yet.");
 
     /* Clean up from previous pass */
     release_fat(fs);
@@ -117,41 +138,72 @@ void read_fat(DOS_FS * fs)
 
     first = alloc(alloc_size);
     fs_read(fs->fat_start, eff_size, first);
+    get_fat(&first_media, first, 0, fs);
+    first_ok = (first_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
     if (fs->nfats > 1) {
 	second = alloc(alloc_size);
 	fs_read(fs->fat_start + fs->fat_size, eff_size, second);
-    }
-    if (second && memcmp(first, second, eff_size) != 0) {
-	FAT_ENTRY first_media, second_media;
-	get_fat(&first_media, first, 0, fs);
 	get_fat(&second_media, second, 0, fs);
-	first_ok = (first_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
 	second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
+    }
+    if (fat_table == 0) {
+        if (!first_ok && second && !second_ok)
+            die("Both FATs appear to be corrupt. Giving up. Run fsck.fat with non-zero -F option.");
+        if (!first_ok && !second)
+            die("First FAT appears to be corrupt and second FAT does not exist. Giving up. Run fsck.fat with -F 1 option.");
+    }
+    if (fat_table == 0 && second && memcmp(first, second, eff_size) != 0) {
 	if (first_ok && !second_ok) {
 	    printf("FATs differ - using first FAT.\n");
 	    fs_write(fs->fat_start + fs->fat_size, eff_size, first);
-	}
-	if (!first_ok && second_ok) {
+	} else if (!first_ok && second_ok) {
 	    printf("FATs differ - using second FAT.\n");
 	    fs_write(fs->fat_start, eff_size, second);
 	    memcpy(first, second, eff_size);
-	}
-	if (first_ok && second_ok) {
-	    printf("FATs differ but appear to be intact.\n");
+	} else {
+	    if (first_ok && second_ok)
+		printf("FATs differ but appear to be intact.\n");
+	    else
+		printf("FATs differ and both appear to be corrupt.\n");
 	    if (get_choice(1, "  Using first FAT.",
 			   2,
 			   1, "Use first FAT",
 			   2, "Use second FAT") == 1) {
+		if (!first_ok) {
+		    fix_first_cluster(fs, first);
+		    fs_write(fs->fat_start, (fs->fat_bits + 7) / 8, first);
+		}
 		fs_write(fs->fat_start + fs->fat_size, eff_size, first);
 	    } else {
+		if (!second_ok) {
+		    fix_first_cluster(fs, second);
+		    fs_write(fs->fat_start + fs->fat_size, (fs->fat_bits + 7) / 8, second);
+		}
 		fs_write(fs->fat_start, eff_size, second);
 		memcpy(first, second, eff_size);
 	    }
 	}
-	if (!first_ok && !second_ok) {
-	    printf("Both FATs appear to be corrupt. Giving up.\n");
-	    exit(1);
-	}
+    }
+    if (fat_table != 0) {
+        if (fat_table == 1) {
+            printf("Using first FAT.\n");
+            if (!first_ok) {
+                fix_first_cluster(fs, first);
+                fs_write(fs->fat_start, (fs->fat_bits + 7) / 8, first);
+            }
+            if (second && memcmp(first, second, eff_size) != 0)
+                fs_write(fs->fat_start + fs->fat_size, eff_size, first);
+        } else if (fat_table == 2) {
+            printf("Using second FAT.\n");
+            if (!second_ok) {
+                fix_first_cluster(fs, second);
+                fs_write(fs->fat_start + fs->fat_size, (fs->fat_bits + 7) / 8, second);
+            }
+            if (memcmp(first, second, eff_size) != 0) {
+                fs_write(fs->fat_start, eff_size, second);
+                memcpy(first, second, eff_size);
+            }
+        }
     }
     if (second) {
 	free(second);

@@ -176,6 +176,7 @@ typedef struct {
 } DOS_FS;
 
 extern int rw, list, verbose, test, no_spaces_in_sfns;
+extern long fat_table;
 extern unsigned n_files;
 extern void *mem_queue;
 

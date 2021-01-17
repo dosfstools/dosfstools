@@ -133,6 +133,21 @@ This option can be given more than once.
 Salvage unused cluster chains to files.
 By default, unused clusters are added to the free disk space except in auto mode
 (\fB\-a\fP).
+.IP "\fB\-F\fP \fINUM\fP" 4
+Specify FAT table \fINUM\fP for filesystem access.
+By default value \fI0\fP is assumed and then the first uncorrupted FAT table is
+chosen.
+Uncorrupted means that FAT table has valid first cluster.
+If default value \fI0\fP is used and all FAT tables are corrupted then
+\fBfsck.fat\fP gives up and does not try to repair FAT filesystem.
+If non-zero \fINUM\fP value is specified then \fBfsck.fat\fP uses FAT table
+\fINUM\fP for repairing FAT filesystem.
+If FAT table \fINUM\fP has corrupted first cluster then \fBfsck.fat\fP will
+repair it.
+In any case, if FAT filesystem has more FAT tables then repaired content of
+chosen FAT table is copied to other FAT tables.
+To repair corrupted first cluster it is required to call \fBfsck.fat\fP with
+non-zero \fINUM\fP value.
 .IP "\fB\-l\fP" 4
 List path names of files being processed.
 .IP "\fB\-n\fP" 4

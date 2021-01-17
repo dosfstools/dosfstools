@@ -47,6 +47,7 @@
 #include "charconv.h"
 
 int rw = 0, list = 0, test = 0, verbose = 0;
+long fat_table = 0;
 int no_spaces_in_sfns = 0;
 int boot_only = 0;
 unsigned n_files = 0;
@@ -74,6 +75,7 @@ static void usage(char *name, int exitval)
 	    DEFAULT_DOS_CODEPAGE);
     fprintf(stderr, "  -d PATH         drop file with name PATH (can be given multiple times)\n");
     fprintf(stderr, "  -f              salvage unused chains to files\n");
+    fprintf(stderr, "  -F NUM          specify FAT table NUM used for filesystem access\n");
     fprintf(stderr, "  -l              list path names\n");
     fprintf(stderr, "  -n              no-op, check non-interactively without changing\n");
     fprintf(stderr, "  -p              same as -a, for compat with other *fsck\n");
@@ -119,7 +121,7 @@ int main(int argc, char **argv)
     rw = interactive = 1;
     check_atari();
 
-    while ((c = getopt_long(argc, argv, "Aac:d:bflnprStu:vVwy",
+    while ((c = getopt_long(argc, argv, "Aac:d:bfF:lnprStu:vVwy",
 				    long_options, NULL)) != -1)
 	switch (c) {
 	case 'A':		/* toggle Atari format */
@@ -152,6 +154,14 @@ int main(int argc, char **argv)
 	    break;
 	case 'f':
 	    salvage_files = 1;
+	    break;
+	case 'F':
+	    errno = 0;
+	    fat_table = strtol(optarg, &tmp, 10);
+	    if (!*optarg || isspace(*optarg) || *tmp || errno || fat_table < 0 || fat_table > 255) {
+		fprintf(stderr, "Invalid FAT table : %s\n", optarg);
+		usage(argv[0], 2);
+	    }
 	    break;
 	case 'l':
 	    list = 1;
