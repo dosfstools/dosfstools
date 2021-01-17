@@ -14,6 +14,8 @@ TESTS = referenceFAT12.mkfs              \
 	check-fat12_first_cluster.fsck   \
 	check-fat16_first_cluster.fsck   \
 	check-fat32_first_cluster.fsck   \
+	check-fat16_dos_cln_shut.fsck    \
+	check-fat32_dos_cln_shut.fsck    \
 	check-chain_to_free_cluster.fsck \
 	check-chain_too_long.fsck        \
 	check-chain_to_other_file.fsck   \
@@ -68,6 +70,8 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  check-fat16_first_cluster.args   \
 		  check-fat32_first_cluster.fsck   \
 		  check-fat32_first_cluster.args   \
+		  check-fat16_dos_cln_shut.fsck    \
+		  check-fat32_dos_cln_shut.fsck    \
 		  check-chain_to_free_cluster.fsck \
 		  check-chain_too_long.fsck        \
 		  check-chain_to_other_file.fsck   \
