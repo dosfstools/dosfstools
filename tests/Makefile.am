@@ -11,6 +11,9 @@ TESTS = referenceFAT12.mkfs              \
 	mkfs-fat32_2_res_sects.mkfs      \
 	mkfs-fat32_4K.mkfs               \
 	check-bad_names.fsck             \
+	check-fat12_first_cluster.fsck   \
+	check-fat16_first_cluster.fsck   \
+	check-fat32_first_cluster.fsck   \
 	check-chain_to_free_cluster.fsck \
 	check-chain_too_long.fsck        \
 	check-chain_to_other_file.fsck   \
@@ -59,6 +62,12 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  mkfs-fat32_4K.mkfs               \
 		  mkfs-fat32_4K.xxd                \
 		  check-bad_names.fsck             \
+		  check-fat12_first_cluster.fsck   \
+		  check-fat12_first_cluster.args   \
+		  check-fat16_first_cluster.fsck   \
+		  check-fat16_first_cluster.args   \
+		  check-fat32_first_cluster.fsck   \
+		  check-fat32_first_cluster.args   \
 		  check-chain_to_free_cluster.fsck \
 		  check-chain_too_long.fsck        \
 		  check-chain_to_other_file.fsck   \

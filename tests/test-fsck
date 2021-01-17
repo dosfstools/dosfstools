@@ -41,6 +41,12 @@ if [ "$XXD_FOUND" != "yes" ]; then
 fi
 
 
+if [ -f "$testname.args" ]; then
+	ARGS=$(cat "$testname.args")
+else
+	ARGS=
+fi
+
 echo "Test $testname"
 
 # make sure there aren't files remaining from earlier run
@@ -50,7 +56,7 @@ xxd -r "${srcdir}/${testname}.fsck" "${testname}.img" || exit 99
 
 
 echo "First fsck run to check and fix error..."
-run_fsck -a "${testname}.img"
+run_fsck -a $ARGS "${testname}.img"
 success=$?
 if [ $success -eq 0 ]; then
 	echo "*** Error was not detected by fsck."
