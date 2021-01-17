@@ -553,16 +553,16 @@ void read_boot(DOS_FS * fs)
 	     * (root_entries != 0), we handle the root dir the old way. Give a
 	     * warning, but convertig to a root dir in a cluster chain seems
 	     * to complex for now... */
-	    printf("Warning: FAT32 root dir not in cluster chain! "
+	    fprintf(stderr, "Warning: FAT32 root dir not in cluster chain! "
 		   "Compatibility mode...\n");
 	else if (!fs->root_cluster && !fs->root_entries)
 	    die("No root directory!");
 	else if (fs->root_cluster && fs->root_entries)
-	    printf("Warning: FAT32 root dir is in a cluster chain, but "
+	    fprintf(stderr, "Warning: FAT32 root dir is in a cluster chain, but "
 		   "a separate root dir\n"
 		   "  area is defined. Cannot fix this easily.\n");
 	if (fs->data_clusters < FAT16_THRESHOLD)
-	    printf("Warning: Filesystem is FAT32 according to fat_length "
+	    fprintf(stderr, "Warning: Filesystem is FAT32 according to fat_length "
 		   "and fat32_length fields,\n"
 		   "  but has only %lu clusters, less than the required "
 		   "minimum of %d.\n"
