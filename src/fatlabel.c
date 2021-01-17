@@ -116,9 +116,11 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 
     fs_open(device, rw);
     read_boot(&fs);
-    if (fs.fat_bits == 32)
-	read_fat(&fs);
+
     if (!change && !reset) {
+	if (fs.fat_bits == 32)
+	    read_fat(&fs, 0);
+
 	offset = find_volume_de(&fs, &de);
 	if (offset != 0) {
 	    if (de.name[0] == 0x05)
@@ -131,6 +133,9 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 
 	exit(0);
     }
+
+    if (fs.fat_bits == 32)
+	read_fat(&fs, 1);
 
     if (!reset)
 	write_label(&fs, label);

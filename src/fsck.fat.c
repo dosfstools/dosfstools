@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 
     if (verify)
 	printf("Starting check/repair pass.\n");
-    while (read_fat(&fs), scan_root(&fs))
+    while (read_fat(&fs, 2), scan_root(&fs))
 	qfree(&mem_queue);
     if (test)
 	fix_bad(&fs);
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
     if (verify) {
 	n_files = 0;
 	printf("Starting verification pass.\n");
-	read_fat(&fs);
+	read_fat(&fs, 2);
 	scan_root(&fs);
 	reclaim_free(&fs);
 	if (!atari_format)

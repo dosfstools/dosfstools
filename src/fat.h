@@ -23,7 +23,7 @@
 #ifndef _FAT_H
 #define _FAT_H
 
-void read_fat(DOS_FS * fs);
+void read_fat(DOS_FS * fs, int mode);
 
 /* Loads the FAT of the filesystem described by FS. Initializes the FAT,
    replaces broken FATs and rejects invalid cluster entries. */

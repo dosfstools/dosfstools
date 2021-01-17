@@ -108,8 +108,9 @@ static void fix_first_cluster(DOS_FS * fs, void * first_cluster)
  * One error that is fixed here is a cluster that links to something out of range.
  *
  * @param[inout]    fs      Information about the filesystem
+ * @param[in]       mode    0 - read-only, 1 - read-write (no repair), 2 - repair
  */
-void read_fat(DOS_FS * fs)
+void read_fat(DOS_FS * fs, int mode)
 {
     int eff_size, alloc_size;
     uint32_t i;
@@ -146,13 +147,21 @@ void read_fat(DOS_FS * fs)
 	get_fat(&second_media, second, 0, fs);
 	second_ok = (second_media.value & FAT_EXTD(fs)) == FAT_EXTD(fs);
     }
-    if (fat_table == 0) {
+    if (mode != 0 && fat_table == 0) {
         if (!first_ok && second && !second_ok)
             die("Both FATs appear to be corrupt. Giving up. Run fsck.fat with non-zero -F option.");
         if (!first_ok && !second)
             die("First FAT appears to be corrupt and second FAT does not exist. Giving up. Run fsck.fat with -F 1 option.");
     }
-    if (fat_table == 0 && second && memcmp(first, second, eff_size) != 0) {
+    if (mode == 0 && !first_ok && second && second_ok) {
+        /* In read-only mode if first FAT is corrupted and second is OK then use second FAT */
+        void *first_backup = first;
+        first = second;
+        second = first_backup;
+    }
+    if (mode != 0 && fat_table == 0 && second && memcmp(first, second, eff_size) != 0) {
+	if (mode != 2)
+	    die("FATs differ, please run fsck.fat");
 	if (first_ok && !second_ok) {
 	    printf("FATs differ - using first FAT.\n");
 	    fs_write(fs->fat_start + fs->fat_size, eff_size, first);
@@ -184,7 +193,7 @@ void read_fat(DOS_FS * fs)
 	    }
 	}
     }
-    if (fat_table != 0) {
+    if (mode != 0 && fat_table != 0) {
         if (fat_table == 1) {
             printf("Using first FAT.\n");
             if (!first_ok) {
@@ -213,17 +222,27 @@ void read_fat(DOS_FS * fs)
     fs->cluster_owner = alloc(total_num_clusters * sizeof(DOS_FILE *));
     memset(fs->cluster_owner, 0, (total_num_clusters * sizeof(DOS_FILE *)));
 
+    if (mode == 0)
+        return;
+
     /* Truncate any cluster chains that link to something out of range */
     for (i = 2; i < fs->data_clusters + 2; i++) {
 	FAT_ENTRY curEntry;
 	get_fat(&curEntry, fs->fat, i, fs);
 	if (curEntry.value == 1) {
+	    if (mode != 2)
+		die("Cluster %ld out of range (1), please run fsck.fat",
+		    (long)(i - 2));
 	    printf("Cluster %ld out of range (1). Setting to EOF.\n",
 		   (long)(i - 2));
 	    set_fat(fs, i, -1);
 	}
 	if (curEntry.value >= fs->data_clusters + 2 &&
 	    (curEntry.value < FAT_MIN_BAD(fs))) {
+	    if (mode != 2)
+		die("Cluster %ld out of range (%ld > %ld), please run fsck.fat",
+		    (long)(i - 2), (long)curEntry.value,
+		    (long)(fs->data_clusters + 2 - 1));
 	    printf("Cluster %ld out of range (%ld > %ld). Setting to EOF.\n",
 		   (long)(i - 2), (long)curEntry.value,
 		   (long)(fs->data_clusters + 2 - 1));
