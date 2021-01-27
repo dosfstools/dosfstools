@@ -166,8 +166,8 @@ Consider short (8.3) file names with spaces in the middle to be invalid, like
 previous versions of this program did.
 While such file names are not forbidden by the FAT specification, and were never
 treated as errors by Microsoft file system checking tools, many DOS programs are
-unable to handle files with such names. Using this option can make them
-accessible to these programs.
+unable to handle files with such names.
+Using this option can make them accessible to these programs.
 .IP "" 4
 Short file names which \fIstart\fP with a space are considered invalid
 regardless of this option's setting.

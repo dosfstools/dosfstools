@@ -57,42 +57,48 @@ Show version number and terminate.
 .\" ----------------------------------------------------------------------------
 .SH COMPATIBILITY and BUGS
 For historic reasons FAT label is stored in two different locations: in the boot
-sector and as a special volume label entry in the root directory. MS-DOS 5.00,
-MS-DOS 6.22, MS-DOS 7.10, Windows 98, Windows XP and also Windows 10 read FAT
-label only from the root directory. Absence of the volume label in the root
-directory is interpreted as empty or none label, even if boot sector contains
-some valid label.
+sector and as a special volume label entry in the root directory.
+MS-DOS 5.00, MS-DOS 6.22, MS-DOS 7.10, Windows 98, Windows XP and also
+Windows 10 read FAT label only from the root directory.
+Absence of the volume label in the root directory is interpreted as empty or
+none label, even if boot sector contains some valid label.
 
 When Windows XP or Windows 10 system changes a FAT label it stores it only in
-the root directory \(em letting boot sector unchanged. Which leads to problems
-when a label is removed on Windows. Old label is still stored in the boot sector
-but removed from the root directory.
+the root directory \(em letting boot sector unchanged.
+Which leads to problems when a label is removed on Windows.
+Old label is still stored in the boot sector but is removed from the root
+directory.
 
 \fBdosfslabel\fP prior to the version 3.0.7 operated only with FAT labels stored
 in the boot sector, completely ignoring a volume label in the root directory.
 
 \fBdosfslabel\fP in versions 3.0.7\(en3.0.15 reads FAT labels from the root
 directory and in case of absence, it fallbacks to a label stored in the boot
-sector. Change operation resulted in updating a label in the boot sector and
-\fIsometimes\fP also in the root directory due to the bug. That bug was fixed in
-\fBdosfslabel\fP version 3.0.16 and since this version \fBdosfslabel\fP updates
-label in both location.
+sector.
+Change operation resulted in updating a label in the boot sector and
+\fIsometimes\fP also in the root directory due to the bug.
+That bug was fixed in \fBdosfslabel\fP version 3.0.16 and since this version
+\fBdosfslabel\fP updates label in both location.
 
 Since version 4.2, \fBfatlabel\fP reads a FAT label only from the root directory
-(like MS-DOS and Windows systems), but changes a FAT label in both locations. In
-version 4.2 was fixed handling of empty labels and labels which starts with a
-byte 0xE5. Also in this version was added support for non-ASCII labels according
-to specified DOS codepage and were added checks if a new label is valid.
+(like MS-DOS and Windows systems), but changes a FAT label in both locations.
+In version 4.2 was fixed handling of empty labels and labels which starts with a
+byte 0xE5.
+Also in this version was added support for non-ASCII labels according to the
+specified DOS codepage and were added checks if a new label is valid.
 
 It is strongly suggested to not use \fBdosfslabel\fP prior to version 3.0.16.
 .\" ----------------------------------------------------------------------------
 .SH DOS CODEPAGES
 MS-DOS and Windows systems use DOS (OEM) codepage for encoding and decoding FAT
-label. In Windows systems DOS codepage is global for all running applications
-and cannot be configured explicitly. It is set implicitly by option \fILanguage
-for non-Unicode programs\fP available in \fIRegional and Language Options\fP via
-\fIControl Panel\fP. Default DOS codepage for fatlabel is 850. See following
-mapping table between DOS codepage and Language for non-Unicode programs:
+label.
+In Windows systems DOS codepage is global for all running applications and
+cannot be configured explicitly.
+It is set implicitly by option \fILanguage for non-Unicode programs\fP available
+in \fIRegional and Language Options\fP via \fIControl Panel\fP.
+Default DOS codepage for fatlabel is 850.
+See following mapping table between DOS codepage and Language for non-Unicode
+programs:
 .TS
 tab(:);
 c lx.

@@ -107,32 +107,37 @@ If nothing is specified, \fBmkfs.fat\fP will automatically select between 12, 16
 and 32 bit, whatever fits better for the filesystem size.
 .IP "\fB\-g\fP \fIHEADS\fP/\fISECTORS-PER-TRACK\fP" 4
 Specify \fIHEADS\fP and \fISECTORS-PER-TRACK\fP numbers which represents
-disk geometry of \fIDEVICE\fP. Both numbers are stored into the FAT boot sector.
+disk geometry of \fIDEVICE\fP.
+Both numbers are stored into the FAT boot sector.
 Number \fISECTORS-PER-TRACK\fP is used also for aligning the total count of FAT
-sectors. By default disk geometry is read from \fIDEVICE\fP itself. If it is not
-available then \fILBA-Assist Translation\fP and translation table from the
-\fISD Card Part 2 File System Specification\fP based on total number of disk
-sectors is used.
+sectors.
+By default disk geometry is read from \fIDEVICE\fP itself.
+If it is not available then \fILBA-Assist Translation\fP and translation table
+from the \fISD Card Part 2 File System Specification\fP based on total number
+of disk sectors is used.
 .IP "\fB\-h\fP \fINUMBER-OF-HIDDEN-SECTORS\fP" 4
 Specify the number of so-called \fIhidden sectors\fP, as stored in the FAT boot
 sector: this number represents the beginning sector of the partition containing
-the file system. Normally this is an offset (in sectors) relative to the start
-of the disk, although for MBR logical volumes contained in an extended partition
-of type 0x05 (a non-LBA extended partition), a quirk in the MS-DOS implementation
-of FAT requires it to be relative to the partition's immediate containing
-Extended Boot Record. Boot code and other software handling FAT volumes may also
-rely on this field being set up correctly; most modern FAT implementations will
-ignore it.
+the file system.
+Normally this is an offset (in sectors) relative to the start of the disk,
+although for MBR logical volumes contained in an extended partition of type 0x05
+(a non-LBA extended partition), a quirk in the MS-DOS implementation of FAT
+requires it to be relative to the partition's immediate containing Extended Boot
+Record.
+Boot code and other software handling FAT volumes may also rely on this field
+being set up correctly; most modern FAT implementations will ignore it.
 By default, if the \fIDEVICE\fP is a partition block device, \fBmkfs.fat\fP uses
-the partition offset relative to disk start. Otherwise, \fBmkfs.fat\fP assumes
-zero. Use this option to override this behaviour.
+the partition offset relative to disk start.
+Otherwise, \fBmkfs.fat\fP assumes zero.
+Use this option to override this behaviour.
 .IP "\fB\-i\fP \fIVOLUME-ID\fP" 4
 Sets the volume ID of the newly created filesystem; \fIVOLUME-ID\fP is a 32-bit
 hexadecimal number (for example, 2e24ec82).
 The default is a number which depends on the filesystem creation time.
 .IP "\fB\-I\fP" 4
-Ignore and disable safety checks. By default \fBmkfs.fat\fP refuses to create a
-filesystem on a device with partitions or virtual mapping.
+Ignore and disable safety checks.
+By default \fBmkfs.fat\fP refuses to create a filesystem on a device with
+partitions or virtual mapping.
 \fBmkfs.fat\fP will complain and tell you that it refuses to work.
 This is different when using MO disks.
 One doesn't always need partitions on MO disks.
@@ -153,13 +158,14 @@ This value is usually 0xF8 for hard disks and is 0xF0 or a value from 0xF9 to
 0xFF for floppies or partitions to be used for floppy emulation.
 .IP "\fB\-\-mbr\fP[=\fIy\fP|\fIyes\fP|\fIn\fP|\fIno\fP|\fIa\fP|\fIauto\fP]" 4
 Fill (fake) MBR table with disk signature one partition which starts at sector
-0 (includes MBR itself) and spans whole disk device. It is needed only for
-non-removable disks used on Microsoft Windows systems and only when formatting
-whole unpartitioned disk. Location of the disk signature and partition table
-overlaps with the end of the first FAT sector (boot code location), therefore
-there is no additional space usage. Default is \fIauto\fP mode in which
-\fBmkfs.fat\fP put MBR table only for non-removable disks when formatting
-whole unpartitioned disk.
+0 (includes MBR itself) and spans whole disk device.
+It is needed only for non-removable disks used on Microsoft Windows systems and
+only when formatting whole unpartitioned disk.
+Location of the disk signature and partition table overlaps with the end of the
+first FAT sector (boot code location), therefore there is no additional space
+usage.
+Default is \fIauto\fP mode in which \fBmkfs.fat\fP put MBR table only for
+non-removable disks when formatting whole unpartitioned disk.
 .IP "\fB\-n\fP \fIVOLUME-NAME\fP" 4
 Sets the volume name (label) of the filesystem.
 The volume name can be up to 11 characters long.
