@@ -23,6 +23,8 @@
 #ifndef _CHECK_H
 #define _CHECK_H
 
+void check_dirty_bits(DOS_FS * fs);
+
 int scan_root(DOS_FS * fs);
 
 /* Scans the root directory and recurses into all subdirectories. See check.c
