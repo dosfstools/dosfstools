@@ -171,12 +171,18 @@ The default is no label.
 Use DOS codepage \fIPAGE\fP to encode label.
 By default codepage 850 is used.
 .IP "\fB\-r\fP \fIROOT-DIR-ENTRIES\fP" 4
-Select the number of entries available in the root directory.
+Select the minimal number of entries available in the root directory.
 The default is 112 or 224 for floppies and 512 for hard disks.
+Note that this is minimal number and it may be increased by \fBmkfs.fat\fP
+due to alignment of structures.
+See also \fBmkfs.fat\fP option \fB\-a\fP.
 .IP "\fB\-R\fP \fINUMBER-OF-RESERVED-SECTORS\fP" 4
-Select the number of reserved sectors.
+Select the minimal number of reserved sectors.
 With FAT32 format at least 2 reserved sectors are needed, the default is 32.
 Otherwise the default is 1 (only the boot sector).
+Note that this is minimal number and it may be increased by \fBmkfs.fat\fP
+due to alignment of structures.
+See also \fBmkfs.fat\fP option \fB\-a\fP.
 .IP "\fB\-s\fP \fISECTORS-PER-CLUSTER\fP" 4
 Specify the number of disk sectors per cluster.
 Must be a power of 2, i.e. 1, 2, 4, 8, ... 128.

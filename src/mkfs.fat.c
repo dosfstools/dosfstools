@@ -1450,8 +1450,8 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "  --mbr[=y|n|a]   Fill (fake) MBR table with one partition which spans whole disk\n");
     fprintf(stderr, "  -n LABEL        Set volume name to LABEL (up to 11 characters long)\n");
     fprintf(stderr, "  --codepage=N    use DOS codepage N to encode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
-    fprintf(stderr, "  -r COUNT        Make room for COUNT entries in the root directory\n");
-    fprintf(stderr, "  -R COUNT        Set number of reserved sectors to COUNT\n");
+    fprintf(stderr, "  -r COUNT        Make room for at least COUNT entries in the root directory\n");
+    fprintf(stderr, "  -R COUNT        Set minimal number of reserved sectors to COUNT\n");
     fprintf(stderr, "  -s COUNT        Set number of sectors per cluster to COUNT\n");
     fprintf(stderr, "  -S SIZE         Select a sector size of SIZE (a power of two, at least 512)\n");
     fprintf(stderr, "  -v              Verbose execution\n");
