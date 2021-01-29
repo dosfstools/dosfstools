@@ -23,6 +23,9 @@ TESTS = referenceFAT12.mkfs              \
 	check-duplicate_names.fsck       \
 	check-dot_entries.fsck           \
 	check-huge.fsck                  \
+	check-label-different.fsck       \
+	check-label-only-boot.fsck       \
+	check-label-only-root.fsck       \
 	label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 	label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
 	label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.label        \
@@ -79,6 +82,12 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  check-duplicate_names.fsck       \
 		  check-dot_entries.fsck           \
 		  check-huge.fsck                  \
+		  check-label-different.fsck       \
+		  check-label-different.xxd        \
+		  check-label-only-boot.fsck       \
+		  check-label-only-boot.xxd        \
+		  check-label-only-root.fsck       \
+		  check-label-only-root.xxd        \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.xxd            \
 		  label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
