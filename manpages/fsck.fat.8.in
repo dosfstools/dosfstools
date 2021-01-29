@@ -1,6 +1,7 @@
 .\" fsck.fat.8 - manpage for fsck.fat
 .\"
 .\" Copyright (C) 2006-2014 Daniel Baumann <daniel@debian.org>
+.\" Copyright (C) 2018-2021 Pali Rohár <pali.rohar@gmail.com>
 .\"
 .\" This program is free software: you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -261,7 +262,11 @@ Werner Almesberger
 Roman Hodek
 .ME ,
 and others.
-The current maintainer is
+Current maintainers are
 .MT aeb@\:debian.org
 Andreas Bombe
+.ME
+and
+.MT pali.rohar@\:gmail.com
+Pali Rohár
 .ME .
