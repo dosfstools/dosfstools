@@ -407,7 +407,7 @@ static void check_blocks(void)
     try = TEST_BUFFER_BLOCKS;
     while (currently_testing < blocks) {
 	if (currently_testing + try > blocks)
-	    try = blocks - currently_testing;
+	    try = blocks - currently_testing; /* TODO: check overflow */
 	got = do_check(blkbuf, try, currently_testing);
 	currently_testing += got;
 	if (got == try) {
@@ -1876,7 +1876,7 @@ int main(int argc, char **argv)
 		die("unable to create %s", device_name);
 	}
 	/* expand to desired size */
-	if (ftruncate(dev, part_sector * sector_size + blocks * BLOCK_SIZE))
+	if (ftruncate(dev, part_sector * sector_size + blocks * BLOCK_SIZE)) /* TODO: check overflow */
 	    die("unable to resize %s", device_name);
     }
 

@@ -366,6 +366,7 @@ uint32_t next_cluster(DOS_FS * fs, uint32_t cluster)
 
 off_t cluster_start(DOS_FS * fs, uint32_t cluster)
 {
+    /* TODO: check overflow */
     return fs->data_start + ((off_t)cluster - 2) * (unsigned long long)fs->cluster_size;
 }
 
