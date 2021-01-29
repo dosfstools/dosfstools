@@ -50,7 +50,7 @@ fi
 echo "Test $testname"
 
 # make sure there aren't files remaining from earlier run
-rm -f "${testname}.img"
+rm -f "${testname}.img" "${testname}.refimg"
 
 xxd -r "${srcdir}/${testname}.fsck" "${testname}.img" || exit 99
 
@@ -68,9 +68,19 @@ elif [ $success -eq 1 ]; then
 
 	if [ $success -ne 0 ]; then
 		echo "*** Error was not fixed by fsck."
+	else
+		echo "Comparing..."
+		xxd -r "${srcdir}/${testname}.xxd" "${testname}.refimg" || exit 99
+		cmp "${testname}.img" "${testname}.refimg"
+		success=$?
+
+		if [ $success -eq 2 ]; then
+			# cmp reported error
+			exit 99
+		fi
 	fi
 fi
 
 
-rm -f "${testname}.img"
+rm -f "${testname}.img" "${testname}.refimg"
 exit $success

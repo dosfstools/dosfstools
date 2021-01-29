@@ -67,20 +67,32 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  mkfs-fat32_4K.mkfs               \
 		  mkfs-fat32_4K.xxd                \
 		  check-bad_names.fsck             \
+		  check-bad_names.xxd              \
 		  check-fat12_first_cluster.fsck   \
 		  check-fat12_first_cluster.args   \
+		  check-fat12_first_cluster.xxd    \
 		  check-fat16_first_cluster.fsck   \
 		  check-fat16_first_cluster.args   \
+		  check-fat16_first_cluster.xxd    \
 		  check-fat32_first_cluster.fsck   \
 		  check-fat32_first_cluster.args   \
+		  check-fat32_first_cluster.xxd    \
 		  check-fat16_dos_cln_shut.fsck    \
+		  check-fat16_dos_cln_shut.xxd     \
 		  check-fat32_dos_cln_shut.fsck    \
+		  check-fat32_dos_cln_shut.xxd     \
 		  check-chain_to_free_cluster.fsck \
+		  check-chain_to_free_cluster.xxd  \
 		  check-chain_too_long.fsck        \
+		  check-chain_too_long.xxd         \
 		  check-chain_to_other_file.fsck   \
+		  check-chain_to_other_file.xxd    \
 		  check-circular_chain.fsck        \
+		  check-circular_chain.xxd         \
 		  check-duplicate_names.fsck       \
+		  check-duplicate_names.xxd        \
 		  check-dot_entries.fsck           \
+		  check-dot_entries.xxd            \
 		  check-huge.fsck                  \
 		  check-label-different.fsck       \
 		  check-label-different.xxd        \
