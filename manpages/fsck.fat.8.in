@@ -20,7 +20,7 @@
 .\" can be found in /usr/share/common-licenses/GPL-3 file.
 .\"
 .\"
-.TH FSCK.FAT 8 2017-06-28 "dosfstools @PACKAGE_VERSION@"
+.TH FSCK.FAT 8 @RELEASE_DATE@ "dosfstools @PACKAGE_VERSION@"
 .SH NAME
 fsck.fat \- check and repair MS-DOS FAT filesystems
 .\" ----------------------------------------------------------------------------
