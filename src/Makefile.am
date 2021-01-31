@@ -19,6 +19,7 @@ AM_CFLAGS = -Wall -Wextra -Wno-sign-compare -Wno-missing-field-initializers \
 
 sbin_PROGRAMS = fsck.fat mkfs.fat fatlabel
 noinst_PROGRAMS = testdevinfo
+EXTRA_DIST = blkdev/README
 
 charconv_common_sources = charconv.c charconv.h
 charconv_common_ldadd = $(LIBICONV)
