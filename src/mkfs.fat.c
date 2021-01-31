@@ -265,7 +265,7 @@ static int sectors_per_cluster = 0;	/* Number of sectors per disk cluster */
 static int root_dir_entries = 0;	/* Number of root directory entries */
 static int root_dir_entries_set = 0;	/* User selected root directory size */
 static char *blank_sector;	/* Blank sector - all zeros */
-static int hidden_sectors = 0;	/* Number of hidden sectors */
+static unsigned hidden_sectors = 0;	/* Number of hidden sectors */
 static int hidden_sectors_by_user = 0;	/* -h option invoked */
 static int drive_number_option = 0;	/* drive number */
 static int drive_number_by_user = 0;	/* drive number option invoked */
@@ -623,7 +623,7 @@ static void establish_params(struct device_info *info)
                        sectors >     260*1024*2 ? 8 : 1;
     }
 
-    if (!hidden_sectors_by_user && info->geom_start >= 0)
+    if (!hidden_sectors_by_user && info->geom_start >= 0 && info->geom_start + part_sector <= UINT32_MAX)
         hidden_sectors = info->geom_start + part_sector;
 
     if (!root_dir_entries)

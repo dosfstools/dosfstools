@@ -77,9 +77,10 @@ static void get_block_device_size(struct device_info *info, int fd)
 }
 
 
-static void get_block_geometry(struct device_info *info, int fd)
+static void get_block_geometry(struct device_info *info, int fd, dev_t rdev)
 {
-    unsigned int heads, sectors, start;
+    unsigned int heads, sectors;
+    unsigned long long start;
 
     if (!blkdev_get_geometry(fd, &heads, &sectors)
 	    && heads && sectors) {
@@ -87,7 +88,7 @@ static void get_block_geometry(struct device_info *info, int fd)
 	info->geom_sectors = sectors;
     }
 
-    if (!blkdev_get_start(fd, &start))
+    if (!blkdev_get_start(fd, rdev, &start))
 	info->geom_start = start;
 }
 
@@ -113,7 +114,7 @@ static void get_block_linux_info(struct device_info *info, int devfd, dev_t rdev
     struct dirent *d;
     int maj;
     int min;
-    int start;
+    long long start;
     int removable;
 
 #ifdef HAVE_LINUX_LOOP_H
@@ -178,7 +179,7 @@ static void get_block_linux_info(struct device_info *info, int devfd, dev_t rdev
                         if (fd >= 0) {
                             file = fdopen(fd, "r");
                             if (file) {
-                                if (fscanf(file, "%d", &start) != 1)
+                                if (fscanf(file, "%lld", &start) != 1)
                                     start = -1;
                                 fclose(file);
                             } else {
@@ -306,7 +307,7 @@ int get_device_info(int fd, struct device_info *info)
     }
 
     get_block_device_size(info, fd);
-    get_block_geometry(info, fd);
+    get_block_geometry(info, fd, stat.st_rdev);
     get_sector_size(info, fd);
 
 #ifdef __linux__
