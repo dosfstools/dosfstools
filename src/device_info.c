@@ -24,7 +24,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <sys/sysmacros.h>
+
+#ifdef HAVE_SYS_SYSMACROS_H
+# include <sys/sysmacros.h>
+#endif
 
 #ifdef HAVE_LINUX_LOOP_H
 #include <linux/loop.h>
