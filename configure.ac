@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_INIT([dosfstools], [4.2])
+AC_INIT([dosfstools], [4.2+git])
 AC_SUBST([RELEASE_DATE], [2021-01-31])
 AM_INIT_AUTOMAKE([1.11 foreign subdir-objects parallel-tests])
 
