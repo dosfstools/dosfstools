@@ -26,6 +26,18 @@ matrix:
       env: CFLAGS="-m32 -W -Wall -O2 -g -fwrapv -fsanitize=address"
   include:
     - compiler: gcc
+      dist: bionic
+      env: CFLAGS="-W -Wall -O2 -g"
+    - compiler: clang
+      dist: bionic
+      env: CFLAGS="-W -Wall -O2 -g"
+    - compiler: gcc
+      dist: focal
+      env: CFLAGS="-W -Wall -O2 -g"
+    - compiler: clang
+      dist: focal
+      env: CFLAGS="-W -Wall -O2 -g"
+    - compiler: gcc
       env: CFLAGS="-mx32 -W -Wall -O2 -g -fwrapv" LDFLAGS="--static"
       addons:
         apt:
