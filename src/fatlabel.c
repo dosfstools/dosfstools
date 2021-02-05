@@ -187,6 +187,7 @@ static void usage(int error, int usage_only)
     FILE *f = error ? stderr : stdout;
     int status = error ? 1 : 0;
 
+    fprintf(f, "fatlabel " VERSION " (" VERSION_DATE ")\n");
     fprintf(f, "Usage: fatlabel [OPTIONS] DEVICE [NEW]\n");
     if (usage_only)
 	exit(status);

@@ -124,6 +124,8 @@ int main(int argc, char **argv)
     rw = interactive = 1;
     check_atari();
 
+    printf("fsck.fat " VERSION " (" VERSION_DATE ")\n");
+
     while ((c = getopt_long(argc, argv, "Aac:d:bfF:lnprStu:UvVwy",
 				    long_options, NULL)) != -1)
 	switch (c) {
