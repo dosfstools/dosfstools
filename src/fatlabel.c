@@ -182,13 +182,13 @@ static void handle_volid(bool change, bool reset, const char *device, const char
 }
 
 
-static void usage(int error, int usage_only)
+static void usage(char *name, int error, int usage_only)
 {
     FILE *f = error ? stderr : stdout;
     int status = error ? 1 : 0;
 
     fprintf(f, "fatlabel " VERSION " (" VERSION_DATE ")\n");
-    fprintf(f, "Usage: fatlabel [OPTIONS] DEVICE [NEW]\n");
+    fprintf(f, "Usage: %s [OPTIONS] DEVICE [NEW]\n", name);
     if (usage_only)
 	exit(status);
 
@@ -241,10 +241,10 @@ int main(int argc, char *argv[])
 		codepage = strtol(optarg, &tmp, 10);
 		if (!*optarg || isspace(*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
 		    fprintf(stderr, "Invalid codepage : %s\n", optarg);
-		    usage(1, 0);
+		    usage(argv[0], 1, 0);
 		}
 		if (!set_dos_codepage(codepage))
-		    usage(1, 0);
+		    usage(argv[0], 1, 0);
 		break;
 
 	    case 'V':
@@ -253,11 +253,11 @@ int main(int argc, char *argv[])
 		break;
 
 	    case 'h':
-		usage(0, 0);
+		usage(argv[0], 0, 0);
 		break;
 
 	    case '?':
-		usage(1, 0);
+		usage(argv[0], 1, 0);
 		exit(1);
 
 	    default:
@@ -275,7 +275,7 @@ int main(int argc, char *argv[])
     } else if (optind == argc - 1) {
 	change = false;
     } else {
-	usage(1, 1);
+	usage(argv[0], 1, 1);
     }
 
     if (change || reset)
