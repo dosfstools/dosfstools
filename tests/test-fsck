@@ -41,8 +41,8 @@ if [ "$XXD_FOUND" != "yes" ]; then
 fi
 
 
-if [ -f "$testname.args" ]; then
-	ARGS=$(cat "$testname.args")
+if [ -f "${srcdir}/${testname}.args" ]; then
+	ARGS=$(cat "${srcdir}/${testname}.args")
 else
 	ARGS=
 fi
