@@ -230,7 +230,6 @@ int main(int argc, char **argv)
     if (optind != argc - 1)
 	usage(argv[0], 2);
 
-    printf("fsck.fat " VERSION " (" VERSION_DATE ")\n");
     fs_open(argv[optind], rw);
 
     read_boot(&fs);
