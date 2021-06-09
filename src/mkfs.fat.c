@@ -1216,7 +1216,7 @@ static void setup_tables(void)
 	       device_name, le16toh(bs.heads),
 	       (le16toh(bs.heads) != 1) ? "s" : "", le16toh(bs.secs_track),
 	       (le16toh(bs.secs_track) != 1) ? "s" : "");
-	printf("hidden sectors 0x%04x;\n",  hidden_sectors);
+	printf("hidden sectors %u;\n",  hidden_sectors);
 	printf("logical sector size is %d,\n", sector_size);
 	printf("using 0x%02x media descriptor, with %u sectors;\n",
 	       (int)(bs.media), (unsigned)num_sectors);
