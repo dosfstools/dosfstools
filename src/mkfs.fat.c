@@ -1095,7 +1095,7 @@ static void setup_tables(void)
         partition[3] = 0;
 
         /* Partition type */
-        if (le16toh(bs.heads) > 254 || le16toh(bs.secs_track) > 63) { /* CHS values are out of range for MBR, use LBA */
+        if (le16toh(bs.heads) > 255 || le16toh(bs.secs_track) > 63) { /* CHS values are out of range for MBR, use LBA */
             if (size_fat != 32)
                 partition[4] = 0x0E; /* BIG FAT16 (LBA) */
             else
@@ -1112,7 +1112,7 @@ static void setup_tables(void)
             partition[4] = 0x0C; /* FAT32 (LBA) */
 
         /* CHS address of the last sector */
-        if (le16toh(bs.heads) > 254 || le16toh(bs.secs_track) > 63 || num_sectors >= le16toh(bs.secs_track) * le16toh(bs.heads) * 1024) {
+        if (le16toh(bs.heads) > 255 || le16toh(bs.secs_track) > 63 || num_sectors >= le16toh(bs.secs_track) * le16toh(bs.heads) * 1024) {
             /* If CHS address is too large use tuple (1023, 254, 63) */
             partition[5] = 254;
             partition[6] = 255;
