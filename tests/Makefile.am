@@ -48,8 +48,7 @@ TESTS = referenceFAT12.mkfs                    \
 	label-fat32_xp_none.label
 
 
-XFAIL_TESTS = check-huge.fsck \
-	      check-backup_boot_sector_mismatch.fsck
+XFAIL_TESTS = check-huge.fsck
 
 TEST_EXTENSIONS = .mkfs .fsck .label
 MKFS_LOG_COMPILER = $(srcdir)/test-mkfs
