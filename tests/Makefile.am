@@ -10,6 +10,8 @@ TESTS = referenceFAT12.mkfs              \
 	referenceFAT32mbr.mkfs           \
 	mkfs-fat32_2_res_sects.mkfs      \
 	mkfs-fat32_4K.mkfs               \
+	check-backup_boot_sec_mism.fsck  \
+	check-bad_boot_sector.fsck       \
 	check-bad_names.fsck             \
 	check-fat12_first_cluster.fsck   \
 	check-fat16_first_cluster.fsck   \
@@ -66,6 +68,8 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  mkfs-fat32_2_res_sects.xxd       \
 		  mkfs-fat32_4K.mkfs               \
 		  mkfs-fat32_4K.xxd                \
+		  check-backup_boot_sec_mism.fsck  \
+		  check-bad_boot_sector.fsck       \
 		  check-bad_names.fsck             \
 		  check-bad_names.xxd              \
 		  check-fat12_first_cluster.fsck   \
