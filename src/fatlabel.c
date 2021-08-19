@@ -152,7 +152,7 @@ static void handle_volid(bool change, bool reset, const char *device, const char
 	errno = 0;
 	conversion = strtoll(newserial, &tmp, 16);
 
-	if (!*newserial || isspace(*newserial) || *tmp || conversion < 0) {
+	if (!*newserial || isspace((unsigned char)*newserial) || *tmp || conversion < 0) {
 	    fprintf(stderr, "fatlabel: volume ID must be a hexadecimal number\n");
 	    exit(1);
 	}
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
 	    case 'c':
 		errno = 0;
 		codepage = strtol(optarg, &tmp, 10);
-		if (!*optarg || isspace(*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
+		if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
 		    fprintf(stderr, "Invalid codepage : %s\n", optarg);
 		    usage(argv[0], 1, 0);
 		}
