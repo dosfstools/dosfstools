@@ -147,7 +147,7 @@ int main(int argc, char **argv)
 	case 'c':
 	    errno = 0;
 	    codepage = strtol(optarg, &tmp, 10);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
 		fprintf(stderr, "Invalid codepage : %s\n", optarg);
 		usage(argv[0], 2);
 	    }
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	case 'F':
 	    errno = 0;
 	    fat_table = strtol(optarg, &tmp, 10);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || fat_table < 0 || fat_table > 255) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || fat_table < 0 || fat_table > 255) {
 		fprintf(stderr, "Invalid FAT table : %s\n", optarg);
 		usage(argv[0], 2);
 	    }
