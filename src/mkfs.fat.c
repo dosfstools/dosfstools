@@ -468,7 +468,7 @@ static void get_list_blocks(char *filename)
 
 	check = end;
 	while (*check) {
-	    if (!isspace(*check)) {
+	    if (!isspace((unsigned char)*check)) {
 		fprintf(stderr,
 			"Badly formed number in bad blocks file line %d\n",
 			lineno);
@@ -1531,7 +1531,7 @@ int main(int argc, char **argv)
 	case 'b':		/* b : location of backup boot sector */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > 0xffff) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 0 || conversion > 0xffff) {
 		printf("Bad location for backup boot sector : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1551,7 +1551,7 @@ int main(int argc, char **argv)
 	case 'D':		/* D : Choose Drive Number */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0x00 || conversion > 0xFF) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 0x00 || conversion > 0xFF) {
 		printf ("Bad drive number: %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1562,7 +1562,7 @@ int main(int argc, char **argv)
 	case 'f':		/* f : Choose number of FATs */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 1 || conversion > 4) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 1 || conversion > 4) {
 		printf("Bad number of FATs : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1572,7 +1572,7 @@ int main(int argc, char **argv)
 	case 'F':		/* F : Choose FAT size */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 12 && conversion != 16 && conversion != 32)) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || (conversion != 12 && conversion != 16 && conversion != 32)) {
 		printf("Bad FAT type : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1583,7 +1583,7 @@ int main(int argc, char **argv)
 	case 'g':		/* g : geometry: heads and sectors per track */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || tmp[0] != '/' || !tmp[1] || isspace(tmp[1]) || errno || conversion <= 0 || conversion > UINT16_MAX) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || tmp[0] != '/' || !tmp[1] || isspace((unsigned char)tmp[1]) || errno || conversion <= 0 || conversion > UINT16_MAX) {
 		printf("Bad format of geometry : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1599,7 +1599,7 @@ int main(int argc, char **argv)
 	case 'h':		/* h : number of hidden sectors */
 	    errno = 0;
 	    conversion = strtoll(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > UINT32_MAX) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 0 || conversion > UINT32_MAX) {
 		printf("Bad number of hidden sectors : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1615,7 +1615,7 @@ int main(int argc, char **argv)
 	    errno = 0;
 	    conversion = strtoll(optarg, &tmp, 16);
 
-	    if (!*optarg || isspace(*optarg) || *tmp || conversion < 0) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || conversion < 0) {
 		printf("Volume ID must be a hexadecimal number\n");
 		usage(argv[0], 1);
 	    }
@@ -1699,7 +1699,7 @@ int main(int argc, char **argv)
 	case 'M':		/* M : FAT Media byte */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno) {
 		printf("Bad number for media descriptor : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1717,7 +1717,7 @@ int main(int argc, char **argv)
 	case OPT_CODEPAGE:	/* --codepage : Code page */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 10);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 0 || conversion > INT_MAX) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 0 || conversion > INT_MAX) {
 		fprintf(stderr, "Invalid codepage : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1728,7 +1728,7 @@ int main(int argc, char **argv)
 	case 'r':		/* r : Root directory entries */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 16 || conversion > 32768) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 16 || conversion > 32768) {
 		printf("Bad number of root directory entries : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1739,7 +1739,7 @@ int main(int argc, char **argv)
 	case 'R':		/* R : number of reserved sectors */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || conversion < 1 || conversion > 0xffff) {
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || conversion < 1 || conversion > 0xffff) {
 		printf("Bad number of reserved sectors : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
@@ -1749,7 +1749,7 @@ int main(int argc, char **argv)
 	case 's':		/* s : Sectors per cluster */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 1 && conversion != 2
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || (conversion != 1 && conversion != 2
 	        && conversion != 4 && conversion != 8 && conversion != 16
 	        && conversion != 32 && conversion != 64 && conversion != 128)) {
 		printf("Bad number of sectors per cluster : %s\n", optarg);
@@ -1761,7 +1761,7 @@ int main(int argc, char **argv)
 	case 'S':		/* S : Sector size */
 	    errno = 0;
 	    conversion = strtol(optarg, &tmp, 0);
-	    if (!*optarg || isspace(*optarg) || *tmp || errno || (conversion != 512 && conversion != 1024 &&
+	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || (conversion != 512 && conversion != 1024 &&
 	        conversion != 2048 && conversion != 4096 && conversion != 8192 &&
 	        conversion != 16384 && conversion != 32768)) {
 		printf("Bad logical sector size : %s\n", optarg);
@@ -1812,7 +1812,7 @@ int main(int argc, char **argv)
     case OPT_OFFSET:
         errno = 0;
         conversion = strtoll(optarg, &tmp, 0);
-        if (!*optarg || isspace(*optarg) || *tmp || errno) {
+        if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno) {
             printf("Bad number for offset : %s\n", optarg);
             usage(argv[0], 1);
         }
@@ -1850,7 +1850,7 @@ int main(int argc, char **argv)
 	errno = 0;
 	conversion = strtoll(argv[optind], &tmp, 0);
 
-	if (!*argv[optind] || isspace(*argv[optind]) || *tmp || errno || conversion < 0) {
+	if (!*argv[optind] || isspace((unsigned char)*argv[optind]) || *tmp || errno || conversion < 0) {
 	    printf("Bad block count : %s\n", argv[optind]);
 	    usage(argv[0], 1);
 	}
