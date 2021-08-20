@@ -60,6 +60,7 @@ AC_CHECK_HEADERS([\
 		  sys/ioccom.h \
 		  sys/mkdev.h \
 		  sys/queue.h \
+		  sys/sysmacros.h \
 		  ])
 
 AC_CHECK_HEADERS([endian.h sys/endian.h libkern/OSByteOrder.h])
