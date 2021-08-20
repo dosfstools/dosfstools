@@ -78,7 +78,7 @@ compatibility with some SD card readers. CHS geometry is part of FAT boot
 sector which mkfs.fat must fill.
 
 fsck now checks for DOS Clean Shutdown bit and marks filesystem as clean after
-successful run. This is for compatibility with Microsft Windows 98 and also with
+successful run. This is for compatibility with Microsoft Windows 98 and also with
 Windows NT-based variants.
 
 Dependency on systemd/udev was completely removed from mkfs tool. But there is
@@ -94,7 +94,7 @@ hard disk and floppy devices (second, third, ...).
 fsck now preserve reserved fields in info sector. They are used by other systems
 (e.g. FSIBOOT stage of lDOS boot32.asm), hence why are reserved.
 
-fsck was extended to check and fix that first two entires in directory
+fsck was extended to check and fix that first two entries in directory
 structures are . and ..
 
 mkfs now aligns total number of sectors to be multiple of the value of sectors
