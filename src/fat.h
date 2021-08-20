@@ -16,7 +16,7 @@
    You should have received a copy of the GNU General Public License
    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-   THe complete text of the GNU General Public License
+   The complete text of the GNU General Public License
    can be found in /usr/share/common-licenses/GPL-3 file.
 */
 
@@ -66,7 +66,7 @@ void set_owner(DOS_FS * fs, uint32_t cluster, DOS_FILE * owner);
 
 DOS_FILE *get_owner(DOS_FS * fs, uint32_t cluster);
 
-/* Returns the owner of the repective cluster or NULL if the cluster has no
+/* Returns the owner of the respective cluster or NULL if the cluster has no
    owner. */
 
 void fix_bad(DOS_FS * fs);

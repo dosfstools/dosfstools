@@ -94,7 +94,7 @@ hard disk and floppy devices (second, third, ...).
 fsck now preserve reserved fields in info sector. They are used by other systems
 (e.g. FSIBOOT stage of lDOS boot32.asm), hence why are reserved.
 
-fsck was extended to check and fix that first two entires in directory
+fsck was extended to check and fix that first two entries in directory
 structures are . and ..
 
 mkfs now aligns total number of sectors to be multiple of the value of sectors
