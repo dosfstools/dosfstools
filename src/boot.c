@@ -479,10 +479,31 @@ static int try_backup_boot_sector(unsigned *boot_sector, unsigned offset,
 {
     /* Backup boot sectors are for FAT32 only. Also, check backup boot sectors
      * for a signature. */
-    return
+    int success =
 	try_boot_sector(boot_sector, offset, b) &&
 	is_fat32(b) &&
 	has_signature(b);
+
+    if (success) {
+	unsigned short sectors = GET_UNALIGNED_W(b->sectors);
+
+	printf(
+	    "Candidate backup boot sector found at sector %u:\n"
+	    "%10d bytes per logical sector\n"
+	    "%10u sectors total\n"
+	    "Use this backup boot sector?\n",
+	    *boot_sector,
+	    GET_UNALIGNED_W(b->sector_size),
+	    sectors ? sectors : le32toh(b->total_sect));
+	return get_choice(1, "  Using this backup boot sector.",
+			  2,
+			  1, "Use this backup boot sector",
+			  2, "Search for a different backup boot sector") == 1 ?
+	    1 :
+	    0;
+    }
+
+    return success;
 }
 
 void read_boot(DOS_FS * fs)
