@@ -407,8 +407,8 @@ char *lfn_get(DIR_ENT * de, off_t * lfn_offset)
 	die("lfn_get called with LFN directory entry");
 
 #if 0
-    if (de->lcase)
-	printf("lcase=%02x\n", de->lcase);
+    if (de->ntbyte)
+	printf("ntbyte=%02x\n", de->ntbyte);
 #endif
 
     if (lfn_slot == -1)

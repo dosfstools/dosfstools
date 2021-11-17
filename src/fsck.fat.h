@@ -129,7 +129,7 @@ struct info_sector {
 typedef struct {
     uint8_t name[MSDOS_NAME];	/* name including extension */
     uint8_t attr;		/* attribute bits */
-    uint8_t lcase;		/* Case for base and extension */
+    uint8_t ntbyte;		/* Case for base and extension, encryption flags and padding size */
     uint8_t ctime_ms;		/* Creation time, milliseconds */
     uint16_t ctime;		/* Creation time */
     uint16_t cdate;		/* Creation date */
