@@ -194,7 +194,4 @@ extern void *mem_queue;
 /* return -16 as a number with fs->fat_bits bits */
 #define FAT_EXTD(fs)	(((1 << fs->eff_fat_bits)-1) & ~0xf)
 
-/* marker for files with no 8.3 name */
-#define FAT_NO_83NAME 32
-
 #endif

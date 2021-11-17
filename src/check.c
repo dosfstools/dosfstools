@@ -153,16 +153,6 @@ static int bad_name(DOS_FILE * file)
     if (!file->offset)
 	return 0;
 
-    /* check if we have neither a long filename nor a short name */
-    if ((file->lfn == NULL) && (file->dir_ent.lcase & FAT_NO_83NAME)) {
-	return 1;
-    }
-
-    /* don't complain about the dummy 11 bytes used by patched Linux
-       kernels */
-    if (file->dir_ent.lcase & FAT_NO_83NAME)
-	return 0;
-
     for (i = 0; i < MSDOS_NAME; i++) {
 	if ((name[i] < ' ' && !(i == 0 && name[0] == 0x05)) || name[i] == 0x7f)
 	    return 1;
@@ -274,16 +264,7 @@ static void auto_rename(DOS_FILE * file)
 			    (const char *)file->dir_ent.name, MSDOS_NAME))
 		break;
 	if (!walk) {
-	    if (file->dir_ent.lcase & FAT_NO_83NAME) {
-		/* as we only assign a new 8.3 filename, reset flag that 8.3 name is not
-		   present */
-		file->dir_ent.lcase &= ~FAT_NO_83NAME;
-		/* reset the attributes, only keep DIR and VOLUME */
-		file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME);
-		fs_write(file->offset, MSDOS_NAME + 2, &file->dir_ent);
-	    } else {
-		fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
-	    }
+	    fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 	    if (file->lfn) {
 		lfn_remove(file->lfn_offset, file->offset);
 		file->lfn = NULL;
@@ -316,16 +297,7 @@ static void rename_file(DOS_FILE * file)
 	    walk[1] = 0;
 	    for (walk = name; *walk == ' ' || *walk == '\t'; walk++) ;
 	    if (file_cvt(walk, file->dir_ent.name)) {
-		if (file->dir_ent.lcase & FAT_NO_83NAME) {
-		    /* as we only assign a new 8.3 filename, reset flag that 8.3 name is not
-		       present */
-		    file->dir_ent.lcase &= ~FAT_NO_83NAME;
-		    /* reset the attributes, only keep DIR and VOLUME */
-		    file->dir_ent.attr &= ~(ATTR_DIR | ATTR_VOLUME);
-		    fs_write(file->offset, MSDOS_NAME + 2, &file->dir_ent);
-		} else {
-		    fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
-		}
+		fs_write(file->offset, MSDOS_NAME, file->dir_ent.name);
 		if (file->lfn) {
 		    lfn_remove(file->lfn_offset, file->offset);
 		    file->lfn = NULL;
@@ -427,13 +399,6 @@ static int handle_dot(DOS_FS * fs, DOS_FILE * file, int dotdot)
 		goto conjure;
 	    }
 	}
-    }
-    if (file->dir_ent.lcase & FAT_NO_83NAME) {
-	/* Some versions of mtools write these directory entries with random data in
-	   this field. */
-	printf("%s\n  Is a dot with no 8.3 name flag set, clearing.\n", path_name(file));
-	file->dir_ent.lcase &= ~FAT_NO_83NAME;
-	MODIFY(file, lcase, file->dir_ent.lcase);
     }
 
     return 0;
