@@ -26,6 +26,8 @@ TESTS = referenceFAT12.mkfs              \
 	check-label-different.fsck       \
 	check-label-only-boot.fsck       \
 	check-label-only-root.fsck       \
+	check-encryption_with_invalid_83.fsck                      \
+	check-encryption_with_duplicate_dirent.fsck                \
 	label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 	label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
 	label-fat32_mkdosfs_label1_dosfslabel_NO_NAME.label        \
