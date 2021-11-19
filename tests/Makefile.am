@@ -102,6 +102,10 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  check-label-only-boot.xxd        \
 		  check-label-only-root.fsck       \
 		  check-label-only-root.xxd        \
+		  check-encryption_with_invalid_83.fsck                      \
+		  check-encryption_with_invalid_83.xxd                       \
+		  check-encryption_with_duplicate_dirent.fsck                \
+		  check-encryption_with_duplicate_dirent.xxd                 \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.label          \
 		  label-fat32_mkdosfs_label1_dosfslabel_empty.xxd            \
 		  label-fat32_mkdosfs_label1_dosfslabel_label2.label         \
