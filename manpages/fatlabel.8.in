@@ -97,7 +97,7 @@ In Windows systems DOS codepage is global for all running applications and
 cannot be configured explicitly.
 It is set implicitly by option \fILanguage for non-Unicode programs\fP available
 in \fIRegional and Language Options\fP via \fIControl Panel\fP.
-Default DOS codepage for fatlabel is 850.
+Default DOS codepage for \fBfatlabel\fP is 850.
 See following mapping table between DOS codepage and Language for non-Unicode
 programs:
 .TS
