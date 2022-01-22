@@ -120,6 +120,8 @@ static int cp850_char_to_printable(char **p, unsigned char c, unsigned int out_s
 {
     size_t ret;
     wchar_t wcs[2];
+    if (!c)
+        return 0;
     wcs[0] = (c & 0x80) ? cp850_table[c & 0x7F] : c;
     wcs[1] = 0;
     ret = wcstombs(*p, wcs, out_size);
@@ -230,6 +232,8 @@ int dos_char_to_printable(char **p, unsigned char c, unsigned int out_size)
     size_t bytes_out = out_size;
     if (!init_conversion(-1))
 	return 0;
+    if (!c)
+        return 0;
     if (internal_cp850)
         return cp850_char_to_printable(p, c, out_size);
     return iconv(dos_to_local, &pin, &bytes_in, p, &bytes_out) != (size_t)-1;

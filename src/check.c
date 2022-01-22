@@ -1131,7 +1131,7 @@ static int check_boot_label(DOS_FS *fs)
 
     ret = validate_volume_label(fs->label);
     if (ret & ~0x1) {
-        printf("Label '%s' stored in boot sector is not valid.\n", pretty_label(fs->label));
+        printf("Label '%s' stored in boot sector is not valid.\n", pretty_label(fs->label, 0));
         switch (get_choice(1, "  Auto-removing label from boot sector.",
                            2,
                            1, "Remove invalid label from boot sector",
@@ -1147,7 +1147,7 @@ static int check_boot_label(DOS_FS *fs)
             return 1;
         }
     } else if ((ret & 0x1) && only_uppercase_label) {
-        printf("Label '%s' stored in boot sector contains lowercase characters.\n", pretty_label(fs->label));
+        printf("Label '%s' stored in boot sector contains lowercase characters.\n", pretty_label(fs->label, 0));
         switch (get_choice(1, "  Auto-changing lowercase characters to uppercase",
                            3,
                            1, "Change lowercase characters to uppercase",
@@ -1194,7 +1194,7 @@ void check_label(DOS_FS *fs)
         check_boot_label(fs);
 
     if (offset == 0 && memcmp(fs->label, "NO NAME    ", 11) != 0) {
-        printf("Label in boot sector is '%s', but there is no volume label in root directory.\n", pretty_label(fs->label));
+        printf("Label in boot sector is '%s', but there is no volume label in root directory.\n", pretty_label(fs->label, 0));
         switch (get_choice(1, "  Auto-removing label from boot sector.",
                            2,
                            1, "Remove label from boot sector",
@@ -1216,7 +1216,7 @@ void check_label(DOS_FS *fs)
             doslabel[0] = 0xe5;
         ret = validate_volume_label(doslabel);
         if (ret & ~0x1) {
-            printf("Volume label '%s' stored in root directory is not valid.\n", pretty_label(doslabel));
+            printf("Volume label '%s' stored in root directory is not valid.\n", pretty_label(doslabel, 0));
             switch (get_choice(1, "  Auto-removing label.",
                                2,
                                1, "Remove invalid label",
@@ -1233,7 +1233,7 @@ void check_label(DOS_FS *fs)
                 break;
             }
         } else if ((ret & 0x1) && only_uppercase_label) {
-            printf("Volume label '%s' stored in root directory contains lowercase characters.\n", pretty_label(doslabel));
+            printf("Volume label '%s' stored in root directory contains lowercase characters.\n", pretty_label(doslabel, 0));
             switch (get_choice(1, "  Auto-changing lowercase characters to uppercase",
                                3,
                                1, "Change lowercase characters to uppercase",
@@ -1266,7 +1266,7 @@ void check_label(DOS_FS *fs)
 again:
 
     if (offset != 0 && memcmp(fs->label, "NO NAME    ", 11) == 0 && memcmp(doslabel, "NO NAME    ", 11) != 0) {
-        printf("There is no label in boot sector, but there is volume label '%s' stored in root directory\n", pretty_label(doslabel));
+        printf("There is no label in boot sector, but there is volume label '%s' stored in root directory\n", pretty_label(doslabel, 0));
         switch (get_choice(1, "  Auto-copying volume label from root directory to boot sector.",
                            2,
                            1, "Copy volume label from root directory to boot sector",
@@ -1283,9 +1283,9 @@ again:
     }
 
     if (offset != 0 && memcmp(fs->label, "NO NAME    ", 11) != 0 && memcmp(fs->label, doslabel, 11) != 0) {
-        strncpy(buffer, pretty_label(doslabel), sizeof(buffer)-1);
+        strncpy(buffer, pretty_label(doslabel, 0), sizeof(buffer)-1);
         buffer[sizeof(buffer)-1] = 0;
-        printf("Volume label '%s' stored in root directory and label '%s' stored in boot sector and different.\n", buffer, pretty_label(fs->label));
+        printf("Volume label '%s' stored in root directory and label '%s' stored in boot sector and different.\n", buffer, pretty_label(fs->label, 0));
         switch (get_choice(1, "  Auto-copying volume label from root directory to boot sector.",
                            2,
                            1, "Copy volume label from root directory to boot sector",

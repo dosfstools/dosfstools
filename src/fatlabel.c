@@ -119,7 +119,7 @@ static void handle_label(bool change, bool reset, const char *device, char *newl
 	if (offset != 0) {
 	    if (de.name[0] == 0x05)
 		de.name[0] = 0xe5;
-	    printf("%s\n", pretty_label((char *)de.name));
+	    printf("%s\n", pretty_label((char *)de.name, '_'));
 	}
 
 	if (fs.fat_bits == 32)

@@ -763,7 +763,7 @@ void remove_label(DOS_FS *fs)
     }
 }
 
-const char *pretty_label(const char *label)
+const char *pretty_label(const char *label, char rep)
 {
     static char buffer[256];
     char *p;
@@ -776,9 +776,17 @@ const char *pretty_label(const char *label)
     }
 
     p = buffer;
-    for (i = 0; i <= last && label[i] && p < buffer + sizeof(buffer) - 1; ++i) {
-        if (!dos_char_to_printable(&p, label[i], buffer + sizeof(buffer) - 1 - p))
-            *p++ = '_';
+    for (i = 0; i <= last && p < buffer + sizeof(buffer) - 1; ++i) {
+        if (!dos_char_to_printable(&p, label[i], buffer + sizeof(buffer) - 1 - p)) {
+            if (rep) {
+                *p++ = rep;
+            } else if (p + 4 < buffer + sizeof(buffer) - 1) {
+                *p++ = '\\';
+                *p++ = '0' + (label[i] >> 6);
+                *p++ = '0' + ((label[i] >> 3) & 7);
+                *p++ = '0' + (label[i] & 7);
+            }
+        }
     }
     *p = 0;
 
