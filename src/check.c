@@ -491,13 +491,17 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	    break;
 	}
 	if (!(file->dir_ent.attr & ATTR_DIR) && le32toh(file->dir_ent.size) <=
-	    clusters * fs->cluster_size) {
+	    (unsigned long long)clusters * fs->cluster_size) {
 	    printf
-		("%s\n  File size is %u bytes, cluster chain length is > %u "
-		 "bytes.\n  Truncating file to %u bytes.\n", path_name(file),
+		("%s\n"
+		 "  File size is %u bytes, cluster chain length is %llu bytes.\n"
+		 "  Truncating file to %u bytes (%u clusters).\n",
+		 path_name(file),
 		 le32toh(file->dir_ent.size),
-		 (unsigned)clusters * fs->cluster_size,
-		 le32toh(file->dir_ent.size));
+		 (unsigned long long)clusters * fs->cluster_size,
+		 (((unsigned long long)clusters * fs->cluster_size <= UINT32_MAX) ?
+		  (clusters * fs->cluster_size) : UINT32_MAX),
+		 clusters);
 	    truncate_file(fs, file, clusters);
 	    break;
 	}
@@ -512,19 +516,19 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		    break;
 		else {
 		    if ((unsigned long long)clusters2 * fs->cluster_size >= UINT32_MAX)
-		        die("Internal error: File size is larger than 2^32-1");
+		        die("Internal error: Cluster chain is larger than 2^32");
 		    clusters2++;
 		}
 	    restart = file->dir_ent.attr & ATTR_DIR;
 	    if (!owner->offset) {
-		printf("  Truncating second to %u bytes because first "
-		       "is FAT32 root dir.\n",
-		       (unsigned)clusters * fs->cluster_size);
+		printf("  Truncating second to %llu bytes (%u clusters) "
+		       "because first is FAT32 root dir.\n",
+		       (unsigned long long)clusters * fs->cluster_size, clusters);
 		do_trunc = 2;
 	    } else if (!file->offset) {
-		printf("  Truncating first to %u bytes because second "
-		       "is FAT32 root dir.\n",
-		       (unsigned)clusters2 * fs->cluster_size);
+		printf("  Truncating first to %llu bytes (%u clusters) "
+		       "because second is FAT32 root dir.\n",
+		       (unsigned long long)clusters2 * fs->cluster_size, clusters);
 		do_trunc = 1;
 	    } else {
 		char *trunc_first_string;
@@ -532,15 +536,15 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		char *noninteractive_string;
 
 		xasprintf(&trunc_first_string,
-			 "Truncate first to %u bytes%s",
-			 (unsigned)clusters2 * fs->cluster_size,
+			 "Truncate first to %llu bytes (clusters %u)%s",
+			 (unsigned long long)clusters2 * fs->cluster_size, clusters2,
 			 restart ? " and restart" : "");
 		xasprintf(&trunc_second_string,
-			  "Truncate second to %u bytes",
-			  (unsigned)clusters * fs->cluster_size);
+			  "Truncate second to %llu bytes (clusters %u)",
+			  (unsigned long long)clusters * fs->cluster_size, clusters);
 		xasprintf(&noninteractive_string,
-			  "  Truncating second to %u bytes.",
-			  (unsigned)clusters * fs->cluster_size);
+			  "  Truncating second to %llu bytes (clusters %u).",
+			  (unsigned long long)clusters * fs->cluster_size, clusters);
 
 		do_trunc = get_choice(2, noninteractive_string,
 				      2,
@@ -562,7 +566,10 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 			    set_fat(fs, prev, -1);
 			else
 			    MODIFY_START(owner, 0, fs);
-			MODIFY(owner, size, htole32(clusters * fs->cluster_size));
+			if ((unsigned long long)clusters * fs->cluster_size > UINT32_MAX)
+				MODIFY(owner, size, htole32(UINT32_MAX));
+			else
+				MODIFY(owner, size, htole32(clusters * fs->cluster_size));
 			if (restart)
 			    return 1;
 			while (this > 0 && this != -1) {
@@ -573,7 +580,7 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 			break;
 		    }
 		    if ((unsigned long long)clusters * fs->cluster_size >= UINT32_MAX)
-		        die("Internal error: File size is larger than 2^32-1");
+		        die("Internal error: Cluster chain is larger than 2^32");
 		    clusters++;
 		    prev = this;
 		}
@@ -590,20 +597,26 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 	}
 	set_owner(fs, curr, file);
 	if ((unsigned long long)clusters * fs->cluster_size >= UINT32_MAX)
-	    die("Internal error: File size is larger than 2^32-1");
+	    die("Internal error: Cluster chain is larger than 2^32");
 	clusters++;
 	prev = curr;
     }
     if (!(file->dir_ent.attr & ATTR_DIR) && le32toh(file->dir_ent.size) >
-	clusters * fs->cluster_size) {
+	(unsigned long long)clusters * fs->cluster_size) {
+	unsigned int new_size;
+	if ((unsigned long long)clusters * fs->cluster_size > UINT32_MAX)
+	    new_size = UINT32_MAX;
+	else
+	    new_size = clusters * fs->cluster_size;
 	printf
-	    ("%s\n  File size is %u bytes, cluster chain length is %u bytes."
-	     "\n  Truncating file to %u bytes.\n", path_name(file),
+	    ("%s\n"
+	     "  File size is %u bytes, cluster chain length is %llu bytes.\n"
+	     "  Truncating file to %u bytes (%u clusters).\n",
+	     path_name(file),
 	     le32toh(file->dir_ent.size),
-	     (unsigned)clusters * fs->cluster_size,
-	     (unsigned)clusters * fs->cluster_size);
-	MODIFY(file, size,
-	       htole32(clusters * fs->cluster_size));
+	     (unsigned long long)clusters * fs->cluster_size,
+	     new_size, clusters);
+	MODIFY(file, size, htole32(new_size));
     }
     return 0;
 }
