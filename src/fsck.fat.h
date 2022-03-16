@@ -124,7 +124,7 @@ struct info_sector {
     uint32_t next_cluster;	/* Most recently allocated cluster. */
     uint8_t reserved2[12];
     uint32_t boot_sign;
-};
+} __attribute__ ((packed));
 
 typedef struct {
     uint8_t name[MSDOS_NAME];	/* name including extension */

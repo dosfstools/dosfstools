@@ -43,7 +43,7 @@ typedef struct {
     uint8_t name5_10[12];	/* 6 more characters in name */
     uint16_t start;		/* starting cluster number, 0 in long slots */
     uint8_t name11_12[4];	/* last 2 characters in name */
-} LFN_ENT;
+} __attribute__ ((packed)) LFN_ENT;
 
 #define LFN_ID_START	0x40
 #define LFN_ID_SLOTMASK	0x1f
