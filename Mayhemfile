@@ -1,0 +1,14 @@
+project: WGibbs15/dosfstools-fatlabel
+
+# Target name (should be unique within the project)
+target: dosfstools-fatlabel
+
+# Base image to run the binary in.
+image: ghcr.io/wgibbs15/fatlabel:fuzz
+
+# List of commands used to test the target
+cmds:
+
+    # Command used to start the target, "@@" is the input file
+    # (when "@@" is omitted Mayhem defaults to stdin inputs)
+    - cmd: /fatlabel @@
