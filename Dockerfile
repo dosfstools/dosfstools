@@ -19,5 +19,4 @@ RUN make -j4
 # Package Stage
 FROM --platform=linux/amd64 ubuntu:20.04
 
-COPY --from=builder /dosfstools/src/fatlabel /fatlabel
-
+COPY --from=builder /dosfstools/src/testdevinfo /testdevinfo
