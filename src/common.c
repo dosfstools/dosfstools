@@ -360,7 +360,7 @@ int validate_volume_label(char *doslabel)
        code page) are not allowed.
      */
     for (i = 0; i < 11; i++) {
-        if (doslabel[i] < 0x20)
+        if ((unsigned) doslabel[i] < 0x20)
             ret |= 0x02;
         if (doslabel[i] == 0x22 ||
             (doslabel[i] >= 0x2A && doslabel[i] <= 0x2C) ||
