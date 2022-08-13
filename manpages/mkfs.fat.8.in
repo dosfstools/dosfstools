@@ -193,12 +193,14 @@ See also \fBmkfs.fat\fP option \fB\-a\fP.
 .IP "\fB\-s\fP \fISECTORS-PER-CLUSTER\fP" 4
 Specify the number of disk sectors per cluster.
 Must be a power of 2, i.e. 1, 2, 4, 8, ... 128.
-.IP "\fB\-S\fP \fILOGICAL-SECTOR-SIZE\fP" 4
-Specify the number of bytes per logical sector.
+.IP "\fB\-S\fP \fISECTOR-SIZE\fP" 4
+Specify the number of bytes per filesystem sector.
 Must be a power of 2 and greater than or equal to 512, i.e. 512, 1024, 2048,
 4096, 8192, 16384, or 32768.
-Values larger than 4096 are not conforming to the FAT file system specification
+Values larger than 4096 are not conforming to the FAT filesystem specification
 and may not work everywhere.
+Some operating systems have requirement that filesystem sector size must match
+logical disk device sector size. So default value is logical disk sector size.
 .IP "\fB\-v\fP" 4
 Verbose execution.
 .IP "\fB\-\-offset\fP \fISECTOR\fP" 4
