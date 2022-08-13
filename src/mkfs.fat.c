@@ -85,10 +85,6 @@
 
 /* Macro definitions */
 
-/* Mark a cluster in the FAT as bad */
-
-#define mark_unit_bad( unit ) mark_FAT_unit( unit, FAT_BAD )
-
 /* Compute ceil(a/b) */
 
 static inline int cdiv(int a, int b)
@@ -252,8 +248,9 @@ static off_t part_sector = 0; /* partition offset in sector */
 static int ignore_safety_checks = 0;	/* Ignore safety checks */
 static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
-static int start_data_unit;	/* Sector number for the start of the data area in 512 byte sectors */
-static int start_data_block;	/* Block number for the start of the data area */
+static unsigned long long start_data_unit;	/* Sector number for the start of the data area in 512 byte sectors*/
+static int start_data_sector;	/* Sector number for the start of the data area */
+static unsigned long long start_data_block;	/* Block number for the start of the data area */
 static unsigned char *fat;	/* File allocation table */
 static unsigned alloced_fat_length;	/* # of FAT sectors we can keep in memory */
 static unsigned fat_entries;		/* total entries in FAT table (including reserved) */
@@ -281,7 +278,7 @@ static int fill_mbr_partition = -1;	/* Whether to fill MBR partition table or no
 /* Function prototype definitions */
 
 static void mark_FAT_cluster(int cluster, unsigned int value);
-static void mark_FAT_unit(int unit, unsigned int value);
+static void mark_block_bad(unsigned long long block);
 static long do_check(char *buffer, int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
@@ -336,17 +333,23 @@ static void mark_FAT_cluster(int cluster, unsigned int value)
     }
 }
 
-/* Mark a specified 512 byte sector as having a particular value in its FAT entry */
+/* Mark a specified block as bad in its FAT entry */
 
-static void mark_FAT_unit(int unit, unsigned int value)
+static void mark_block_bad(unsigned long long blockno)
 {
-    int cluster = (unit - start_data_unit) / (int)(bs.cluster_size) /
-        (sector_size / UNIT_SIZE) + 2;
+    unsigned long long cluster, unit;
+    int i;
 
-    if (unit < start_data_unit || unit >= num_sectors)
-        die("Internal error: out of range sector number in mark_FAT_sector");
+    for (i = 0; i < UNITS_PER_BLOCK; i++) {
+        unit = blockno * UNITS_PER_BLOCK + i;
+        cluster = (unit - start_data_unit) / (int)(bs.cluster_size) /
+            (sector_size / UNIT_SIZE) + 2;
 
-    mark_FAT_cluster(cluster, value);
+        if (unit < start_data_unit || unit >= num_sectors)
+            die("Internal error: out of range sector number in mark_FAT_sector");
+
+        mark_FAT_cluster(cluster, FAT_BAD);
+    }
 }
 
 /* Perform a test on a block.  Return the number of blocks that could be read successfully */
@@ -392,7 +395,6 @@ static void alarm_intr(int alnum)
 static void check_blocks(void)
 {
     int try, got;
-    int i;
     static char blkbuf[BLOCK_SIZE * TEST_BUFFER_BLOCKS];
 
     if (verbose) {
@@ -418,8 +420,7 @@ static void check_blocks(void)
 	if (currently_testing < start_data_block)
 	    die("bad blocks before data-area: cannot make fs");
 
-	for (i = 0; i < UNITS_PER_BLOCK; i++)	/* Mark all of the sectors in the block as bad */
-	    mark_unit_bad(currently_testing * UNITS_PER_BLOCK + i);
+	mark_block_bad(currently_testing);
 	badblocks++;
 	currently_testing++;
     }
@@ -497,9 +498,8 @@ static void get_list_blocks(char *filename)
 			blockno);
 		die("Error in bad blocks file");
 	    }
-
-	    mark_unit_bad(sector);
 	}
+	mark_block_bad(blockno);
 	badblocks++;
     }
     fclose(listfile);
@@ -1201,11 +1201,12 @@ static void setup_tables(void)
     }
     fat_entries = cluster_count + 2;
 
+    start_data_sector = reserved_sectors + nr_fats * fat_length +
+        cdiv(root_dir_entries * 32, sector_size);
     /* Define the smallest unit as a 512 byte sector */
-    start_data_unit = (reserved_sectors + nr_fats * fat_length +
-	    cdiv(root_dir_entries * 32, sector_size)) *
-        (sector_size / UNIT_SIZE);
-    start_data_block = cdiv(start_data_unit, UNITS_PER_BLOCK);
+    start_data_unit = (unsigned long long)start_data_sector * sector_size / UNIT_SIZE;
+    /* First block which consists entirely of data sectors */
+    start_data_block = cdiv((unsigned long long)start_data_sector * sector_size, BLOCK_SIZE);
 
     if (blocks < start_data_block + 32)	/* Arbitrary undersize filesystem! */
 	die("Too few blocks for viable filesystem");
