@@ -43,6 +43,7 @@
 int interactive;
 int write_immed;
 int atari_format;
+int skip_name_validation;
 const char *program_name;
 
 
@@ -340,6 +341,9 @@ int validate_volume_label(char *doslabel)
     int i;
     int ret = 0;
     wchar_t wlabel[12];
+
+    if (skip_name_validation)
+        return 0;
 
     if (dos_string_to_wchar_string(wlabel, doslabel, sizeof(wlabel))) {
         for (i = 0; wlabel[i]; i++) {

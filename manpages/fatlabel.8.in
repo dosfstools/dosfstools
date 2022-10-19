@@ -51,6 +51,8 @@ Remove label in label mode or generate new ID in volume ID mode.
 .IP "\fB-c\fP \fIPAGE\fP, \fB\-\-codepage\fP=\fIPAGE\fP" 4
 Use DOS codepage \fIPAGE\fP to encode/decode label.
 By default codepage 850 is used.
+.IP "\fB\-\-skip-name-validation\fP" 4
+Do not validate filesystem label.
 .IP "\fB\-h\fP, \fB\-\-help\fP" 4
 Display a help message and terminate.
 .IP "\fB\-V\fP, \fB\-\-version\fP" 4

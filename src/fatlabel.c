@@ -196,21 +196,24 @@ static void usage(char *name, int error, int usage_only)
     fprintf(f, "existing label or serial if NEW is not given.\n");
     fprintf(f, "\n");
     fprintf(f, "Options:\n");
-    fprintf(f, "  -i, --volume-id     Work on serial number instead of label\n");
-    fprintf(f, "  -r, --reset         Remove label or generate new serial number\n");
-    fprintf(f, "  -c N, --codepage=N  use DOS codepage N to encode/decode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
-    fprintf(f, "  -V, --version       Show version number and terminate\n");
-    fprintf(f, "  -h, --help          Print this message and terminate\n");
+    fprintf(f, "  -i, --volume-id        Work on serial number instead of label\n");
+    fprintf(f, "  -r, --reset            Remove label or generate new serial number\n");
+    fprintf(f, "  -c N, --codepage=N     use DOS codepage N to encode/decode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
+    fprintf(f, "  --skip-name-validation Do not validate filesystem label\n");
+    fprintf(f, "  -V, --version          Show version number and terminate\n");
+    fprintf(f, "  -h, --help             Print this message and terminate\n");
     exit(status);
 }
 
 
 int main(int argc, char *argv[])
 {
+    enum {OPT_SKIP_NAME_VALIDATION=1000};
     const struct option long_options[] = {
 	{"volume-id", no_argument, NULL, 'i'},
 	{"reset",     no_argument, NULL, 'r'},
 	{"codepage",  required_argument, NULL, 'c'},
+	{"skip-name-validation", optional_argument, NULL, OPT_SKIP_NAME_VALIDATION},
 	{"version",   no_argument, NULL, 'V'},
 	{"help",      no_argument, NULL, 'h'},
 	{0,}
@@ -245,6 +248,10 @@ int main(int argc, char *argv[])
 		}
 		if (!set_dos_codepage(codepage))
 		    usage(argv[0], 1, 0);
+		break;
+
+	    case OPT_SKIP_NAME_VALIDATION:
+		skip_name_validation = 1;
 		break;
 
 	    case 'V':

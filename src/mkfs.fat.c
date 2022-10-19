@@ -1424,33 +1424,33 @@ static void usage(const char *name, int exitval)
     fprintf(stderr, "created with a size of 1024 bytes times BLOCKS, which must be specified.\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Options:\n");
-    fprintf(stderr, "  -a              Disable alignment of data structures\n");
-    fprintf(stderr, "  -A              Toggle Atari variant of the filesystem\n");
-    fprintf(stderr, "  -b SECTOR       Select SECTOR as location of the FAT32 backup boot sector\n");
-    fprintf(stderr, "  -c              Check device for bad blocks before creating the filesystem\n");
-    fprintf(stderr, "  -C              Create file TARGET then create filesystem in it\n");
-    fprintf(stderr, "  -D NUMBER       Write BIOS drive number NUMBER to boot sector\n");
-    fprintf(stderr, "  -f COUNT        Create COUNT file allocation tables\n");
-    fprintf(stderr, "  -F SIZE         Select FAT size SIZE (12, 16 or 32)\n");
-    fprintf(stderr, "  -g GEOM         Select disk geometry: heads/sectors_per_track\n");
-    fprintf(stderr, "  -h NUMBER       Write hidden sectors NUMBER to boot sector\n");
-    fprintf(stderr, "  -i VOLID        Set volume ID to VOLID (a 32 bit hexadecimal number)\n");
-    fprintf(stderr, "  -I              Ignore and disable safety checks\n");
-    fprintf(stderr, "  -l FILENAME     Read bad blocks list from FILENAME\n");
-    fprintf(stderr, "  -m FILENAME     Replace default error message in boot block with contents of FILENAME\n");
-    fprintf(stderr, "  -M TYPE         Set media type in boot sector to TYPE\n");
-    fprintf(stderr, "  --mbr[=y|n|a]   Fill (fake) MBR table with one partition which spans whole disk\n");
-    fprintf(stderr, "  -n LABEL        Set volume name to LABEL (up to 11 characters long)\n");
-    fprintf(stderr, "  --codepage=N    use DOS codepage N to encode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
-    fprintf(stderr, "  -r COUNT        Make room for at least COUNT entries in the root directory\n");
-    fprintf(stderr, "  -R COUNT        Set minimal number of reserved sectors to COUNT\n");
-    fprintf(stderr, "  -s COUNT        Set number of sectors per cluster to COUNT\n");
-    fprintf(stderr, "  -S SIZE         Select a sector size of SIZE (a power of two, at least 512)\n");
-    fprintf(stderr, "  -v              Verbose execution\n");
-    fprintf(stderr, "  --variant=TYPE  Select variant TYPE of filesystem (standard or Atari)\n");
-    fprintf(stderr, "\n");
-    fprintf(stderr, "  --offset=SECTOR Write the filesystem at a specific sector into the device file.\n");
-    fprintf(stderr, "  --help          Show this help message and exit\n");
+    fprintf(stderr, "  -a                     Disable alignment of data structures\n");
+    fprintf(stderr, "  -A                     Toggle Atari variant of the filesystem\n");
+    fprintf(stderr, "  -b SECTOR              Select SECTOR as location of the FAT32 backup boot sector\n");
+    fprintf(stderr, "  -c                     Check device for bad blocks before creating the filesystem\n");
+    fprintf(stderr, "  -C                     Create file TARGET then create filesystem in it\n");
+    fprintf(stderr, "  -D NUMBER              Write BIOS drive number NUMBER to boot sector\n");
+    fprintf(stderr, "  -f COUNT               Create COUNT file allocation tables\n");
+    fprintf(stderr, "  -F SIZE                Select FAT size SIZE (12, 16 or 32)\n");
+    fprintf(stderr, "  -g GEOM                Select disk geometry: heads/sectors_per_track\n");
+    fprintf(stderr, "  -h NUMBER              Write hidden sectors NUMBER to boot sector\n");
+    fprintf(stderr, "  -i VOLID               Set volume ID to VOLID (a 32 bit hexadecimal number)\n");
+    fprintf(stderr, "  -I                     Ignore and disable safety checks\n");
+    fprintf(stderr, "  -l FILENAME            Read bad blocks list from FILENAME\n");
+    fprintf(stderr, "  -m FILENAME            Replace default error message in boot block with contents of FILENAME\n");
+    fprintf(stderr, "  -M TYPE                Set media type in boot sector to TYPE\n");
+    fprintf(stderr, "  --mbr[=y|n|a]          Fill (fake) MBR table with one partition which spans whole disk\n");
+    fprintf(stderr, "  -n LABEL               Set volume name to LABEL (up to 11 characters long)\n");
+    fprintf(stderr, "  --codepage=N           use DOS codepage N to encode label (default: %d)\n", DEFAULT_DOS_CODEPAGE);
+    fprintf(stderr, "  -r COUNT               Make room for at least COUNT entries in the root directory\n");
+    fprintf(stderr, "  -R COUNT               Set minimal number of reserved sectors to COUNT\n");
+    fprintf(stderr, "  -s COUNT               Set number of sectors per cluster to COUNT\n");
+    fprintf(stderr, "  -S SIZE                Select a sector size of SIZE (a power of two, at least 512)\n");
+    fprintf(stderr, "  -v                     Verbose execution\n");
+    fprintf(stderr, "  --variant=TYPE         Select variant TYPE of filesystem (standard or Atari)\n");
+    fprintf(stderr, "  --skip-name-validation Do not validate filesystem label\n");
+    fprintf(stderr, "  --offset=SECTOR        Write the filesystem at a specific sector into the device file.\n");
+    fprintf(stderr, "  --help                 Show this help message and exit\n");
     exit(exitval);
 }
 
@@ -1472,14 +1472,15 @@ int main(int argc, char **argv)
     long long conversion;
     char *source_date_epoch = NULL;
 
-    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_MBR, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET};
+    enum {OPT_HELP=1000, OPT_INVARIANT, OPT_MBR, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET, OPT_SKIP_NAME_VALIDATION};
     const struct option long_options[] = {
-	    {"codepage",  required_argument, NULL, OPT_CODEPAGE},
-	    {"invariant", no_argument,       NULL, OPT_INVARIANT},
-	    {"mbr",       optional_argument, NULL, OPT_MBR},
-	    {"variant",   required_argument, NULL, OPT_VARIANT},
-	    {"offset",    required_argument, NULL, OPT_OFFSET},
-	    {"help",      no_argument,       NULL, OPT_HELP},
+	    {"codepage",             required_argument, NULL, OPT_CODEPAGE},
+	    {"invariant",            no_argument,       NULL, OPT_INVARIANT},
+	    {"mbr",                  optional_argument, NULL, OPT_MBR},
+	    {"variant",              required_argument, NULL, OPT_VARIANT},
+	    {"offset",               required_argument, NULL, OPT_OFFSET},
+	    {"skip-name-validation", optional_argument, NULL, OPT_SKIP_NAME_VALIDATION},
+	    {"help",                 no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
 
@@ -1818,6 +1819,10 @@ int main(int argc, char **argv)
 
         part_sector = (off_t) conversion;
         break;
+
+	case OPT_SKIP_NAME_VALIDATION:
+		skip_name_validation = 1;
+		break;
 
 	case '?':
 	    usage(argv[0], 1);

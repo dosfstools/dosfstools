@@ -35,6 +35,7 @@
 extern int interactive;
 extern int write_immed;
 extern int atari_format;	/* Use Atari variation of MS-DOS FS format */
+extern int skip_name_validation;
 
 /* program_name used for printing messages; no name will be printed when it is
  * left as NULL */

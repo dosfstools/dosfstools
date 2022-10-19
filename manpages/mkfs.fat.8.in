@@ -220,6 +220,8 @@ volume ID and creation time.
 Multiple runs of \fBmkfs.fat\fP on the same device create identical results
 with this option.
 Its main purpose is testing \fBmkfs.fat\fP.
+.IP "\fB\-\-skip-name-validation\fP" 4
+Do not validate filesystem label.
 .\" ----------------------------------------------------------------------------
 .SH BUGS
 \fBmkfs.fat\fP can not create boot-able filesystems.
