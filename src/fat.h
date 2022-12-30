@@ -66,7 +66,7 @@ void set_owner(DOS_FS * fs, uint32_t cluster, DOS_FILE * owner);
 
 DOS_FILE *get_owner(DOS_FS * fs, uint32_t cluster);
 
-/* Returns the owner of the repective cluster or NULL if the cluster has no
+/* Returns the owner of the respective cluster or NULL if the cluster has no
    owner. */
 
 void fix_bad(DOS_FS * fs);

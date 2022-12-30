@@ -68,7 +68,7 @@ static unsigned char fat_uni2esc[64] = {
     'u', 'v', 'w', 'x', 'y', 'z', '+', '-'
 };
 
-/* This defines which unicode chars are directly convertable to ISO-8859-1 */
+/* This defines which unicode chars are directly convertible to ISO-8859-1 */
 #define UNICODE_CONVERTABLE(cl,ch)	(ch == 0 && (cl < 0x80 || cl >= 0xa0))
 
 /* for maxlen param */
@@ -212,7 +212,7 @@ void lfn_add_slot(DIR_ENT * de, off_t dir_offset)
     if (lfn->id & LFN_ID_START && slot != 0) {
 	if (lfn_slot != -1) {
 	    int can_clear = 0;
-	    /* There is already a LFN "in progess", so it is an error that a
+	    /* There is already a LFN "in progress", so it is an error that a
 	     * new start entry is here. */
 	    /* Causes: 1) if slot# == expected: start bit set mysteriously, 2)
 	     *         old LFN overwritten by new one */

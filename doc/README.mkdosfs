@@ -1,4 +1,4 @@
-mkdosfs - Make DOS filesystem utilty.
+mkdosfs - Make DOS filesystem utility.
 
 
 I wrote this, partially to complement the dosfsck utility written by Werner
