@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     char *device = NULL;
     char *new = NULL;
     char *tmp;
-    long codepage;
+    long codepage = -1;
     int c;
 
     check_atari();
@@ -243,8 +243,6 @@ int main(int argc, char *argv[])
 		    fprintf(stderr, "Invalid codepage : %s\n", optarg);
 		    usage(argv[0], 1, 0);
 		}
-		if (!set_dos_codepage(codepage))
-		    usage(argv[0], 1, 0);
 		break;
 
 	    case 'V':
@@ -267,7 +265,7 @@ int main(int argc, char *argv[])
 	}
     }
 
-    if (!set_dos_codepage(-1))	/* set default codepage if none was given in command line */
+    if (!set_dos_codepage(codepage))
         exit(1);
 
     if (optind == argc - 2) {

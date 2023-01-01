@@ -1471,6 +1471,7 @@ int main(int argc, char **argv)
     struct timeval create_timeval;
     long long conversion;
     char *source_date_epoch = NULL;
+    long codepage = -1;
 
     enum {OPT_HELP=1000, OPT_INVARIANT, OPT_MBR, OPT_VARIANT, OPT_CODEPAGE, OPT_OFFSET};
     const struct option long_options[] = {
@@ -1715,8 +1716,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Invalid codepage : %s\n", optarg);
 		usage(argv[0], 1);
 	    }
-	    if (!set_dos_codepage(conversion))
-		usage(argv[0], 1);
+	    codepage = conversion;
 	    break;
 
 	case 'r':		/* r : Root directory entries */
@@ -1829,7 +1829,7 @@ int main(int argc, char **argv)
 	    exit(2);
 	}
 
-    if (!set_dos_codepage(-1))	/* set default codepage if none was given in command line */
+    if (!set_dos_codepage(codepage))
         exit(1);
 
     if (optind == argc || !argv[optind]) {
