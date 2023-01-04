@@ -3475,7 +3475,7 @@ commit 07d85ff
 Author: Daniel Baumann <mail@daniel-baumann.ch>
 Date:   Tue Oct 15 08:04:11 2013 +0200
 
-    Reformating mkfs.fat manpage.
+    Reformatting mkfs.fat manpage.
     
     Signed-off-by: Daniel Baumann <mail@daniel-baumann.ch>
 
