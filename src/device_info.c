@@ -229,6 +229,8 @@ static void get_block_linux_info(struct device_info *info, int devfd, dev_t rdev
 
     /* Check if device is slave of another device and therefore is virtual */
     fd = openat(blockfd, "slaves", O_RDONLY | O_DIRECTORY);
+    if (fd < 0 && errno == ENOENT && info->partition != 0)
+        fd = openat(blockfd, "../slaves", O_RDONLY | O_DIRECTORY);
     if (fd >= 0) {
         dir = fdopendir(fd);
         if (dir) {
@@ -260,6 +262,8 @@ static void get_block_linux_info(struct device_info *info, int devfd, dev_t rdev
     if (info->type == TYPE_UNKNOWN) {
         removable = 0;
         fd = openat(blockfd, "removable", O_RDONLY);
+        if (fd < 0 && errno == ENOENT && info->partition != 0)
+            fd = openat(blockfd, "../removable", O_RDONLY);
         if (fd >= 0) {
             file = fdopen(fd, "r");
             if (file) {
