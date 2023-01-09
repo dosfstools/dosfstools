@@ -449,7 +449,7 @@ static void get_list_blocks(char *filename)
 	lineno++;
 	ssize_t length = getline(&line, &linesize, listfile);
 	if (length < 0) {
-	    if (errno == 0) /* end of file */
+	    if (feof(listfile))
 		break;
 
 	    perror("getline");
