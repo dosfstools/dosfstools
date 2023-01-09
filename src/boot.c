@@ -489,8 +489,8 @@ void read_boot(DOS_FS * fs)
 	    /* M$ hasn't specified this, but it looks reasonable: If
 	     * root_cluster is 0 but there is a separate root dir
 	     * (root_entries != 0), we handle the root dir the old way. Give a
-	     * warning, but convertig to a root dir in a cluster chain seems
-	     * to complex for now... */
+	     * warning, but converting to a root dir in a cluster chain seems
+	     * too complex for now... */
 	    fprintf(stderr, "Warning: FAT32 root dir not in cluster chain! "
 		   "Compatibility mode...\n");
 	else if (!fs->root_cluster && !fs->root_entries)
@@ -513,7 +513,7 @@ void read_boot(DOS_FS * fs)
 	read_fsinfo(fs, &b, logical_sector_size);
     } else if (!atari_format) {
 	/* On real MS-DOS, a 16 bit FAT is used whenever there would be too
-	 * much clusers otherwise. */
+	 * much clusters otherwise. */
 	fs->fat_bits = (fs->data_clusters >= FAT12_THRESHOLD) ? 16 : 12;
 	if (fs->data_clusters >= FAT16_THRESHOLD)
 	    die("Too many clusters (%lu) for FAT16 filesystem.",
@@ -525,7 +525,7 @@ void read_boot(DOS_FS * fs)
 	/* If more clusters than fat entries in 16-bit fat, we assume
 	 * it's a real MSDOS FS with 12-bit fat. */
 	if (fs->data_clusters + 2 > fat_length * logical_sector_size * 8 / 16 ||
-	    /* if it has one of the usual floppy sizes -> 12bit FAT  */
+	    /* if it has one of the usual floppy sizes -> 12bit FAT */
 	    (total_sectors == 720 || total_sectors == 1440 ||
 	     total_sectors == 2880))
 	    fs->fat_bits = 12;

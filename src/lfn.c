@@ -212,7 +212,7 @@ void lfn_add_slot(DIR_ENT * de, off_t dir_offset)
     if (lfn->id & LFN_ID_START && slot != 0) {
 	if (lfn_slot != -1) {
 	    int can_clear = 0;
-	    /* There is already a LFN "in progess", so it is an error that a
+	    /* There is already a LFN "in progress", so it is an error that a
 	     * new start entry is here. */
 	    /* Causes: 1) if slot# == expected: start bit set mysteriously, 2)
 	     *         old LFN overwritten by new one */

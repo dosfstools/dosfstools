@@ -123,7 +123,7 @@ void read_fat(DOS_FS * fs, int mode)
     if (fat_table > fs->nfats)
         die("Requested FAT table %ld does not exist.", fat_table);
     if (fat_table > 2)
-        die("Reading FAT table greather than 2 is not implemented yet.");
+        die("Reading FAT table greater than 2 is not implemented yet.");
 
     /* Clean up from previous pass */
     release_fat(fs);
