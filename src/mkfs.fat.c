@@ -32,10 +32,10 @@
 
    As far as possible the aim here is to make the "mkfs.fat" command
    look almost identical to the other Linux filesystem make utilties,
-   eg bad blocks are still specified as blocks, not sectors, but when
-   it comes down to it, DOS is tied to the idea of a sector (512 bytes
-   as a rule), and not the block.  For example the boot block does not
-   occupy a full cluster.
+   e.g. bad blocks are still specified as blocks, not sectors, but
+   when it comes down to it, DOS is tied to the idea of a sector
+   (commonly 512 bytes), and not the block.  For example the boot
+   sector does not normally occupy a full cluster.
 
    Fixes/additions May 1998 by Roman Hodek
    <Roman.Hodek@informatik.uni-erlangen.de>:
@@ -78,23 +78,8 @@
 
 #define TEST_BUFFER_BLOCKS 16
 #define BLOCK_SIZE         1024
-#define HARD_SECTOR_SIZE   512
-#define SECTORS_PER_BLOCK ( BLOCK_SIZE / HARD_SECTOR_SIZE )
 
 #define NO_NAME "NO NAME    "
-
-/* Macro definitions */
-
-/* Mark a cluster in the FAT as bad */
-
-#define mark_sector_bad( sector ) mark_FAT_sector( sector, FAT_BAD )
-
-/* Compute ceil(a/b) */
-
-static inline int cdiv(int a, int b)
-{
-    return (a + b - 1) / b;
-}
 
 /* FAT values */
 #define FAT_EOF      (atari_format ? 0x0fffffff : 0x0ffffff8)
@@ -253,7 +238,7 @@ static int ignore_safety_checks = 0;	/* Ignore safety checks */
 static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
 static int start_data_sector;	/* Sector number for the start of the data area */
-static int start_data_block;	/* Block number for the start of the data area */
+static unsigned long long start_data_block;	/* Block number for the start of the data area */
 static unsigned char *fat;	/* File allocation table */
 static unsigned alloced_fat_length;	/* # of FAT sectors we can keep in memory */
 static unsigned fat_entries;		/* total entries in FAT table (including reserved) */
@@ -278,10 +263,17 @@ static int invariant = 0;		/* Whether to set normally randomized or
 					   constants */
 static int fill_mbr_partition = -1;	/* Whether to fill MBR partition table or not */
 
+/* Compute ceil(a/b) */
+
+static inline unsigned long long cdiv(unsigned long long a, unsigned long long b)
+{
+    return (a + b - 1) / b;
+}
+
 /* Function prototype definitions */
 
 static void mark_FAT_cluster(int cluster, unsigned int value);
-static void mark_FAT_sector(int sector, unsigned int value);
+static void mark_block_bad(unsigned long long block);
 static long do_check(char *buffer, int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
@@ -336,17 +328,31 @@ static void mark_FAT_cluster(int cluster, unsigned int value)
     }
 }
 
-/* Mark a specified sector as having a particular value in it's FAT entry */
+/* Mark a specified block as bad in its FAT entry */
 
-static void mark_FAT_sector(int sector, unsigned int value)
+static void mark_block_bad(unsigned long long blockno)
 {
-    int cluster = (sector - start_data_sector) / (int)(bs.cluster_size) /
-	(sector_size / HARD_SECTOR_SIZE) + 2;
+    long first_cluster = (blockno - start_data_block) * BLOCK_SIZE / sector_size /
+        bs.cluster_size + 2;
+    int num_clusters = cdiv(BLOCK_SIZE, sector_size * bs.cluster_size);
+    int i;
+    long cluster;
 
-    if (sector < start_data_sector || sector >= num_sectors)
-	die("Internal error: out of range sector number in mark_FAT_sector");
+    if (blockno < start_data_block)
+        die("Bad blocks before data area: cannot make fs");
+    if (blockno >= blocks)
+        die("Internal error: out of range block number in mark_block_bad");
 
-    mark_FAT_cluster(cluster, value);
+    for (i = 0; i < num_clusters; i++) {
+        cluster = first_cluster + i;
+        if (cluster >= fat_entries) {
+            if (verbose >= 2)
+                printf("Block number %llu is behind last cluster, no FAT entry to mark bad, ignoring\n",
+                        blockno);
+            return;
+        }
+        mark_FAT_cluster(cluster, FAT_BAD);
+    }
 }
 
 /* Perform a test on a block.  Return the number of blocks that could be read successfully */
@@ -392,7 +398,6 @@ static void alarm_intr(int alnum)
 static void check_blocks(void)
 {
     int try, got;
-    int i;
     static char blkbuf[BLOCK_SIZE * TEST_BUFFER_BLOCKS];
 
     if (verbose) {
@@ -415,11 +420,8 @@ static void check_blocks(void)
 	    continue;
 	} else
 	    try = 1;
-	if (currently_testing < start_data_block)
-	    die("bad blocks before data-area: cannot make fs");
 
-	for (i = 0; i < SECTORS_PER_BLOCK; i++)	/* Mark all of the sectors in the block as bad */
-	    mark_sector_bad(currently_testing * SECTORS_PER_BLOCK + i);
+	mark_block_bad(currently_testing);
 	badblocks++;
 	currently_testing++;
     }
@@ -433,7 +435,6 @@ static void check_blocks(void)
 
 static void get_list_blocks(char *filename)
 {
-    int i;
     FILE *listfile;
     long long blockno;
     char *line = NULL;
@@ -482,24 +483,13 @@ static void get_list_blocks(char *filename)
 	if (end == line)
 	    continue;
 
-	/* Mark all of the sectors in the block as bad */
-	for (i = 0; i < SECTORS_PER_BLOCK; i++) {
-	    unsigned long long sector = blockno * SECTORS_PER_BLOCK + i;
-
-	    if (sector < start_data_sector) {
-		fprintf(stderr, "Block number %lld is before data area\n",
-			blockno);
-		die("Error in bad blocks file");
-	    }
-
-	    if (sector >= num_sectors) {
-		fprintf(stderr, "Block number %lld is behind end of filesystem\n",
-			blockno);
-		die("Error in bad blocks file");
-	    }
-
-	    mark_sector_bad(sector);
+	/* Mark all of the clusters in the block as bad */
+	if (blockno >= blocks) {
+	    fprintf(stderr, "Block number %lld is behind end of filesystem\n",
+		    blockno);
+	    die("Error in bad blocks file");
 	}
+	mark_block_bad(blockno);
 	badblocks++;
     }
     fclose(listfile);
@@ -1196,12 +1186,10 @@ static void setup_tables(void)
     }
     fat_entries = cluster_count + 2;
 
-    /* The two following vars are in hard sectors, i.e. 512 byte sectors! */
-    start_data_sector = (reserved_sectors + nr_fats * fat_length +
-	    cdiv(root_dir_entries * 32, sector_size)) *
-	(sector_size / HARD_SECTOR_SIZE);
-    start_data_block = (start_data_sector + SECTORS_PER_BLOCK - 1) /
-	SECTORS_PER_BLOCK;
+    start_data_sector = reserved_sectors + nr_fats * fat_length +
+        cdiv(root_dir_entries * 32, sector_size);
+    /* First block which consists entirely of data sectors */
+    start_data_block = cdiv((unsigned long long)start_data_sector * sector_size, BLOCK_SIZE);
 
     if (blocks < start_data_block + 32)	/* Arbitrary undersize filesystem! */
 	die("Too few blocks for viable filesystem");
