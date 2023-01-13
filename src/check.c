@@ -1165,7 +1165,7 @@ static int check_boot_label(DOS_FS *fs)
                            3,
                            1, "Change lowercase characters to uppercase",
                            2, "Remove invalid label",
-                           2, "Set new label")) {
+                           3, "Set new label")) {
         case 1:
             if (!dos_string_to_wchar_string(wlabel, fs->label, sizeof(wlabel)))
                 die("Cannot change lowercase characters to uppercase.");
@@ -1251,7 +1251,7 @@ void check_label(DOS_FS *fs)
                                3,
                                1, "Change lowercase characters to uppercase",
                                2, "Remove invalid label",
-                               2, "Set new label")) {
+                               3, "Set new label")) {
             case 1:
                 if (!dos_string_to_wchar_string(wlabel, doslabel, sizeof(wlabel)))
                     die("Cannot change lowercase characters to uppercase.");
