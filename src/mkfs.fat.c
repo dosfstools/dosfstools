@@ -109,7 +109,7 @@ static inline int cdiv(int a, int b)
 
 /* According to Microsoft FAT specification (fatgen103.doc) disk with
  * 4085 clusters (or more) is FAT16, but Microsoft Windows FAT driver
- * fastfat.sys detects disk with less then 4087 clusters as FAT12.
+ * fastfat.sys detects disk with less than 4087 clusters as FAT12.
  * Linux FAT drivers msdos.ko and vfat.ko detect disk with at least
  * 4085 clusters as FAT16, therefore for compatibility reasons with
  * both systems disallow formatting disks to 4085 or 4086 clusters. */
@@ -895,7 +895,7 @@ static void setup_tables(void)
 		    printf("Trying FAT32: too much clusters\n");
 		clust32 = 0;
 	    }
-	    /* When explicitly asked, allow to create FAT32 with less then MIN_CLUST_32 */
+	    /* When explicitly asked, allow to create FAT32 with less than MIN_CLUST_32 */
 	    if (clust32 && clust32 < MIN_CLUST_32
 		&& !(size_fat_by_user && size_fat == 32)) {
 		if (verbose >= 2 && (size_fat == 0 || size_fat == 32))
@@ -937,7 +937,7 @@ static void setup_tables(void)
 
 	case 32:
 	    if (clust32 < MIN_CLUST_32)
-		fprintf(stderr, "WARNING: Number of clusters for 32 bit FAT is less then suggested minimum.\n");
+		fprintf(stderr, "WARNING: Number of clusters for 32 bit FAT is less than suggested minimum.\n");
 	    cluster_count = clust32;
 	    fat_length = fatlength32;
 	    bs.fat_length = htole16(0);
@@ -1906,7 +1906,7 @@ int main(int argc, char **argv)
 	}
 
         if (devinfo.size <= part_sector * sector_size)
-          die("The device %s size %llu is less then the offset %llu",
+          die("The device %s size %llu is less than the offset %llu",
               device_name, devinfo.size, (unsigned long long) part_sector * sector_size);
     }
 

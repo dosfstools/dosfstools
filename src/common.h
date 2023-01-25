@@ -79,7 +79,7 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
  * Display a numbered list of choices and accept user input to select one. If
  * interactive is false, it will instead print noninteractive_msg and return
  * noninteractive_result. The number of options must be given in choices and
- * must be more than one and less then ten.
+ * must be more than one and less than ten.
  *
  * The variable arguments are choices times <int val, const char *desc>, where
  * val is the value that is returned when the user selects this option and desc
