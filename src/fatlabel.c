@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
 	{"help",      no_argument, NULL, 'h'},
 	{0,}
     };
-    bool change;
+    bool change = false;
     bool reset = false;
     bool volid_mode = false;
     char *device = NULL;
