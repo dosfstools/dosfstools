@@ -280,8 +280,9 @@ static int fill_mbr_partition = -1;	/* Whether to fill MBR partition table or no
 
 /* Function prototype definitions */
 
-static void mark_FAT_cluster(int cluster, unsigned int value);
-static void mark_FAT_sector(int sector, unsigned int value);
+static int set_FAT_byte(int index, unsigned char value);
+static int mark_FAT_cluster(int cluster, unsigned int value);
+static int mark_FAT_sector(int sector, unsigned int value);
 static long do_check(char *buffer, int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
@@ -293,10 +294,23 @@ static void write_tables(void);
 
 /* The function implementations */
 
+/* Set a byte in FAT to a particular value */
+
+static int set_FAT_byte(int index, unsigned char value)
+{
+    unsigned char old;
+
+    old = fat[index];
+    fat[index] = value;
+
+    return old != value;
+}
+
 /* Mark the specified cluster as having a particular value */
 
-static void mark_FAT_cluster(int cluster, unsigned int value)
+static int mark_FAT_cluster(int cluster, unsigned int value)
 {
+    int changed = 0;
 
     if (cluster < 0 || cluster >= fat_entries)
 	die("Internal error: out of range cluster number in mark_FAT_cluster");
@@ -305,40 +319,43 @@ static void mark_FAT_cluster(int cluster, unsigned int value)
     case 12:
 	value &= 0x0fff;
 	if (((cluster * 3) & 0x1) == 0) {
-	    fat[3 * cluster / 2] = (unsigned char)(value & 0x00ff);
-	    fat[(3 * cluster / 2) + 1] =
-		(unsigned char)((fat[(3 * cluster / 2) + 1] & 0x00f0)
-				| ((value & 0x0f00) >> 8));
+	    changed |= set_FAT_byte(3 * cluster / 2,
+		value & 0x00ff);
+	    changed |= set_FAT_byte(3 * cluster / 2 + 1,
+		(fat[(3 * cluster / 2) + 1] & 0x00f0)
+		 | ((value & 0x0f00) >> 8));
 	} else {
-	    fat[3 * cluster / 2] =
-		(unsigned char)((fat[3 * cluster / 2] & 0x000f) |
-				((value & 0x000f) << 4));
-	    fat[(3 * cluster / 2) + 1] = (unsigned char)((value & 0x0ff0) >> 4);
+	    changed |= set_FAT_byte(3 * cluster / 2,
+		(fat[3 * cluster / 2] & 0x000f) | ((value & 0x000f) << 4));
+	    changed |= set_FAT_byte(3 * cluster / 2 + 1,
+		(value & 0x0ff0) >> 4);
 	}
 	break;
 
     case 16:
 	value &= 0xffff;
-	fat[2 * cluster] = (unsigned char)(value & 0x00ff);
-	fat[(2 * cluster) + 1] = (unsigned char)(value >> 8);
+	changed |= set_FAT_byte(2 * cluster, value & 0x00ff);
+	changed |= set_FAT_byte(2 * cluster + 1, value >> 8);
 	break;
 
     case 32:
 	value &= 0xfffffff;
-	fat[4 * cluster] = (unsigned char)(value & 0x000000ff);
-	fat[(4 * cluster) + 1] = (unsigned char)((value & 0x0000ff00) >> 8);
-	fat[(4 * cluster) + 2] = (unsigned char)((value & 0x00ff0000) >> 16);
-	fat[(4 * cluster) + 3] = (unsigned char)((value & 0xff000000) >> 24);
+	changed |= set_FAT_byte(4 * cluster, value & 0x000000ff);
+	changed |= set_FAT_byte(4 * cluster + 1, (value & 0x0000ff00) >> 8);
+	changed |= set_FAT_byte(4 * cluster + 2, (value & 0x00ff0000) >> 16);
+	changed |= set_FAT_byte(4 * cluster + 3, (value & 0xff000000) >> 24);
 	break;
 
     default:
 	die("Bad FAT size (not 12, 16, or 32)");
     }
+
+    return changed;
 }
 
-/* Mark a specified sector as having a particular value in it's FAT entry */
+/* Mark a specified sector as having a particular value in its FAT entry */
 
-static void mark_FAT_sector(int sector, unsigned int value)
+static int mark_FAT_sector(int sector, unsigned int value)
 {
     int cluster = (sector - start_data_sector) / (int)(bs.cluster_size) /
 	(sector_size / HARD_SECTOR_SIZE) + 2;
@@ -346,7 +363,7 @@ static void mark_FAT_sector(int sector, unsigned int value)
     if (sector < start_data_sector || sector >= num_sectors)
 	die("Internal error: out of range sector number in mark_FAT_sector");
 
-    mark_FAT_cluster(cluster, value);
+    return mark_FAT_cluster(cluster, value);
 }
 
 /* Perform a test on a block.  Return the number of blocks that could be read successfully */
@@ -433,7 +450,7 @@ static void check_blocks(void)
 
 static void get_list_blocks(char *filename)
 {
-    int i;
+    int changed, i;
     FILE *listfile;
     long long blockno;
     char *line = NULL;
@@ -476,6 +493,7 @@ static void get_list_blocks(char *filename)
 	    continue;
 
 	/* Mark all of the sectors in the block as bad */
+	changed = 0;
 	for (i = 0; i < SECTORS_PER_BLOCK; i++) {
 	    unsigned long long sector = blockno * SECTORS_PER_BLOCK + i;
 
@@ -487,9 +505,10 @@ static void get_list_blocks(char *filename)
 		die("Error in bad blocks file at line %u: Block number %lld is behind end of filesystem", lineno, blockno);
 	    }
 
-	    mark_sector_bad(sector);
+	    changed |= mark_sector_bad(sector);
 	}
-	badblocks++;
+	if (changed)
+	    badblocks++;
     }
     fclose(listfile);
     free(line);
