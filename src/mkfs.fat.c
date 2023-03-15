@@ -438,7 +438,7 @@ static void get_list_blocks(char *filename)
     long long blockno;
     char *line = NULL;
     size_t linesize = 0;
-    int lineno = 0;
+    unsigned lineno = 0;
     char *end, *check;
 
     listfile = fopen(filename, "r");
@@ -459,13 +459,13 @@ static void get_list_blocks(char *filename)
 	blockno = strtoll(line, &end, 10);
 
 	if (errno || blockno < 0) {
-	    die("Error in bad blocks file at line %d: Badly formed number", lineno);
+	    die("Error in bad blocks file at line %u: Badly formed number", lineno);
 	}
 
 	check = end;
 	while (*check) {
 	    if (!isspace((unsigned char)*check)) {
-		die("Error in bad blocks file at line %d: Badly formed number", lineno);
+		die("Error in bad blocks file at line %u: Badly formed number", lineno);
 	    }
 
 	    check++;
@@ -480,11 +480,11 @@ static void get_list_blocks(char *filename)
 	    unsigned long long sector = blockno * SECTORS_PER_BLOCK + i;
 
 	    if (sector < start_data_sector) {
-		die("Error in bad blocks file at line %d: Block number %lld is before data area", lineno, blockno);
+		die("Error in bad blocks file at line %u: Block number %lld is before data area", lineno, blockno);
 	    }
 
 	    if (sector >= num_sectors) {
-		die("Error in bad blocks file at line %d: Block number %lld is behind end of filesystem", lineno, blockno);
+		die("Error in bad blocks file at line %u: Block number %lld is behind end of filesystem", lineno, blockno);
 	    }
 
 	    mark_sector_bad(sector);
