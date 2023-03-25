@@ -1318,7 +1318,7 @@ again:
         buffer[sizeof(buffer)-1] = 0;
         printf("Volume label '%s' stored in root directory and label '%s' stored in boot sector and different.\n", buffer, pretty_label(fs->label, 0));
         switch (get_choice(1, "  Auto-copying volume label from root directory to boot sector.",
-                           2,
+                           3,
                            1, "Copy volume label from root directory to boot sector",
                            2, "Copy label from boot sector to root directory",
                            3, "No action")) {
