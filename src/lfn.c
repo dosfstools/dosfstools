@@ -50,7 +50,7 @@ typedef struct {
 
 #define CHARS_PER_LFN	13
 
-/* These modul-global vars represent the state of the LFN parser */
+/* These module-global vars represent the state of the LFN parser */
 unsigned char *lfn_unicode = NULL;
 unsigned char lfn_checksum;
 int lfn_slot = -1;
@@ -96,7 +96,7 @@ static size_t wctombs(char *dest, wchar_t x)
     return size;
 }
 
-/* This function converts an unicode string to a normal ASCII string, assuming
+/* This function converts a unicode string to a normal ASCII string, assuming
  * ISO-8859-1 charset. Characters not in 8859-1 are converted to the same
  * escape notation as used by the kernel, i.e. the uuencode-like ":xxx" */
 static char *cnv_unicode(const unsigned char *uni, int maxlen, int use_q)
