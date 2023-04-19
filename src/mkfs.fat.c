@@ -243,7 +243,7 @@ static int backup_boot = 0;	/* Sector# of backup boot sector */
 static int backup_boot_set = 0;	/* User selected backup boot sector */
 static int info_sector = 0;	/* Sector# of FAT32 info sector */
 static int reserved_sectors = 0;	/* Number of reserved sectors */
-static int badblocks = 0;	/* Number of bad blocks in the filesystem */
+static int bad_blocks = 0;	/* Number of bad blocks in the filesystem */
 static int nr_fats = 2;		/* Default number of FATs to produce */
 static int size_fat = 0;	/* Size in bits of FAT entries */
 static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
@@ -443,7 +443,7 @@ static void check_blocks(void)
 
 	for (i = 0; i < SECTORS_PER_BLOCK; i++)	/* Mark all of the sectors in the block as bad */
 	    mark_sector_bad(currently_testing * SECTORS_PER_BLOCK + i);
-	badblocks++;
+	bad_blocks++;
 	currently_testing++;
     }
 
@@ -455,8 +455,8 @@ static void check_blocks(void)
 	printf("\n");
     }
 
-    if (badblocks)
-	printf("%d bad block%s\n", badblocks, (badblocks > 1) ? "s" : "");
+    if (bad_blocks)
+	printf("%d bad block%s\n", bad_blocks, (bad_blocks > 1) ? "s" : "");
 }
 
 static void get_list_blocks(char *filename)
@@ -519,13 +519,13 @@ static void get_list_blocks(char *filename)
 	    changed |= mark_sector_bad(sector);
 	}
 	if (changed)
-	    badblocks++;
+	    bad_blocks++;
     }
     fclose(listfile);
     free(line);
 
-    if (badblocks)
-	printf("%d bad block%s\n", badblocks, (badblocks > 1) ? "s" : "");
+    if (bad_blocks)
+	printf("%d bad block%s\n", bad_blocks, (bad_blocks > 1) ? "s" : "");
 }
 
 /* Check to see if the specified device is currently mounted - abort if it is */
