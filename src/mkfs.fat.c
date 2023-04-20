@@ -277,6 +277,7 @@ static int invariant = 0;		/* Whether to set normally randomized or
 					   current time based values to
 					   constants */
 static int fill_mbr_partition = -1;	/* Whether to fill MBR partition table or not */
+static volatile sig_atomic_t display_status;	/* Whether to display status now or not */
 
 /* Function prototype definitions */
 
@@ -387,7 +388,7 @@ static long do_check(char *buffer, int try, off_t current_block)
     return got;
 }
 
-/* Alarm clock handler - display the status of the quest for bad blocks!  Then retrigger the alarm for five seconds
+/* Alarm clock handler - request to display status of the quest for bad blocks!  Then retrigger the alarm for five seconds
    later (so we can come here again) */
 
 static void alarm_intr(int alnum)
@@ -402,8 +403,7 @@ static void alarm_intr(int alnum)
     if (!currently_testing)
 	return;
 
-    printf("%lld... ", (unsigned long long)currently_testing);
-    fflush(stdout);
+    display_status = 1;
 }
 
 static void check_blocks(void)
@@ -417,12 +417,18 @@ static void check_blocks(void)
 	fflush(stdout);
     }
     currently_testing = 0;
+    display_status = 0;
     if (verbose) {
 	signal(SIGALRM, alarm_intr);
 	alarm(5);
     }
     try = TEST_BUFFER_BLOCKS;
     while (currently_testing < blocks) {
+	if (display_status) {
+	    display_status = 0;
+	    printf("%lld... ", (unsigned long long)currently_testing);
+	    fflush(stdout);
+	}
 	if (currently_testing + try > blocks)
 	    try = blocks - currently_testing; /* TODO: check overflow */
 	got = do_check(blkbuf, try, currently_testing);
