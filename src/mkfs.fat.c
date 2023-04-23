@@ -250,7 +250,6 @@ static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
 static int dev = -1;		/* FS block device file handle */
 static off_t part_sector = 0; /* partition offset in sector */
 static int ignore_safety_checks = 0;	/* Ignore safety checks */
-static off_t currently_testing = 0;	/* Block currently being tested (if autodetect bad blocks) */
 static struct msdos_boot_sector bs;	/* Boot sector data */
 static int start_data_sector;	/* Sector number for the start of the data area */
 static int start_data_block;	/* Block number for the start of the data area */
@@ -388,26 +387,19 @@ static long do_check(char *buffer, int try, off_t current_block)
     return got;
 }
 
-/* Alarm clock handler - request to display status of the quest for bad blocks!  Then retrigger the alarm for five seconds
-   later (so we can come here again) */
+/* Alarm clock handler - request to display status of the quest for bad blocks! */
 
 static void alarm_intr(int alnum)
 {
     (void)alnum;
-
-    if (currently_testing >= blocks)
-	return;
-
-    signal(SIGALRM, alarm_intr);
-    alarm(5);
-    if (!currently_testing)
-	return;
 
     display_status = 1;
 }
 
 static void check_blocks(void)
 {
+    struct sigaction old;
+    off_t currently_testing;
     int try, got;
     int i;
     static char blkbuf[BLOCK_SIZE * TEST_BUFFER_BLOCKS];
@@ -419,8 +411,15 @@ static void check_blocks(void)
     currently_testing = 0;
     display_status = 0;
     if (verbose) {
-	signal(SIGALRM, alarm_intr);
-	alarm(5);
+	struct sigaction action;
+
+	action.sa_handler = alarm_intr;
+	sigemptyset(&action.sa_mask);
+	action.sa_flags = SA_RESTART;
+	if (sigaction(SIGALRM, &action, &old) < 0)
+	    old.sa_handler = SIG_ERR;
+	else
+	    alarm(5);
     }
     try = TEST_BUFFER_BLOCKS;
     while (currently_testing < blocks) {
@@ -428,6 +427,7 @@ static void check_blocks(void)
 	    display_status = 0;
 	    printf("%lld... ", (unsigned long long)currently_testing);
 	    fflush(stdout);
+	    alarm(5);
 	}
 	if (currently_testing + try > blocks)
 	    try = blocks - currently_testing; /* TODO: check overflow */
@@ -447,8 +447,13 @@ static void check_blocks(void)
 	currently_testing++;
     }
 
-    if (verbose)
+    if (verbose) {
+	if (old.sa_handler != SIG_ERR) {
+	    alarm(0);
+	    sigaction(SIGALRM, &old, NULL);
+	}
 	printf("\n");
+    }
 
     if (badblocks)
 	printf("%d bad block%s\n", badblocks, (badblocks > 1) ? "s" : "");
