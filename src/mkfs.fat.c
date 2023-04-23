@@ -244,6 +244,7 @@ static int backup_boot_set = 0;	/* User selected backup boot sector */
 static int info_sector = 0;	/* Sector# of FAT32 info sector */
 static int reserved_sectors = 0;	/* Number of reserved sectors */
 static int bad_blocks = 0;	/* Number of bad blocks in the filesystem */
+static int bad_clusters = 0;	/* Number of bad clusters in the filesystem */
 static int nr_fats = 2;		/* Default number of FATs to produce */
 static int size_fat = 0;	/* Size in bits of FAT entries */
 static int size_fat_by_user = 0;	/* 1 if FAT size user selected */
@@ -289,6 +290,7 @@ static void check_blocks(void);
 static void get_list_blocks(char *filename);
 static void check_mount(char *device_name);
 static void establish_params(struct device_info *info);
+static void process_bad_blocks(void);
 static void setup_tables(void);
 static void write_tables(void);
 
@@ -349,6 +351,9 @@ static int mark_FAT_cluster(int cluster, unsigned int value)
     default:
 	die("Bad FAT size (not 12, 16, or 32)");
     }
+
+    if (changed && value == FAT_BAD)
+	bad_clusters++;
 
     return changed;
 }
@@ -456,7 +461,7 @@ static void check_blocks(void)
     }
 
     if (bad_blocks)
-	printf("%d bad block%s\n", bad_blocks, (bad_blocks > 1) ? "s" : "");
+	process_bad_blocks();
 }
 
 static void get_list_blocks(char *filename)
@@ -525,7 +530,7 @@ static void get_list_blocks(char *filename)
     free(line);
 
     if (bad_blocks)
-	printf("%d bad block%s\n", bad_blocks, (bad_blocks > 1) ? "s" : "");
+	process_bad_blocks();
 }
 
 /* Check to see if the specified device is currently mounted - abort if it is */
@@ -1382,6 +1387,25 @@ static void setup_tables(void)
     if (write (dev, buf, __size) != __size)		\
 	error ("failed whilst writing " errstr);	\
   } while(0)
+
+static void process_bad_blocks(void)
+{
+    printf("%d bad block%s\n", bad_blocks, (bad_blocks > 1) ? "s" : "");
+
+    if (size_fat == 32) {
+	struct fat32_fsinfo *info;
+	uint32_t free_clusters;
+
+	/* fsinfo structure is at offset 0x1e0 in info sector by observation */
+	info = (struct fat32_fsinfo *)(info_sector_buffer + 0x1e0);
+
+	/* reduce amount of free clusters accordingly */
+	free_clusters = le32toh(info->free_clusters);
+	if (free_clusters < bad_clusters)
+		die("too many bad clusters");
+	info->free_clusters = htole32(free_clusters - bad_clusters);
+    }
+}
 
 static void write_tables(void)
 {
