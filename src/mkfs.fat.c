@@ -282,6 +282,7 @@ static volatile sig_atomic_t display_status;	/* Whether to display status now or
 /* Function prototype definitions */
 
 static int set_FAT_byte(int index, unsigned char value);
+static unsigned int read_FAT_cluster(int cluster);
 static int mark_FAT_cluster(int cluster, unsigned int value);
 static int mark_FAT_sector(int sector, unsigned int value);
 static long do_check(char *buffer, int try, off_t current_block);
@@ -306,6 +307,21 @@ static int set_FAT_byte(int index, unsigned char value)
     fat[index] = value;
 
     return old != value;
+}
+
+/* Read value of the specified cluster */
+
+static unsigned int read_FAT_cluster(int cluster)
+{
+    uint32_t e;
+
+    if (cluster < 0 || cluster >= fat_entries)
+	die("Internal error: out of range cluster number in read_FAT_cluster");
+    if (size_fat != 32)
+	die("Internal error: unexpected call of read_FAT_cluster");
+
+    e = le32toh(((unsigned int *)fat)[cluster]);
+    return e & 0xfffffff;
 }
 
 /* Mark the specified cluster as having a particular value */
@@ -1395,6 +1411,7 @@ static void process_bad_blocks(void)
     if (size_fat == 32) {
 	struct fat32_fsinfo *info;
 	uint32_t free_clusters;
+	unsigned int root_cluster;
 
 	/* fsinfo structure is at offset 0x1e0 in info sector by observation */
 	info = (struct fat32_fsinfo *)(info_sector_buffer + 0x1e0);
@@ -1404,6 +1421,15 @@ static void process_bad_blocks(void)
 	if (free_clusters < bad_clusters)
 		die("too many bad clusters");
 	info->free_clusters = htole32(free_clusters - bad_clusters);
+
+	/* verify that root directory is intact */
+	root_cluster = le32toh(bs.fat32.root_cluster);
+	while (read_FAT_cluster(root_cluster) == FAT_BAD)
+		if (++root_cluster >= fat_entries)
+			die("too many bad clusters");
+	mark_FAT_cluster(root_cluster, FAT_EOF);
+	info->next_cluster = htole32(root_cluster);
+	bs.fat32.root_cluster = htole32(root_cluster);
     }
 }
 
@@ -1446,8 +1472,14 @@ static void write_tables(void)
 	for (y = 0; y < blank_fat_length; y++)
 	    writebuf(blank_sector, sector_size, "FAT");
     }
-    /* Write the root directory directly after the last FAT. This is the root
-     * dir area on FAT12/16, and the first cluster on FAT32. */
+    /* Write the root directory. On FAT12/16 it is directly after the last
+     * FAT. On FAT32 seek to root cluster. */
+    if (size_fat == 32) {
+	unsigned int root_cluster = le32toh(bs.fat32.root_cluster);
+	off_t root_sector = (off_t)reserved_sectors + nr_fats * fat_length +
+	    (root_cluster - 2) * bs.cluster_size;
+	seekto(root_sector * sector_size, "root sector");
+    }
     writebuf((char *)root_dir, size_root_dir, "root directory");
 
     if (blank_sector)

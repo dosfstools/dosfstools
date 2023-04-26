@@ -8,6 +8,7 @@ TESTS = referenceFAT12.mkfs              \
 	referenceFAT16.mkfs              \
 	referenceFAT32.mkfs              \
 	referenceFAT32mbr.mkfs           \
+	mkfs-fat32_1_bad_block.mkfs      \
 	mkfs-fat32_2_res_sects.mkfs      \
 	mkfs-fat32_4K.mkfs               \
 	check-bad_names.fsck             \
@@ -64,6 +65,9 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  referenceFAT32.xxd               \
 		  referenceFAT32mbr.mkfs           \
 		  referenceFAT32mbr.xxd            \
+		  mkfs-fat32_1_bad_block.bad       \
+		  mkfs-fat32_1_bad_block.mkfs      \
+		  mkfs-fat32_1_bad_block.xxd       \
 		  mkfs-fat32_2_res_sects.mkfs      \
 		  mkfs-fat32_2_res_sects.xxd       \
 		  mkfs-fat32_4K.mkfs               \

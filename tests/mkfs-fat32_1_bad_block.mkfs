@@ -1,0 +1,3 @@
+ARGS="-F 32 -n TESTFAT32 -a -l mkfs-fat32_1_bad_block.bad"
+SIZE=1024
+CMP_LIMIT=10M
