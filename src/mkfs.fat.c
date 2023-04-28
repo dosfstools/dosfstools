@@ -285,7 +285,7 @@ static int set_FAT_byte(int index, unsigned char value);
 static unsigned int read_FAT_cluster(int cluster);
 static int mark_FAT_cluster(int cluster, unsigned int value);
 static int mark_FAT_sector(int sector, unsigned int value);
-static long do_check(char *buffer, int try, off_t current_block);
+static long do_check(int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
@@ -389,8 +389,9 @@ static int mark_FAT_sector(int sector, unsigned int value)
 
 /* Perform a test on a block.  Return the number of blocks that could be read successfully */
 
-static long do_check(char *buffer, int try, off_t current_block)
+static long do_check(int try, off_t current_block)
 {
+    static char buffer[BLOCK_SIZE * TEST_BUFFER_BLOCKS];
     long got;
 
     if (lseek(dev, part_sector * sector_size + current_block * BLOCK_SIZE, SEEK_SET)	/* Seek to the correct location */
@@ -423,7 +424,6 @@ static void check_blocks(void)
     off_t currently_testing;
     int try, got;
     int i;
-    static char blkbuf[BLOCK_SIZE * TEST_BUFFER_BLOCKS];
 
     if (verbose) {
 	printf("Searching for bad blocks ");
@@ -452,7 +452,7 @@ static void check_blocks(void)
 	}
 	if (currently_testing + try > blocks)
 	    try = blocks - currently_testing; /* TODO: check overflow */
-	got = do_check(blkbuf, try, currently_testing);
+	got = do_check(try, currently_testing);
 	currently_testing += got;
 	if (got == try) {
 	    try = TEST_BUFFER_BLOCKS;
