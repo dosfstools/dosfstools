@@ -124,8 +124,8 @@ static int vasprintf(char **strp, const char *fmt, va_list va)
     va_list vacopy;
 
     va_copy(vacopy, va);
-
     length = vsnprintf(NULL, 0, fmt, vacopy);
+    va_end(vacopy);
     if (length < 0)
 	return length;
 
