@@ -235,6 +235,29 @@ Usage error.
 When recovering from a corrupted filesystem, \fBfsck.fat\fP dumps recovered data
 into files named \fIfsckNNNN.rec\fP in the top level directory of the filesystem.
 .\" ----------------------------------------------------------------------------
+.SH SECURITY CONSIDERATIONS
+.PP
+When checking a filesystem with orphan (unconnected) cluster chains,
+\fBfsck.fat\fP either marks these chains as free or, if the \fB\-f\fP or
+\fB\-a\fP option is given, salvages (recovers) them into files.
+In the latter case, since an exact data size of an orphan cluster chain is
+unknown, it is set to include all bytes within the cluster chain.
+.PP
+Some operating systems don't clean the space between the last byte of a file
+and the end of its cluster chain, this space may include deleted data (or even
+data that existed before the drive was formatted to the FAT filesystem).
+.PP
+If such a file is deleted while open, and the filesystem is not unmounted
+properly, its cluster chain becomes orphan.
+Salvaging this chain into a file poses a security risk when unprivileged users
+have access to the mountpoint of the filesystem, because some amount of deleted
+data will be exposed to these users (the salvaged file will be larger than the
+original one, including remnant data after the original end-of-file position).
+.PP
+It is recommended that you never run \fBfsck.fat\fP with the \fB\-f\fP or
+\fB\-a\fP option against a filesystem containing sensitive deleted data if
+unprivileged users have access to its mountpoint.
+.\" ----------------------------------------------------------------------------
 .SH BUGS
 .IP "\(bu" 4
 Does not remove entirely empty directories.
