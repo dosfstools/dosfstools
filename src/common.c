@@ -25,6 +25,7 @@
 /* FAT32, VFAT, Atari format support, and various fixes additions May 1998
  * by Roman Hodek <Roman.Hodek@informatik.uni-erlangen.de> */
 
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -154,6 +155,51 @@ int xasprintf(char **strp, const char *fmt, ...)
     return retval;
 }
 
+static sig_atomic_t interrupted = 0;
+
+struct echo {
+    struct termios tio;
+    struct sigaction sa_int;
+    struct sigaction sa_term;
+    int fail;
+};
+
+static void
+sig_handler(int signo)
+{
+    (void)signo;
+
+    interrupted = 1;
+}
+
+static void echo_off(struct echo *echo)
+{
+    echo->fail = tcgetattr(0, &echo->tio);
+    if (!echo->fail) {
+	struct sigaction sa;
+	struct termios tio;
+
+	sa.sa_handler = sig_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, &echo->sa_int);
+	sigaction(SIGTERM, &sa, &echo->sa_term);
+
+	tio = echo->tio;
+	tio.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(0, TCSAFLUSH, &tio);
+    }
+}
+
+static void echo_on(struct echo *echo)
+{
+    if (!echo->fail) {
+	fflush(stdout);
+	tcsetattr(0, TCSAFLUSH, &echo->tio);
+	sigaction(SIGINT, &echo->sa_int, NULL);
+	sigaction(SIGTERM, &echo->sa_term, NULL);
+    }
+}
 
 int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	       int choices, ...)
@@ -165,6 +211,7 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
     int print_choices, print_full_choices;
     va_list va;
     int i;
+    struct echo echo;
     static int inhibit_quit_choice;
 
     if (!interactive) {
@@ -182,6 +229,9 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	choice_strings[i] = va_arg(va, const char *);
     }
     va_end(va);
+
+    memset(&echo, 0, sizeof(echo));
+    echo_off(&echo);
 
     print_choices = 1;
     print_full_choices = 0;
@@ -201,11 +251,17 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	fflush(stdout);
 
 	do {
-	    choice = getchar();
+	    ssize_t r = read(STDIN_FILENO, &choice, 1);
+	    if (r < 1 || interrupted) {
+		choice = EOF;
+	    }
 	} while (choice == '\n');  /* filter out enter presses */
 
-	if (choice == EOF)
+	if (choice == EOF) {
+	    printf("\n");
+	    echo_on(&echo);
 	    exit(1);
+	}
 
 	printf("%c\n", choice);
 
@@ -234,36 +290,25 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 				     2, "Continue");
 	    inhibit_quit_choice = 0;
 
-	    if (quit_choice == 1)
+	    if (quit_choice == 1) {
+		printf("\n");
+		echo_on(&echo);
 		exit(0);
+	    }
 	}
     }
 
+    echo_on(&echo);
     return choice_values[choice - '1'];
 }
 
 
 char *get_line(const char *prompt, char *dest, size_t length)
 {
-    struct termios tio, tio_orig;
-    int tio_fail;
-    char *retval;
-
-    tio_fail = tcgetattr(0, &tio_orig);
-    if (!tio_fail) {
-	tio = tio_orig;
-	tio.c_lflag |= ICANON | ECHO;
-	tcsetattr(0, TCSAFLUSH, &tio);
-    }
-
     printf("%s: ", prompt);
     fflush(stdout);
 
-    retval = fgets(dest, length, stdin);
-
-    if (!tio_fail)
-	tcsetattr(0, TCSAFLUSH, &tio_orig);
-    return retval;
+    return fgets(dest, length, stdin);
 }
 
 

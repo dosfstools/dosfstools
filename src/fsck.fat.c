@@ -35,7 +35,6 @@
 #include <ctype.h>
 #include <limits.h>
 #include <unistd.h>
-#include <termios.h>
 #include <getopt.h>
 
 #include "common.h"
@@ -54,15 +53,6 @@ int only_uppercase_label = 0;
 int boot_only = 0;
 unsigned n_files = 0;
 void *mem_queue = NULL;
-
-static struct termios original_termios;
-
-
-static void restore_termios(void)
-{
-    tcsetattr(0, TCSAFLUSH, &original_termios);
-}
-
 
 static void usage(char *name, int exitval)
 {
@@ -101,7 +91,6 @@ int main(int argc, char **argv)
     DOS_FS fs;
     int salvage_files, verify, c;
     uint32_t free_clusters = 0;
-    struct termios tio;
     char *tmp;
     long codepage = -1;
 
@@ -111,13 +100,6 @@ int main(int argc, char **argv)
 	    {"help",    no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
-
-    if (!tcgetattr(0, &original_termios)) {
-	tio = original_termios;
-	tio.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(0, TCSAFLUSH, &tio);
-	atexit(restore_termios);
-    }
 
     memset(&fs, 0, sizeof(fs));
     salvage_files = verify = 0;
