@@ -91,7 +91,7 @@
 
 /* Compute ceil(a/b) */
 
-static inline int cdiv(int a, int b)
+static inline long long cdiv(long long a, long long b)
 {
     return (a + b - 1) / b;
 }
@@ -889,13 +889,9 @@ static void setup_tables(void)
 		    printf("Trying FAT12: too much clusters\n");
 	    }
 
-	    clust16 = ((long long)fatdata1216 * sector_size + nr_fats * 4) /
-		((int)bs.cluster_size * sector_size + nr_fats * 2);
-	    fatlength16 = cdiv((clust16 + 2) * 2, sector_size);
+	    fatlength16 = cdiv((long long)fatdata1216 + 2 * (int)bs.cluster_size,
+			(int)bs.cluster_size * (sector_size >> 1) + nr_fats);
 	    fatlength16 = align_object(fatlength16, bs.cluster_size);
-	    /* Need to recalculate number of clusters, since the unused parts of the
-	     * FATS and data area together could make up space for an additional,
-	     * not really present cluster. */
 	    clust16 = (fatdata1216 - nr_fats * fatlength16) / bs.cluster_size;
 	    maxclust16 = (fatlength16 * sector_size) / 2;
 	    if (maxclust16 > MAX_CLUST_16)
@@ -916,13 +912,9 @@ static void setup_tables(void)
 		clust16 = 0;
 	    }
 
-	    clust32 = ((long long)fatdata32 * sector_size + nr_fats * 8) /
-		((int)bs.cluster_size * sector_size + nr_fats * 4);
-	    fatlength32 = cdiv((clust32 + 2) * 4, sector_size);
+	    fatlength32 = cdiv((long long)fatdata32 + 2 * (int)bs.cluster_size,
+			(int)bs.cluster_size * (sector_size >> 2) + nr_fats);
 	    fatlength32 = align_object(fatlength32, bs.cluster_size);
-	    /* Need to recalculate number of clusters, since the unused parts of the
-	     * FATS and data area together could make up space for an additional,
-	     * not really present cluster. */
 	    clust32 = (fatdata32 - nr_fats * fatlength32) / bs.cluster_size;
 	    maxclust32 = (fatlength32 * sector_size) / 4;
 	    if (maxclust32 > MAX_CLUST_32)
