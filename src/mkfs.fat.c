@@ -289,7 +289,6 @@ static long do_check(int try, off_t current_block);
 static void alarm_intr(int alnum);
 static void check_blocks(void);
 static void get_list_blocks(char *filename);
-static void check_mount(char *device_name);
 static void establish_params(struct device_info *info);
 static void process_bad_blocks(void);
 static void setup_tables(void);
@@ -547,14 +546,6 @@ static void get_list_blocks(char *filename)
 
     if (bad_blocks)
 	process_bad_blocks();
-}
-
-/* Check to see if the specified device is currently mounted - abort if it is */
-
-static void check_mount(char *device_name)
-{
-    if (is_device_mounted(device_name))
-	die("%s contains a mounted filesystem.", device_name);
 }
 
 /* Establish the geometry and media parameters for the device */
