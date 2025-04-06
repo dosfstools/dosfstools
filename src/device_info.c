@@ -323,34 +323,3 @@ int get_device_info(int fd, struct device_info *info)
 
     return 0;
 }
-
-
-int is_device_mounted(const char *path)
-{
-#if HAVE_DECL_GETMNTENT
-    FILE *f;
-    struct mntent *mnt;
-
-    if ((f = setmntent(_PATH_MOUNTED, "r")) == NULL)
-	return 0;
-    while ((mnt = getmntent(f)) != NULL)
-	if (strcmp(path, mnt->mnt_fsname) == 0)
-	    return 1;
-    endmntent(f);
-    return 0;
-#endif
-
-#if HAVE_DECL_GETMNTINFO
-    struct statfs *stat;
-    int count, i;
-
-    count = getmntinfo(&stat, 0);
-    for (i = 0; i < count; i++)
-	if (!strcmp(path, stat[i].f_mntfromname))
-	    return 1;
-    return 0;
-#endif
-
-    (void)path; /* prevent unused parameter warning */
-    return 0;
-}

@@ -228,6 +228,9 @@ int main(int argc, char **argv)
     if (optind != argc - 1)
 	usage(argv[0], 2);
 
+    if (rw)
+	check_mount(argv[optind]);
+
     fs_open(argv[optind], rw);
 
     read_boot(&fs);

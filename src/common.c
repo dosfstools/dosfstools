@@ -39,6 +39,16 @@
 #include "common.h"
 #include "charconv.h"
 
+#if HAVE_DECL_GETMNTENT
+#include <paths.h>
+#include <mntent.h>
+#endif
+
+#if HAVE_DECL_GETMNTINFO
+#include <sys/param.h>
+#include <sys/ucred.h>
+#include <sys/mount.h>
+#endif
 
 int interactive;
 int write_immed;
@@ -379,4 +389,42 @@ int validate_volume_label(char *doslabel)
         ret |= 0x10;
 
     return ret;
+}
+
+int is_device_mounted(const char *path)
+{
+#if HAVE_DECL_GETMNTENT
+    FILE *f;
+    struct mntent *mnt;
+
+    if ((f = setmntent(_PATH_MOUNTED, "r")) == NULL)
+	return 0;
+    while ((mnt = getmntent(f)) != NULL)
+	if (strcmp(path, mnt->mnt_fsname) == 0)
+	    return 1;
+    endmntent(f);
+    return 0;
+#endif
+
+#if HAVE_DECL_GETMNTINFO
+    struct statfs *stat;
+    int count, i;
+
+    count = getmntinfo(&stat, 0);
+    for (i = 0; i < count; i++)
+	if (!strcmp(path, stat[i].f_mntfromname))
+	    return 1;
+    return 0;
+#endif
+
+    (void)path; /* prevent unused parameter warning */
+    return 0;
+}
+
+/* Check to see if the specified device is currently mounted - abort if it is */
+
+void check_mount(char *device_name)
+{
+    if (is_device_mounted(device_name))
+	die("%s contains a mounted filesystem.", device_name);
 }

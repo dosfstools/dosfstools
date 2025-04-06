@@ -114,4 +114,14 @@ int validate_volume_label(char *doslabel);
  * Validate volume label
  */
 
+int is_device_mounted(const char *path);
+
+/* Whether device is mount */
+
+void check_mount(char *device_name);
+
+/*
+ * Check device mount
+ */
+
 #endif
