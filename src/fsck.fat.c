@@ -112,13 +112,6 @@ int main(int argc, char **argv)
 	    {0,}
     };
 
-    if (!tcgetattr(0, &original_termios)) {
-	tio = original_termios;
-	tio.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(0, TCSAFLUSH, &tio);
-	atexit(restore_termios);
-    }
-
     memset(&fs, 0, sizeof(fs));
     salvage_files = verify = 0;
     rw = interactive = 1;
@@ -229,6 +222,13 @@ int main(int argc, char **argv)
 	usage(argv[0], 2);
 
     fs_open(argv[optind], rw);
+
+    if (interactive && !tcgetattr(0, &original_termios)) {
+        tio = original_termios;
+        tio.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(0, TCSAFLUSH, &tio);
+        atexit(restore_termios);
+    }
 
     read_boot(&fs);
     if (boot_only)
