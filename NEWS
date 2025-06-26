@@ -1,3 +1,23 @@
+dosfstools 5.0 - released <TBD>
+===============================
+
+fsck.fat has exit codes compliant to the standard fsck exit codes (see man
+fsck). The return codes of fatlabel and mkfs.fat changed as well.
+
+The exit code returned by fsck is the sum of the following conditions:
+
+0 - No errors
+1 - File system errors corrected
+2 - System should be rebooted
+4 - File system errors left uncorrected
+8 - Operational error
+16 - Usage or syntax error
+32 - Fsck canceled by user request
+128 - Shared library error
+
+The exit code returned when multiple file systems are checked is the bit-wise
+OR of the exit codes for each file system that is checked.
+
 dosfstools 4.2 - released 2021-01-31
 ====================================
 

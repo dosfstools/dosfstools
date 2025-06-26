@@ -222,13 +222,21 @@ Display help message describing usage and options then exit.
 .\" ----------------------------------------------------------------------------
 .SH "EXIT STATUS"
 .IP "0" 4
-No recoverable errors have been detected.
+No errors
 .IP "1" 4
-Recoverable errors have been detected or \fBfsck.fat\fP has discovered an
-internal inconsistency.
+Filesystem errors corrected
 .IP "2" 4
-Usage error.
-\fBfsck.fat\fP did not access the filesystem.
+System should be rebooted
+.IP "4" 4
+Filesystem errors left uncorrected
+.IP "8" 4
+Operational error
+.IP "16" 4
+Usage or syntax error
+.IP "32" 4
+Checking canceled by user request
+.IP "128" 4
+Shared-library error
 .\" ----------------------------------------------------------------------------
 .SH FILES
 .IP "\fIfsck0000.rec\fP, \fIfsck0001.rec\fP, ..." 4

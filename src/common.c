@@ -38,7 +38,7 @@
 
 #include "common.h"
 #include "charconv.h"
-
+#include "exit_codes.h"
 
 int interactive;
 int write_immed;
@@ -62,7 +62,7 @@ void die(const char *msg, ...)
     vfprintf(stderr, msg, args);
     va_end(args);
     fprintf(stderr, "\n");
-    exit(1);
+    exit(OPERATIONAL_ERROR);
 }
 
 void pdie(const char *msg, ...)
@@ -76,7 +76,7 @@ void pdie(const char *msg, ...)
     vfprintf(stderr, msg, args);
     va_end(args);
     fprintf(stderr, ": %s\n", strerror(errno));
-    exit(1);
+    exit(OPERATIONAL_ERROR);
 }
 
 void *alloc(int size)
@@ -205,7 +205,7 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	} while (choice == '\n');  /* filter out enter presses */
 
 	if (choice == EOF)
-	    exit(1);
+	    exit(USAGE_OR_SYNTAX_ERROR);
 
 	printf("%c\n", choice);
 
@@ -235,7 +235,7 @@ int get_choice(int noninteractive_result, const char *noninteractive_msg,
 	    inhibit_quit_choice = 0;
 
 	    if (quit_choice == 1)
-		exit(0);
+		exit(NO_ERRORS);
 	}
     }
 

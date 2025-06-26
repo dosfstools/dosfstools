@@ -46,6 +46,7 @@
 #include "file.h"
 #include "check.h"
 #include "charconv.h"
+#include "exit_codes.h"
 
 int rw = 0, list = 0, test = 0, verbose = 0;
 long fat_table = 0;
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
 	    codepage = strtol(optarg, &tmp, 10);
 	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || codepage < 0 || codepage > INT_MAX) {
 		fprintf(stderr, "Invalid codepage : %s\n", optarg);
-		usage(argv[0], 2);
+		usage(argv[0], USAGE_OR_SYNTAX_ERROR);
 	    }
 	    break;
 	case 'd':
@@ -163,7 +164,7 @@ int main(int argc, char **argv)
 	    fat_table = strtol(optarg, &tmp, 10);
 	    if (!*optarg || isspace((unsigned char)*optarg) || *tmp || errno || fat_table < 0 || fat_table > 255) {
 		fprintf(stderr, "Invalid FAT table : %s\n", optarg);
-		usage(argv[0], 2);
+		usage(argv[0], USAGE_OR_SYNTAX_ERROR);
 	    }
 	    break;
 	case 'l':
@@ -202,31 +203,31 @@ int main(int argc, char **argv)
 		    atari_format = 1;
 	    } else {
 		    fprintf(stderr, "Unknown variant: %s\n", optarg);
-		    usage(argv[0], 2);
+		    usage(argv[0], USAGE_OR_SYNTAX_ERROR);
 	    }
 	    break;
 	case 'w':
 	    write_immed = 1;
 	    break;
 	case OPT_HELP:
-	    usage(argv[0], 0);
+	    usage(argv[0], NO_ERRORS);
 	    break;
 	case '?':
-	    usage(argv[0], 2);
+	    usage(argv[0], USAGE_OR_SYNTAX_ERROR);
 	    break;
 	default:
 	    fprintf(stderr,
 		    "Internal error: getopt_long() returned unexpected value %d\n", c);
-	    exit(3);
+	    exit(USAGE_OR_SYNTAX_ERROR);
 	}
     if (!set_dos_codepage(codepage))
-        exit(2);
+        exit(USAGE_OR_SYNTAX_ERROR);
     if ((test || write_immed) && !rw) {
 	fprintf(stderr, "-t and -w can not be used in read only mode\n");
-	exit(2);
+	exit(USAGE_OR_SYNTAX_ERROR);
     }
     if (optind != argc - 1)
-	usage(argv[0], 2);
+	usage(argv[0], USAGE_OR_SYNTAX_ERROR);
 
     fs_open(argv[optind], rw);
 
@@ -284,5 +285,5 @@ exit:
 	       n_files, (unsigned long)fs.data_clusters - free_clusters,
 	       (unsigned long)fs.data_clusters);
 
-    return fs_close(rw) ? 1 : 0;
+    return fs_close(rw) ? FS_ERRORS_CORRECTED : NO_ERRORS;
 }

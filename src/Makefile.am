@@ -23,7 +23,7 @@ EXTRA_DIST = blkdev/README
 
 charconv_common_sources = charconv.c charconv.h
 charconv_common_ldadd = $(LIBICONV)
-fscklabel_common_sources = boot.c boot.h common.c common.h \
+fscklabel_common_sources = boot.c boot.h common.c common.h exit_codes.h \
 			   fat.c fat.h io.c io.h msdos_fs.h \
 			   $(charconv_common_sources) \
 			   fsck.fat.h endian_compat.h
@@ -38,7 +38,7 @@ devinfo_common_sources = device_info.c device_info.h \
 			 blkdev/blkdev.c blkdev/blkdev.h \
 			 blkdev/linux_version.c blkdev/linux_version.h
 mkfs_fat_SOURCES  = mkfs.fat.c msdos_fs.h common.c common.h endian_compat.h \
-		    $(charconv_common_sources) $(devinfo_common_sources)
+		    exit_codes.h $(charconv_common_sources) $(devinfo_common_sources)
 mkfs_fat_CPPFLAGS = -I$(srcdir)/blkdev
 mkfs_fat_CFLAGS   = $(AM_CFLAGS)
 mkfs_fat_LDADD    = $(charconv_common_ldadd)

@@ -44,6 +44,7 @@
 #include "fsck.fat.h"
 #include "common.h"
 #include "io.h"
+#include "exit_codes.h"
 
 typedef struct _change {
     void *data;
@@ -60,7 +61,7 @@ void fs_open(const char *path, int rw)
 {
     if ((fd = open(path, rw ? O_RDWR : O_RDONLY)) < 0) {
 	perror("open");
-	exit(6);
+	exit(OPERATIONAL_ERROR);
     }
     changes = last = NULL;
     did_change = 0;
