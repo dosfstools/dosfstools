@@ -15,8 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 AC_INIT([dosfstools], [4.2+git])
+AC_CONFIG_MACRO_DIRS([m4])
 AC_SUBST([RELEASE_DATE], [2021-01-31])
 AM_INIT_AUTOMAKE([1.11 foreign subdir-objects parallel-tests])
+AM_GNU_GETTEXT_VERSION([0.20])
+AM_GNU_GETTEXT([external])
 
 AC_ARG_ENABLE([compat-symlinks],
 	[AS_HELP_STRING([--enable-compat-symlinks],

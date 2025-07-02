@@ -95,7 +95,7 @@ matrix:
 
 script:
   - if test "$LDFLAGS" != "--static"; then export CHECK_ERRORS=1; fi
-  - ./autogen.sh
+  - autoreconf -i
   - ./configure $CONFIGURE_FLAGS
   - make
   - make check
