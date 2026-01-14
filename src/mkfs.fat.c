@@ -32,7 +32,7 @@
 
    As far as possible the aim here is to make the "mkfs.fat" command
    look almost identical to the other Linux filesystem make utilities,
-   eg bad blocks are still specified as blocks, not sectors, but when
+   e.g. bad blocks are still specified as blocks, not sectors, but when
    it comes down to it, DOS is tied to the idea of a sector (512 bytes
    as a rule), and not the block.  For example the boot block does not
    occupy a full cluster.
@@ -231,7 +231,7 @@ static char initial_volume_name[] = NO_NAME; /* Initial volume name, make sure t
 /* Global variables - the root of all evil :-) - see these and weep! */
 
 static char *device_name = NULL;	/* Name of the device on which to create the filesystem */
-static int check = FALSE;	/* Default to no readablity checking */
+static int check = FALSE;	/* Default to no readability checking */
 static int verbose = 0;		/* Default to verbose mode off */
 static long volume_id;		/* Volume ID number */
 static time_t create_time = -1;	/* Creation time */

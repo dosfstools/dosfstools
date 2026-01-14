@@ -43,7 +43,7 @@ extern const char *program_name;
 void die(const char *msg, ...)
     __attribute((noreturn, format(printf, 1, 2)));
 
-/* Displays a prinf-style message and terminates the program. */
+/* Displays a printf-style message and terminates the program. */
 
 void pdie(const char *msg, ...)
     __attribute((noreturn, format(printf, 1, 2)));
