@@ -1561,7 +1561,7 @@ int main(int argc, char **argv)
 
     program_name = "mkfs.fat";
     if (argc && *argv) {	/* What's the program name? */
-	char *p;
+	const char *p;
 	program_name = *argv;
 	if ((p = strrchr(program_name, '/')))
 	    program_name = p + 1;
