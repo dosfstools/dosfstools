@@ -21,6 +21,7 @@ TESTS = referenceFAT12.mkfs              \
 	check-chain_too_long.fsck        \
 	check-chain_to_other_file.fsck   \
 	check-circular_chain.fsck        \
+	check-dangling_directory.fsck    \
 	check-duplicate_names.fsck       \
 	check-dot_entries.fsck           \
 	check-huge.fsck                  \
@@ -95,6 +96,8 @@ dist_check_DATA = test-mkfs test-fsck test-label   \
 		  check-chain_to_other_file.xxd    \
 		  check-circular_chain.fsck        \
 		  check-circular_chain.xxd         \
+		  check-dangling_directory.fsck    \
+		  check-dangling_directory.xxd     \
 		  check-duplicate_names.fsck       \
 		  check-duplicate_names.xxd        \
 		  check-dot_entries.fsck           \

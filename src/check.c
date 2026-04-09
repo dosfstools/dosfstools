@@ -486,7 +486,14 @@ static int check_file(DOS_FS * fs, DOS_FILE * file)
 		set_fat(fs, prev, -1);
 	    else if (!file->offset)
 		die("FAT32 root dir starts with a bad cluster!");
-	    else
+	    else if (file->dir_ent.attr & ATTR_DIR) {
+	      printf(
+		  "%s\n  Directory contents lost after truncation, deleting "
+		  "the directory.\n",
+		  path_name(file));
+	      MODIFY(file, name[0], DELETED_FLAG);
+	      return 0;
+	    } else
 		MODIFY_START(file, 0, fs);
 	    break;
 	}
