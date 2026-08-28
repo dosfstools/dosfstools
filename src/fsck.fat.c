@@ -90,6 +90,9 @@ static void usage(char *name, int exitval)
     fprintf(stderr, "  -v              verbose mode\n");
     fprintf(stderr, "  -V              perform a verification pass\n");
     fprintf(stderr, "  --variant=TYPE  handle variant TYPE of the filesystem\n");
+    fprintf(stderr, "  --discard-orphans\n");
+    fprintf(stderr, "                  free unused cluster chains instead of salvaging them to\n");
+    fprintf(stderr, "                    files\n");
     fprintf(stderr, "  -w              write changes to disk immediately\n");
     fprintf(stderr, "  -y              same as -a, for compat with other *fsck\n");
     fprintf(stderr, "  --help          print this message\n");
@@ -105,9 +108,10 @@ int main(int argc, char **argv)
     char *tmp;
     long codepage = -1;
 
-    enum {OPT_HELP=1000, OPT_VARIANT};
+    enum {OPT_HELP=1000, OPT_VARIANT, OPT_DISCARD_ORPHANS};
     const struct option long_options[] = {
 	    {"variant", required_argument, NULL, OPT_VARIANT},
+	    {"discard-orphans", no_argument, NULL, OPT_DISCARD_ORPHANS},
 	    {"help",    no_argument,       NULL, OPT_HELP},
 	    {0,}
     };
@@ -207,6 +211,9 @@ int main(int argc, char **argv)
 	    break;
 	case 'w':
 	    write_immed = 1;
+	    break;
+	case OPT_DISCARD_ORPHANS:
+	    salvage_files = 0;
 	    break;
 	case OPT_HELP:
 	    usage(argv[0], 0);
