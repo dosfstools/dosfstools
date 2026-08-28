@@ -140,6 +140,16 @@ This option can be given more than once.
 Salvage unused cluster chains to files.
 By default, unused clusters are added to the free disk space except in auto mode
 (\fB\-a\fP).
+See \fB\-\-discard\-orphans\fP for the opposite behaviour.
+.IP "\fB\-\-discard\-orphans\fP" 4
+Free unused cluster chains instead of salvaging them to files, including in auto
+mode (\fB\-a\fP).
+Their contents are discarded and the clusters become eligible to be overwritten.
+This is the opposite of \fB\-f\fP, \fB\-a\fP, \fB\-p\fP and \fB\-y\fP, all of
+which enable salvaging; whichever of these appears last on the command line takes
+effect.
+Note that this option is useful for filesystems with a large number of orphan
+chains, as salvaging is limited to 10000 recovered files.
 .IP "\fB\-F\fP \fINUM\fP" 4
 Specify FAT table \fINUM\fP for filesystem access.
 By default value \fI0\fP is assumed and then the first uncorrupted FAT table is
@@ -238,8 +248,9 @@ into files named \fIfsckNNNN.rec\fP in the top level directory of the filesystem
 .SH SECURITY CONSIDERATIONS
 .PP
 When checking a filesystem with orphan (unconnected) cluster chains,
-\fBfsck.fat\fP either marks these chains as free or, if the \fB\-f\fP or
-\fB\-a\fP option is given, salvages (recovers) them into files.
+\fBfsck.fat\fP either marks these chains as free or, if the \fB\-f\fP, \fB\-a\fP,
+\fB\-p\fP or \fB\-y\fP option is given without a later \fB\-\-discard\-orphans\fP,
+salvages (recovers) them into files.
 In the latter case, since an exact data size of an orphan cluster chain is
 unknown, it is set to include all bytes within the cluster chain.
 .PP
@@ -254,9 +265,11 @@ have access to the mountpoint of the filesystem, because some amount of deleted
 data will be exposed to these users (the salvaged file will be larger than the
 original one, including remnant data after the original end-of-file position).
 .PP
-It is recommended that you never run \fBfsck.fat\fP with the \fB\-f\fP or
-\fB\-a\fP option against a filesystem containing sensitive deleted data if
-unprivileged users have access to its mountpoint.
+It is recommended that you never run \fBfsck.fat\fP with the \fB\-f\fP, \fB\-a\fP,
+\fB\-p\fP or \fB\-y\fP option against a filesystem containing sensitive deleted
+data if unprivileged users have access to its mountpoint.
+Adding \fB\-\-discard\-orphans\fP after these options avoids this exposure, at the
+cost of discarding the orphan data instead of recovering it.
 .\" ----------------------------------------------------------------------------
 .SH BUGS
 .IP "\(bu" 4
