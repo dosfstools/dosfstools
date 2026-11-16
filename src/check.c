@@ -100,16 +100,22 @@ static char *path_name(DOS_FILE * file)
     if (!file)
 	*path = 0;		/* Reached the root directory */
     else {
+	const char *name;
+
 	if (strlen(path_name(file->parent)) > PATH_NAME_MAX)
 	    die("Path name too long.");
 	if (strcmp(path, "/") != 0)
 	    strcat(path, "/");
 
-	/* Append the long name to the path,
-	 * or the short name if there isn't a long one
+	/* The parent prefix is bounded above, but a rendered VFAT long
+	 * name is not: it can expand to several times its length in
+	 * escape sequences. Check the component against the remaining
+	 * space before appending it.
 	 */
-	strcpy(strrchr(path, 0),
-	       file->lfn ? file->lfn : file_name(file->dir_ent.name));
+	name = file->lfn ? file->lfn : file_name(file->dir_ent.name);
+	if (strlen(path) + strlen(name) + 1 > sizeof(path))
+	    die("Path name too long.");
+	strcpy(strrchr(path, 0), name);
     }
     return path;
 }
